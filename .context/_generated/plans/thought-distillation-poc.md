@@ -376,8 +376,8 @@ Open TODOs:
 ## 20. Amendments — 2026-07-26 (on-save distill trigger)
 
 - Extracted `ai/memory/distillation/run-for-chat-message.ts` (`distillChatMessage`) — production orchestration (chunk loop, persist, optional keyword index, agent_runs, file log).
-- `ai/memory/distillation/schedule.ts` — fire-and-forget `scheduleDistillationForMessage` (persist + index by default). Failures log only.
+- `ai/memory/distillation/schedule.ts` — fire-and-forget `scheduleDistillationForMessage` (persist + index by default). Failures log only. Exposes `dispatchDistillationJob` as the future worker entry.
 - `build-response.ts` schedules distill after each saved user and assistant row.
 - `tmp-distill-poc.ts` thinned to a CLI wrapper over `distillChatMessage`.
-- `@todo P1`: plumb Vercel `waitUntil` into the schedule path so serverless does not kill the job after the HTTP response.
-- Next: reindex-conversation script.
+- **Job dispatch direction supersedes "plumb waitUntil":** see `distillation-job-dispatch.md`. v1 = internal Hono job route + fire-and-forget `fetch` under Fluid Compute; `agent_runs` is the status ledger; QStash optional for retries; Trigger.dev / Upstash Workflows deferred. `waitUntil`/`afterResponse` are for finishing the *current* request, not for job dispatch.
+- Next: either implement the job route, or proceed to reindex-conversation script (CLI can keep calling `distillChatMessage` directly).

@@ -2,26 +2,30 @@ import { distillChatMessage } from "./run-for-chat-message"
 
 type ScheduleDistillationOptions = {
     indexKeywords?: boolean
-
-    /**
-     * @todo P1: Plumb Vercel `waitUntil` from the webhook entry so serverless
-     * runtimes keep the job alive after the HTTP response.
-     */
-    waitUntil?: (promise: Promise<unknown>) => void
 }
 
 /**
- * Fire-and-forget distillation after a chat message is saved.
+ * Dispatch distillation after a chat message is saved.
  *
- * @remarks Failures are logged only — the chat reply must not block on this.
+ * @remarks Today this still runs in-process (fire-and-forget). That is a stopgap —
+ * not the intended architecture. See `.context/_generated/plans/distillation-job-dispatch.md`.
+ *
+ * @todo P1: Dispatch via authenticated internal Hono job route (Fluid Compute
+ * long `maxDuration`) with fire-and-forget `fetch`. Do not use `waitUntil` /
+ * `afterResponse` as the job runner — those only extend the current request.
+ *
+ * @todo P2: Optionally put QStash in front of that route for retries / delivery
+ * guarantees. Defer Trigger.dev / Upstash Workflows until multi-step durable
+ * orchestration is actually needed.
+ *
+ * @todo P1: Feature-flag on-save distill before production traffic burns cost.
  */
 const scheduleDistillationForMessage = (
     messageId: string,
     options: ScheduleDistillationOptions = {}
 ): void => {
-    const promise = distillChatMessage({
+    void dispatchDistillationJob({
         messageId,
-        persist: true,
         indexKeywords: options.indexKeywords ?? true
     })
         .then(result => {
@@ -32,8 +36,23 @@ const scheduleDistillationForMessage = (
         .catch(error => {
             console.error(`[distill] failed for ${messageId}`, error)
         })
-
-    options.waitUntil?.(promise)
 }
 
-export { type ScheduleDistillationOptions, scheduleDistillationForMessage }
+/**
+ * Worker entry used by the future job route (and today's in-process fallback).
+ */
+const dispatchDistillationJob = (input: {
+    messageId: string
+    indexKeywords?: boolean
+}) =>
+    distillChatMessage({
+        messageId: input.messageId,
+        persist: true,
+        indexKeywords: input.indexKeywords ?? true
+    })
+
+export {
+    dispatchDistillationJob,
+    type ScheduleDistillationOptions,
+    scheduleDistillationForMessage
+}
