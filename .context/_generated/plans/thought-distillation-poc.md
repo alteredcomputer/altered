@@ -99,6 +99,8 @@ Step 5 repeats until derived thoughts cover the entirety of the source text.
 
 Foundational principle (settled after deliberation): **keywords are explicitly about the derived thought row itself.** Surrounding source context would be unknown pollution — the thought detaches from its source over time — even though it would help indexing relevance. Keywords exist for **searchability/findability beyond datasets**; they are NOT for structure or relations — datasets do linking, structuring, and topical association. Keywords must not rely on the source text.
 
+**Form (corrected 2026-07-26):** each keyword is **exactly one word**. No phrases / multi-word compounds with spaces. Hyphenated tokens count as one word. Normalization drops anything with whitespace.
+
 Timing: either simultaneously during each chunk (leverages in-memory context) or afterwards per derived thought as an independent job. **Default: independent job per thought**; per-chunk inlining is a later option.
 
 Steps:
@@ -106,7 +108,7 @@ Steps:
 0. **Pre-generation context:** a limited search using the **query tool** (Plan B) to gather brain-side info about the thought being indexed — run in a **subagent**, with results **summarized** before loading back to reduce context. Critical constraint: generated keywords must relate **only to the thought, NOT the summary** — double down on this in the relevance pass. (External searching here can resolve things like "ALTERED" as a business rather than a capitalized word.) Stub this step until Plan B lands.
 1. **Direct keyword generation** for the thought.
 2. **Synonym expansion** — the existing `expandKeywordGeneration.iterations` option, default 1 iteration. (Per the 2026-05-30 note: expansion ~10x's surface area; a second expansion introduces drift — don't.)
-3. **Relevance strip** — drop expanded keywords without direct relevance to the thought (the classic "pets → pet food" drift example). This keeps indexing surface area high without introducing irrelevant retrieval.
+3. **Relevance strip** — drop expanded keywords without direct relevance to the thought (e.g. pets → kibble drift). This keeps indexing surface area high without introducing irrelevant retrieval.
 
 The keyword strategy stays **basic** for now — no added nuance unless a need emerges. The generation codepath is **shared with query-side keyword inference** (symmetry; divergences documented in `memory-query-poc.md`).
 
@@ -166,7 +168,7 @@ After the chat-message corpus is tuned to ~80%: a minimalist utility uploading a
 ## 9. Models, cost & observability
 
 - **`anthropic/claude-sonnet-4.6` for every step** — model consistency valued over savings at this stage; it's also what the chat runs on. Watch the cost metrics breakdown.
-- Build a **per-step model map** (split / rewrite / keywords / relevance / …) with every preset = 4.6, plus `@todo`s marking which steps can drop to smaller models (suggested: `openai/gpt-5.4-nano` — already used for admin command classification — for synonym expansion, relevance strips, and other tasks that don't need extreme context conclusions or intelligence).
+- Build a **per-step model map** (split / rewrite / keywords / relevance / …). Baseline for non-chat steps is now `DEFAULT_WORKER_MODEL_ID` (`deepseek/deepseek-v4-flash`); raise only when a step needs high intelligence. Admin command classification may still use `openai/gpt-5.4-nano`.
 - AI SDK notes: the model can be swapped mid-agent (same instructions/context), per tool, and per step — separate agents just configure their own.
 - **No cost caps or kill switches** — the OpenRouter dashboard limit governs prototyping.
 - Metrics: **new tables** (`agent_runs` + relations), plus console logging. **No user-visible stats** — a dashboard or Raycast command comes much later.
@@ -349,3 +351,18 @@ Open TODOs:
 - `tmp-distill-poc --persist` starts an `agent_runs` row (`type: distillation`, `status: running`), saves each collected thought via `saveDerivedThought`, then completes the run with cost/tokens/`resultThoughtIds` (or `failed` + error on throw). Default remains log-only.
 - Run-local `sourceIndex` backlinks convert through `toPersistedBacklinks` (chat-message ids) before insert.
 - File traces under `.logs/agents/distillation/runs/` still written; they now include `agentRunId` + `persistedThoughtIds` when persisting.
+
+## 17. Amendments — 2026-07-26 (keyword pipeline)
+
+- Shared module `ai/memory/keywords/pipeline.ts`: generate → expand (default 1 iter) → strip expanded-only. Brain-context pre-search (step 0) remains stubbed until Plan B.
+- Default keyword model: `deepseek/deepseek-v4-flash` via shared `DEFAULT_WORKER_MODEL_ID` (`ai/models/defaults.ts`) — same default for all non-chat agents / mechanical jobs unless a step needs high intelligence (chat stays on Claude).
+- Keywords are **single words only** (no phrases); pipeline normalization drops whitespace-containing tokens.
+- Structured output uses `generateText` + `Output.object` (not deprecated `generateObject`).
+- `indexThoughtKeywords` + `replaceTagsForThought` write the `tags` table.
+- `tmp-distill-poc --persist --index` runs the pipeline on each saved thought. Query-side should skip strip (`@todo P2` explicit `mode`).
+
+## 18. Amendments — 2026-07-26 (worker model default + keyword form)
+
+- Introduced `DEFAULT_WORKER_MODEL_ID = deepseek/deepseek-v4-flash` for non-chat agents (distillation, keywords, future mechanical agents). Override only when intelligence demands it.
+- Distillation `DEFAULT_DISTILLATION_MODEL_ID` aliases the worker default.
+- Keyword conceptual correction: one word per keyword (plan §6.3 + pipeline prompts/schema).

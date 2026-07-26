@@ -3,6 +3,7 @@ import { ToolLoopAgent } from "ai"
 import { type } from "arktype"
 import { composeInstructions } from "../../../../instructions/composition"
 import { userLanguageStylePreferences } from "../../../../instructions/user-language-style"
+import { DEFAULT_WORKER_MODEL_ID } from "../../../../models/defaults"
 import { createOpenrouterChatModel } from "../../../../provider/create-chat-model"
 import { distillationAgentContextSchema } from "./context"
 import { distillationAgentInstructions } from "./instructions/agent"
@@ -13,10 +14,9 @@ import { createDistillationToolSet } from "./tools/set"
 const distillationAgentId = "distillation" as const
 
 /**
- * @remarks Distillation is a high-volume, small-context loop, so it runs a cheaper model than the chat agent. Re-benchmark before raising it.
+ * @remarks Uses the shared non-chat worker default. Re-benchmark before raising it.
  */
-const DEFAULT_DISTILLATION_MODEL_ID: LanguageModelID =
-    "deepseek/deepseek-v4-flash"
+const DEFAULT_DISTILLATION_MODEL_ID: LanguageModelID = DEFAULT_WORKER_MODEL_ID
 
 const distillationAgentCallOptionsSchema = type({
     context: distillationAgentContextSchema

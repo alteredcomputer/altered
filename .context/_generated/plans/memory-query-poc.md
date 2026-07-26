@@ -79,7 +79,7 @@ A subagent (cheap-model `@todo`; Sonnet 4.6 for now) reviews the retrieved thoug
 
 ## 7. Models, cost & observability
 
-- **`anthropic/claude-sonnet-4.6` for every step** (keyword inference, relevance pass) via the shared per-step model map; `@todo` downgrades for the mechanical steps (suggested `openai/gpt-5.4-nano` for relevance filtering and expansion).
+- Mechanical steps (keyword inference, expansion) default to `DEFAULT_WORKER_MODEL_ID` (`deepseek/deepseek-v4-flash`); raise only when a step needs high intelligence.
 - No cost caps; log metrics + store in `agent_runs`; **no user-visible stats** (dashboard/Raycast much later).
 
 ## 8. Deferred
@@ -111,5 +111,6 @@ Dev workflow mirrors Plan A: individual components via scripts → larger manual
 ## 11. Amendment — 2026-07-26
 
 - **Supersedes the `author`-on-backlink point above.** Backlinks store positions only; `author` and the source dates are resolved by joining to the source (`ResolvedBacklink` in the distillation plan §13). Agent-source filtering therefore happens through that join, not a denormalized backlink column — one extra query per source, which is acceptable and keeps the rows from rotting.
-- **Section 7 model line is superseded:** `anthropic/claude-sonnet-4.6` no longer exists in the config. Steps default to `anthropic/claude-sonnet-5`, and the `@todo` downgrade targets now include `openai/gpt-5.6-luna` (proven adequate for tool-loop reasoning on the distillation side) ahead of `openai/gpt-5.4-nano` for the mechanical steps.
+- **Section 7 model line is superseded:** `anthropic/claude-sonnet-4.6` no longer exists in the config. Non-chat / mechanical steps (including keyword inference) default to `deepseek/deepseek-v4-flash` via `DEFAULT_WORKER_MODEL_ID`. Raise to Claude / Luna only when a step needs high intelligence. Chat remains on `anthropic/claude-sonnet-5`.
+- **Keyword form (shared with Plan A):** query-side keywords are also **single words only** — same `runKeywordPipeline` / generate+expand helpers.
 - Arktype union properties in query tool schemas must use `describe(text, "union")` — see the distillation plan §13.

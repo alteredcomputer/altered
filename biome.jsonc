@@ -36,31 +36,35 @@
 
             "performance": {
                 /**
-                 * @remarks Although it can affect performance when used incorrectly, namespace imports are sometimes necessary to categorize generically-named imports from a module, or to collect all exports for use dynamically.
+                 * @remarks Ultracite Override: Although it can affect performance when used incorrectly, namespace imports are sometimes necessary to categorize generically-named imports from a module, or to collect all exports for use dynamically.
                  */
                 "noNamespaceImport": "warn"
             },
 
             "complexity": {
                 /**
-                 * @remarks Explicitly checking for presence can present as more readable in certain situations.
+                 * @remarks Ultracite Override: Explicitly checking for presence can present as more readable in certain situations.
                  */
                 "useOptionalChain": "off",
 
                 /**
-                 * @remarks `void` can be useful for explicitly discarding promises, or to ignore a return value in an arrow function that doesn't have a block statement.
+                 * @remarks Ultracite Override: `void` can be useful for explicitly discarding promises, or to ignore a return value in an arrow function that doesn't have a block statement.
                  */
                 "noVoid": "off",
 
                 /**
-                 * @remarks In certain cases, a verbose ternary is more easily understood than a double bang.
+                 * @remarks Ultracite Override: In certain cases, a verbose ternary is more easily understood than a double bang.
                  */
                 "noUselessTernary": "off",
 
                 /**
-                 * @remarks A sequenced negation is often more intuitive than a grouped negation.
+                 * @remarks Ultracite Override: A sequenced negation is often more intuitive than a grouped negation.
                  */
                 "useSimplifiedLogicExpression": "off"
+            },
+
+            "suspicious": {
+                "noDeprecatedImports": "error"
             }
         }
     },

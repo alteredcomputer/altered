@@ -4,7 +4,7 @@ Last updated: 2026-07-26
 
 ## Focus
 
-Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Distillation on **`deepseek/deepseek-v4-flash`** (DeepInfra FP4). Persistence wired (§15–§16): `backlinks` table + `saveDerivedThought` + `tmp-distill-poc --persist` → `agent_runs`. Next: live-verify persist run → keyword job → save-path integration → reindex script.
+Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Non-chat workers (distillation, keywords, …) default to **`deepseek/deepseek-v4-flash`** via `DEFAULT_WORKER_MODEL_ID` (DeepInfra FP4). Keywords are single-word only. Persistence + keyword pipeline wired (§15–§18): `--persist` / `--index` on `tmp-distill-poc`. Next: live-verify `--persist --index` → save-path integration → reindex script.
 
 ## Plan linkage
 
@@ -121,6 +121,8 @@ Current focus is the distillation + memory-query POC (3–7 day timebox): auto-d
 
 ## Current risks and caveats
 
+- Keyword pipeline migrated off deprecated `generateObject` to `generateText` + `Output.object`. Biome `noDeprecatedImports` (2.4.13) can still miss `@deprecated` on ambient re-exports (biomejs/biome#7635) — do not rely on the linter alone for AI SDK deprecations.
+
 - Dedupe is not implemented yet; duplicate provider deliveries can still create repeated message rows/replies.
 
 - Natural-language admin command routing currently only handles webhook forwarding target changes; `/new` conversation resets still use slash triggers.
@@ -129,7 +131,7 @@ Current focus is the distillation + memory-query POC (3–7 day timebox): auto-d
 
 ## Next execution order
 
-1. Distillation POC per `thought-distillation-poc.md`: DeepSeek default locked → persistence helpers + `--persist` wire (§15–§16) → live-verify persist → standing ~5-chunk regression message → keyword job → save-path integration → reindex script → Apple Notes upload utility.
+1. Distillation POC per `thought-distillation-poc.md`: DeepSeek + persistence + keyword pipeline (§15–§17) → live-verify `--persist --index` → standing ~5-chunk regression message → save-path integration → reindex script → Apple Notes upload utility.
 
 2. Memory query POC per `memory-query-poc.md`: retrieval SQL + exclusion window (simple 512-token v1) → keyword inference (shared codepath) → relevance pass → replace `query-memory` placeholder → E2E.
 

@@ -3,6 +3,7 @@
  * runs the distillation subagent sequentially per chunk.
  *
  * @remarks Pass `--persist` to write derived thoughts + an `agent_runs` row.
+ * Pass `--index` with `--persist` to run the keyword pipeline on saved thoughts.
  * The full trace always goes to `.logs/agents/distillation/runs/`.
  */
 
@@ -33,6 +34,7 @@ import {
     completeDistillationAgentRun,
     startDistillationAgentRun
 } from "../src/models/agent-runs/save-distillation"
+import { indexThoughtKeywords } from "../src/models/thoughts/index-keywords"
 import { saveDerivedThought } from "../src/models/thoughts/save-derived"
 import { toPersistedBacklinks } from "../src/models/thoughts/to-persisted-backlinks"
 import { getDatabase } from "../src/storage/database/connection"
@@ -42,7 +44,8 @@ const { values } = parseArgs({
         "message-id": { type: "string" },
         "max-chunks": { type: "string" },
         model: { type: "string" },
-        persist: { type: "boolean", default: false }
+        persist: { type: "boolean", default: false },
+        index: { type: "boolean", default: false }
     }
 })
 
@@ -193,9 +196,29 @@ const persistCollectedThoughts = async (
     return savedThoughtIds
 }
 
+const indexSavedThoughts = async (
+    thoughtIds: string[]
+): Promise<Record<string, string[]>> => {
+    const indexedKeywords: Record<string, string[]> = {}
+
+    for (const thoughtId of thoughtIds) {
+        const indexed = await indexThoughtKeywords(thoughtId)
+
+        indexedKeywords[thoughtId] = indexed.keywords
+        console.log(`  indexed ${thoughtId}: ${indexed.keywords.join(", ")}`)
+    }
+
+    return indexedKeywords
+}
+
 const main = async () => {
     const database = getDatabase()
     const shouldPersist = values.persist === true
+    const shouldIndex = values.index === true
+
+    if (shouldIndex && !shouldPersist)
+        throw new Error("--index requires --persist.")
+
     const message = await loadMessage()
 
     let earliestLoaded = message
@@ -334,6 +357,10 @@ const main = async () => {
                 collectedThoughts
             )
 
+        const indexedKeywords = shouldIndex
+            ? await indexSavedThoughts(savedThoughtIds)
+            : {}
+
         if (agentRun)
             await completeDistillationAgentRun({
                 id: agentRun.id,
@@ -363,6 +390,7 @@ const main = async () => {
                 modelId,
                 agentRunId: agentRun?.id ?? null,
                 persistedThoughtIds: savedThoughtIds,
+                indexedKeywords,
 
                 sources: loadedSources.map(source => ({
                     index: source.index,
