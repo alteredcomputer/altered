@@ -387,4 +387,13 @@ Open TODOs:
 - Returns **200** immediately, then `waitUntil(dispatchDistillationJob)` inside the **job** invocation (Fluid Compute `maxDuration: 800`).
 - `scheduleDistillationForMessage` awaits the short HTTP accept (errors logged, chat continues).
 - CLI (`tmp-distill-poc`) still calls `distillChatMessage` directly.
-- Next: reindex-conversation script.
+
+## 22. Amendments — 2026-07-26 (reindex-conversation script)
+
+- `pnpm run:reindex-conversation -- --conversation-id <id> --mode skip|overwrite|duplicate [--index] [--max-messages N] [--dry-run]`
+- Shared `batchId` on every `agent_runs` row in the pass (`distillChatMessage` accepts `batchId`).
+- `skip`: succeeded distillation run for that message → leave alone.
+- `overwrite`: delete derived thoughts backlinked to the message, then distill.
+- `duplicate`: distill again (prior thoughts kept; filterable by `batchId` / run id).
+- Helpers: `listDistilledChatMessageIds`, `deleteDerivedThoughtsForChatMessage`.
+- Next: Apple Notes upload utility (after corpus tuning), or memory-query POC.

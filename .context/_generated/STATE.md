@@ -4,7 +4,7 @@ Last updated: 2026-07-26
 
 ## Focus
 
-Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Non-chat workers default to **`deepseek/deepseek-v4-flash`**. Keywords are single-word only. On-save distill awaits HTTP accept to `POST /jobs/distill-message` (`SHARED_JOBS_SECRET` required). Next: **reindex script**.
+Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Non-chat workers default to **`deepseek/deepseek-v4-flash`**. Keywords are single-word only. On-save distill + `run:reindex-conversation` (§22) landed. Next: dry-run/backfill a thread, then Apple Notes upload **or** memory-query POC.
 
 ## Plan linkage
 
@@ -134,9 +134,9 @@ Current focus is the distillation + memory-query POC (3–7 day timebox): auto-d
 
 ## Next execution order
 
-1. Distillation POC per `thought-distillation-poc.md`: DeepSeek + persistence + keywords (§15–§18) → save-path + job route (§19–§21) → **reindex script** → Apple Notes upload utility.
+1. Distillation POC per `thought-distillation-poc.md`: save-path + job route + reindex (§19–§22) landed → backfill Koa thread → Apple Notes upload utility.
 
-2. Memory query POC per `memory-query-poc.md`: retrieval SQL + exclusion window (simple 512-token v1) → keyword inference (shared codepath) → relevance pass → replace `query-memory` placeholder → E2E.
+2. Memory query POC per `memory-query-poc.md`: retrieval SQL + exclusion window (simple 512-token v1) → keyword inference (shared codepath) → relevance pass → replace `query-memory` placeholder → E2E. Can overlap once a distilled corpus exists.
 
 3. After both are tested to satisfaction: structured-thinking prototype (datasets layered on refined thoughts, likely Raycast interface).
 

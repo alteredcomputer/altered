@@ -21,6 +21,7 @@ type DistillChatMessageOptions = {
     maxChunks?: number
     persist?: boolean
     indexKeywords?: boolean
+    batchId?: string | null
     debug?: { thinking?: boolean }
     log?: boolean
 }
@@ -87,7 +88,8 @@ const distillChatMessage = async (
         ? await startDistillationAgentRun({
               model: modelId,
               conversationId: message.conversationId,
-              chatMessageId: message.id
+              chatMessageId: message.id,
+              batchId: options.batchId
           })
         : null
 
