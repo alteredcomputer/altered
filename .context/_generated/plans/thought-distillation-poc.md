@@ -192,3 +192,97 @@ After the chat-message corpus is tuned to ~80%: a minimalist utility uploading a
 7. **Apple Notes upload utility** + bulk distillation run over the exports.
 
 Dev workflow at every phase: scripts to test individual components → larger manually-triggered runs → only then promote functionality into the main chat agent's tool capabilities.
+
+## 12. Amendments — 2026-07-20 (first live-run review; supersedes conflicting points above)
+
+Agent loop & tools:
+
+- `toolChoice: "required"` with a no-op `complete` tool (no execute body) as the only loop exit — no free-text summarization step; `result.text` is irrelevant. `stopWhen` (25 steps) is a catastrophic-cost guard only.
+- `alreadyCovered` is removed. Covered points are simply skipped (call `complete`); near-duplicates go through `update-thought`.
+- Update-vs-new rules: update only for a literal duplication, refinement, or slight extension of the same single concept ("I like hot dogs" → "I like hot dogs very much"). Compound/adjacent concepts ("I like soda with my hot dogs", "I like big hot dogs") and contradictions are always new thoughts. Never merge before user approval outside these cases.
+- `record-thought` takes verbatim **excerpts** instead of numeric start/end (AI-arithmetic reliability). The system validates containment (error → agent retries) and converts each excerpt to a positional span. Multiple excerpts per thought skip non-correlating middle words and may cross chunk/source boundaries; spans should be fine-grained and cover every piece of text that shaped the thought, including text pulled from earlier sources.
+- `update-thought` (by index) updates content and/or appends excerpts. Expansion/search results include previously distilled thoughts overlapping the returned ranges, each with an index mapped internally to the real identity.
+- `query-thoughts` is a forced step-0 stub (returns nothing) until Plan B lands; then it loads existing brain thoughts so dedupe happens at creation (update existing thought with a new backlink instead of duplicating).
+- Debug `thinking` property (short "why") on record/update, wired as a tool-constructor flag through `createDistillationAgent({ debug: { thinking } })`; conditionally excluded in production to save tokens.
+
+Backlinks & data model:
+
+- Thoughts carry an **array of spans** (polymorphic multi-source backlinks): `{ sourceIndex, start, end, excerpt, author }` in memory; DB rows follow the same shape (a discriminator supports concatenated cross-message spans for SMS-split sentences — cheaper to revert than to merge later).
+- Each backlink stores `author` (`user` | `agent` enum — "agent", not "assistant"). Future queries can exclude agent-derived thoughts (`experimental_generated_messages`-style flag in the iMessage implementation).
+
+Previous-source expansion:
+
+- `expand-context` auto-fetches the previous source **under the hood** when expanding before position 0 (agent never asks for it explicitly): generic `fetchPreviousSource` callback per source type (chat messages: previous message in the conversation; notes later: previous by created-at). Fetched sources are chunked, memoized in context, and indexed **negatively** (0 = current, -1 = previous); chunk indexes stay per-source so nothing shifts.
+- If nothing earlier exists, the response says so and the agent generalizes the unresolved referent (e.g. "a visualization session") instead of inventing specifics.
+- `@todo P3`: deeper history than one source back.
+
+Chunker:
+
+- Line breaks are sentence delimiters (in addition to `.!?` + closing punctuation, now including markdown closers `* _ \` ~` so `**...made.**` splits correctly).
+- Inter-chunk whitespace is **prepended to the following chunk** (whitespace implies structure for what follows); trailing whitespace is appended to the last chunk. Source text is never manipulated — chunks concatenate back to the exact source.
+
+Instructions & perspective:
+
+- One concept per thought, simplest self-contained sentence; guiding question: "What conclusion can be taken from this that will benefit the user's life?"; keep just enough referenced detail (resolve "it"/"that" from context) — neither over-generalized nor copied filler.
+- Chunk-scoped discipline: never distill ahead into later chunks (each gets its own run); gather context sparingly; don't retry failed searches with variations.
+- Perspective (chat-specific instruction extension, not baked into the generic agent): user-authored text → "We should …" default (`@todo P2`: experiment with "I"); agent-authored text → attribute Koa in the content ("Koa said/told me/thinks …"), even for plain facts. Wired via `instructions.extensions` + per-source `author` in context.
+- Personal language-style preferences (hyphens over all dash-style characters) injected into distillation instructions from `src/ai/instructions/user-language-style.ts`; `@todo P2`: inject into the chat persona too.
+
+Script (`tmp-distill-poc.ts`):
+
+- Defaults to the **first user-role message** with `userId IS NULL` (assistant messages still indexed later); `--message-id` override.
+- Experimental message split: chunk metadata as a `system` message (`allowSystemInMessages: true`), the **verbatim chunk text alone** as the `user` message — disambiguates offsets/line breaks.
+- Logs per-step tool calls (condensed inputs) + tool errors + running thought list.
+
+Known bug (separate fix): the ephemeral timestamp header (`[Wednesday, 2026-06-24, 15:30]`) leaks into saved assistant message content — fix in the ephemeral-metadata prompt path, not here. (The 2026-07-26 runs no longer show it only because the affected rows were edited directly in the database; the bug itself is untouched.)
+
+## 13. Amendments — 2026-07-26 (cost pass + structure cleanup; supersedes conflicting points above)
+
+Models (supersedes §9's "4.6 for every step"):
+
+- `anthropic/claude-sonnet-4.6` is **removed** from the model config; every prior usage (chat agent, iMessage response builder, both scripts) now runs `anthropic/claude-sonnet-5` — newer and cheaper ($2/$10 vs $3/$15).
+- Distillation defaults to **`openai/gpt-5.6-luna`** ($1/$6), configurable via `createDistillationAgent({ modelId })` and `--model` on the script. Rationale: highest Artificial Analysis intelligence index inside the attractive cost quadrant (~52, on par with Grok 4.5 high, above GLM-5.2 / Gemini 3.1 Pro / Kimi K2.6) at a third of Sonnet's input price. Measured: **$0.0224 for 5 chunks (~$0.0045/chunk)** against ~$0.02+/chunk on Sonnet 4.6, with output matching the hand-written target thoughts.
+- `xiaomi/mimo-v2.5-pro` ($0.435/$0.87) was added and **tested first — it fails this workload**: malformed tool-call JSON (truncated strings), no loop termination, 45 duplicate thoughts, $0.058 for the same 3 chunks. Cheap models with weak structured tool calling are not viable for a forced-tool loop. Kept in the config as a benchmark reference for mechanical steps (keyword expansion, relevance strips).
+- `deepseek/deepseek-v4-flash` cost corrected to $0.14/$0.28.
+
+Backlinks (supersedes §12's span shape):
+
+- Spans are now **backlinks**: `{ kind: "single" | "continuous", parts: [{ sourceIndex, start, end }] }`. `continuous` means the parts form **one uninterrupted excerpt split only by a source boundary** — it must never render as several separate references. This is the concatenated-backlink case (SMS-split sentences).
+- **`excerpt` is no longer stored.** Excerpts are an agent tool input only; the system normalizes them to positions. Text is always re-derived from positions (`source/read-backlink.ts`) for logs and UI.
+- **`author` is no longer on the backlink.** Authorship gets its own table, and source dates belong to the source — copies on the backlink row would only rot. Instead `ResolvedBacklink` / `ResolvedBacklinkSource` (`backlinks.ts`) is an **app-level aggregate type** carrying `author`, `createdAt`, `updatedAt`, and `addedAt` (when the source entered ALTERED, distinct from when it was authored), resolved by 1–2 follow-up queries when a thought is read alongside its sources. Query-side agent-source filtering (§`memory-query-poc.md`) works off that join, not a denormalized column.
+- Backlink types are staged in the distillation folder with a `@todo P1` to relocate into `src/models/thoughts/` once the schema lands.
+
+Cross-boundary excerpt matching:
+
+- Excerpt lookup runs against **every loaded source concatenated into one document** (`source/document.ts`), so an excerpt may span chunks and source boundaries. A boundary-crossing match resolves to one `continuous` backlink with the separator excluded; a same-source match stays `single`.
+- Matching falls back to a **whitespace-normalized** pass when the exact string misses, covering the agent re-spacing text while joining across a boundary.
+- Instructions now state that a single excerpt may run across chunks and sources as concatenated text, and that continuous text is one reference — separate excerpts are only for text that is genuinely apart.
+
+Agent loop:
+
+- `complete` takes **no arguments**. Both the original `summary?` and the replacement `error?: { message, cause? }` were fabricated on *every* call — the model invented failure narratives ("the completion call was interrupted…") on successful chunks. Failures are read from tool errors and the step guard instead; `@todo P2` to retry error reporting behind a required outcome discriminator once the loop is stable.
+- `record-thought` silently returns the existing index when content exactly matches an already-collected thought — a cheap guard against the duplicate-loop failure mode seen on MiMo.
+- Instruction tightening from the live runs: a second statement about the same subject is a new thought unless it only sharpens the first (when in doubt, record separately); never join two statements with "and"/"but" to fit one thought; when adding excerpts to an existing thought, cover only the new text.
+
+Arktype convention:
+
+- Union properties must pass `"union"` as the second `describe()` argument (as in `tools/admin/change-model.ts`). Without it arktype emits the description on every branch **and** the union, bloating every tool schema. Verified: `direction`/`unit` now emit a single `enum` + one description.
+
+Structure (files were bloated; split by topic):
+
+- `distillation/backlinks.ts` — backlink kinds, parts, schemas, resolved aggregate types.
+- `distillation/context.ts` — agent context schemas only (chunk schema imported, no longer duplicated).
+- `distillation/instructions/` — `agent.ts` (base), `thinking.ts` (debug), `chat-messages.ts` (Koa perspective extension, moved out of the scratchpad script).
+- `distillation/source/` — `split.ts`, `expand.ts`, `search.ts`, `document.ts`, `locate-excerpt.ts`, `read-backlink.ts`, `previous.ts` (`FetchPreviousSource` + `ensurePreviousSource`).
+- `distillation/tools/` — `set.ts` plus one file per tool, with `options.ts` (tool options + thinking property), `context.ts` (context accessors), `excerpts.ts` (excerpt → backlink normalization), `overlaps.ts` (`TextSegment` + overlap lookup).
+
+Run logging:
+
+- Runs write a full trace to `.logs/agents/<agentId>/runs/<timestamp>.json` via the shared `src/ai/observability/write-run-log.ts` (`run-agent.ts` refactored onto it). The trace holds sources, per-chunk steps with tool calls/results/errors, resolved thoughts with backlink text, and cost. Console output is reduced to the chunk text, tool-call names with condensed inputs, newly recorded thoughts, and a final cost + log path line. `@todo P2` to replace with the `agent_runs` table, keeping files as the raw trace.
+
+Open TODOs recorded in code:
+
+- `@todo P2` benchmark the "never distill ahead" rule against forward-expansion coverage — it trades duplicate work for missed cross-chunk conclusions and the balance is unverified.
+- `@todo P2` live-test `fetchPreviousSource` against a conversation where the referent only resolves two or more sources back (currently only one-source-back is exercised).
+- `@todo P1` on `to-model-messages.ts`: ephemeral timestamp header still leaks into persisted assistant content — audit the save / message-mirroring path (DB rows were hand-edited; the bug remains).
+- Test corpus: pick a better multi-thought message (~5 chunks) as the standing regression case once the model choice is locked and persistence lands.

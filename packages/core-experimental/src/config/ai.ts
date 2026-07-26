@@ -3,7 +3,8 @@ const modelVendorIds = [
     "openai",
     "google",
     "deepseek",
-    "tencent"
+    "tencent",
+    "xiaomi"
 ] as const
 
 type ModelVendorID = (typeof modelVendorIds)[number]
@@ -15,7 +16,8 @@ const modelVendorDefinitions = {
     google: { id: "google", name: "Google" },
 
     deepseek: { id: "deepseek", name: "DeepSeek" },
-    tencent: { id: "tencent", name: "Tencent" }
+    tencent: { id: "tencent", name: "Tencent" },
+    xiaomi: { id: "xiaomi", name: "Xiaomi" }
 } as const satisfies Record<ModelVendorID, { id: ModelVendorID; name: string }>
 
 const modelVendorNames = Object.values(modelVendorDefinitions).map(v => v.name)
@@ -25,15 +27,18 @@ type ModelVendorName = (typeof modelVendorNames)[number]
  * @remarks See note on 2026-06-02 titled "Model Presets and Task Definitions" for further development plans for deriving internal model IDs.
  */
 const languageModelIds = [
-    "anthropic/claude-sonnet-4.6",
+    "anthropic/claude-sonnet-5",
 
+    "openai/gpt-5.6-luna",
     "openai/gpt-5.4-nano",
 
     "google/gemini-3.1-flash-lite",
 
     "deepseek/deepseek-v4-flash",
 
-    "tencent/hy3-preview"
+    "tencent/hy3-preview",
+
+    "xiaomi/mimo-v2.5-pro"
 ] as const satisfies `${ModelVendorID}/${string}`[]
 
 type LanguageModelID = (typeof languageModelIds)[number]
@@ -104,11 +109,11 @@ type LanguageModelDefinition = {
  * @remarks Some properties are not exhaustive, and are added as needed.
  */
 const languageModelDefinitions = {
-    "anthropic/claude-sonnet-4.6": {
-        id: "anthropic/claude-sonnet-4.6",
+    "anthropic/claude-sonnet-5": {
+        id: "anthropic/claude-sonnet-5",
         vendorId: "anthropic",
 
-        name: "Claude Sonnet 4.6",
+        name: "Claude Sonnet 5",
         vendorName: "Anthropic",
 
         inferenceProviders: ["anthropic"],
@@ -124,21 +129,54 @@ const languageModelDefinitions = {
         },
 
         cost: {
-            input: 3,
-            output: 15,
+            input: 2,
+            output: 10,
 
             cache: {
-                read: 0.3,
+                read: 0.2,
                 write: [
                     {
                         ttl: "5m",
-                        cost: 3.75
+                        cost: 2.5
                     },
                     {
                         ttl: "1h",
-                        cost: 6
+                        cost: 4
                     }
                 ]
+            }
+        }
+    },
+
+    /**
+     * @remarks Priced above 272k prompt tokens at $2 input / $9 output - not represented here.
+     */
+    "openai/gpt-5.6-luna": {
+        id: "openai/gpt-5.6-luna",
+        vendorId: "openai",
+
+        name: "GPT-5.6 Luna",
+        vendorName: "OpenAI",
+
+        inferenceProviders: ["openai"],
+
+        modalities: {
+            input: ["text", "image", "file"],
+            output: ["text"]
+        },
+
+        contextLimits: {
+            totalTokens: 1_050_000,
+            outputTokens: 128_000
+        },
+
+        cost: {
+            input: 1,
+            output: 6,
+
+            cache: {
+                read: 0.1,
+                write: 1.25
             }
         }
     },
@@ -226,11 +264,11 @@ const languageModelDefinitions = {
         },
 
         cost: {
-            input: 0.0983,
-            output: 0.1966,
+            input: 0.14,
+            output: 0.28,
 
             cache: {
-                read: 0.0197,
+                read: 0.028,
                 write: null
             }
         }
@@ -264,6 +302,36 @@ const languageModelDefinitions = {
                 write: null
             }
         }
+    },
+
+    "xiaomi/mimo-v2.5-pro": {
+        id: "xiaomi/mimo-v2.5-pro",
+        vendorId: "xiaomi",
+
+        name: "MiMo-V2.5-Pro",
+        vendorName: "Xiaomi",
+
+        inferenceProviders: [],
+
+        modalities: {
+            input: ["text"],
+            output: ["text"]
+        },
+
+        contextLimits: {
+            totalTokens: 1_050_000,
+            outputTokens: 131_100
+        },
+
+        cost: {
+            input: 0.435,
+            output: 0.87,
+
+            cache: {
+                read: 0.0036,
+                write: null
+            }
+        }
     }
 } as const satisfies Record<LanguageModelID, LanguageModelDefinition>
 
@@ -288,12 +356,26 @@ type LanguageModelConfiguration = {
 }
 
 const languageModelConfigurations = {
-    "anthropic/claude-sonnet-4.6": {
-        id: "anthropic/claude-sonnet-4.6",
+    "anthropic/claude-sonnet-5": {
+        id: "anthropic/claude-sonnet-5",
 
         isEnabled: true,
 
         allowedInferenceProviders: ["anthropic"],
+
+        ratings: {
+            speed: null,
+            intelligence: null,
+            cost: null
+        }
+    },
+
+    "openai/gpt-5.6-luna": {
+        id: "openai/gpt-5.6-luna",
+
+        isEnabled: true,
+
+        allowedInferenceProviders: null,
 
         ratings: {
             speed: null,
@@ -346,6 +428,20 @@ const languageModelConfigurations = {
 
     "tencent/hy3-preview": {
         id: "tencent/hy3-preview",
+
+        isEnabled: true,
+
+        allowedInferenceProviders: null,
+
+        ratings: {
+            speed: null,
+            intelligence: null,
+            cost: null
+        }
+    },
+
+    "xiaomi/mimo-v2.5-pro": {
+        id: "xiaomi/mimo-v2.5-pro",
 
         isEnabled: true,
 

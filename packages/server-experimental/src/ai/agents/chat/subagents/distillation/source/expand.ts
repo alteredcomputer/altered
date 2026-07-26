@@ -2,7 +2,7 @@
  * @todo P3: Human review.
  */
 
-import type { SourceChunk } from "./split-source"
+import type { SourceChunk } from "./split"
 
 type ExpansionDirection = "before" | "after" | "both"
 type ExpansionUnit = "characters" | "words" | "chunks"

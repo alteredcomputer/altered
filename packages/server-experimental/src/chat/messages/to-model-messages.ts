@@ -26,6 +26,7 @@ function toModelMessages(messages: ChatMessage[]): ModelMessage[] {
  * @todo
  * - P2: We should relocate the prefix construction to somewhere more appropriate.
  * - P2: We should handle the "last message" control flow differently - perhaps only passing the relevant messages into the prefix function, rather than having a special case here. The control flow should be designed in a way that keeps it parallel to the one in `prepareMessagesForGeneration`.
+ * - P1: The ephemeral timestamp header (`[Wednesday, 2026-06-24, 15:30]`) has leaked into persisted assistant `chat_messages.content`. Generation-only prefixes must never be written back - audit the save path and any Chat SDK / agent message mirroring.
  *
  * @remarks Prepended date-time metadata is intended for generation only, and not for persisting in the database.
  */

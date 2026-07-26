@@ -55,7 +55,7 @@ async function buildDirectMessageResponse({
     const chatMessages = await listChatMessagesForConversation(conversation.id)
 
     const modelMessages = prepareMessagesForGeneration(chatMessages, {
-        modelId: "anthropic/claude-sonnet-4.6",
+        modelId: "anthropic/claude-sonnet-5",
 
         enableExplicitCacheControl: {
             anthropic: true

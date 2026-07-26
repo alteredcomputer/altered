@@ -109,7 +109,7 @@ createLogSectionHeader({ title: "EPHEMERAL SYSTEM PROMPT" })
 console.log(ephemeralSystemPrompt)
 
 const preparedMessages = prepareMessagesForGeneration(demoMessages, {
-    modelId: "anthropic/claude-sonnet-4.6",
+    modelId: "anthropic/claude-sonnet-5",
     ephemeralPrompt: ephemeralSystemPrompt,
     enableExplicitCacheControl: { anthropic: true }
 })

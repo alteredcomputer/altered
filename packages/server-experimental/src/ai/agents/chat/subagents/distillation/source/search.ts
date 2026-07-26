@@ -6,6 +6,8 @@ type SourceSearchMatch = {
     term: string
     start: number
     end: number
+    excerptStart: number
+    excerptEnd: number
     excerpt: string
 }
 
@@ -71,6 +73,8 @@ const searchSourceText = (
                 term,
                 start,
                 end,
+                excerptStart,
+                excerptEnd,
                 excerpt: source.slice(excerptStart, excerptEnd)
             })
         }

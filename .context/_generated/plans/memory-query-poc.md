@@ -102,3 +102,14 @@ A subagent (cheap-model `@todo`; Sonnet 4.6 for now) reviews the retrieved thoug
 5. **Replace the `query-memory` placeholder**; unstub Plan A's keyword-context query step; verify via `scripts/run-agent.ts`, then iMessage E2E.
 
 Dev workflow mirrors Plan A: individual components via scripts → larger manual runs → promotion into the chat agent.
+
+## 10. Amendment — 2026-07-20
+
+- Backlink spans now store `author` (`user` | `agent`). Queries should be able to filter out thoughts derived solely from agent-authored sources via the backlink relation (experimental `experimental_generated_messages`-style flag in the iMessage implementation — a toggleable constant, not a permanent API).
+- Thought content encodes provenance for agent-authored sources ("Koa said/thinks …"), which is expected to *improve* querying once chat history is replaced by loaded thoughts — the reader always knows whether a statement was the user's or Koa's.
+
+## 11. Amendment — 2026-07-26
+
+- **Supersedes the `author`-on-backlink point above.** Backlinks store positions only; `author` and the source dates are resolved by joining to the source (`ResolvedBacklink` in the distillation plan §13). Agent-source filtering therefore happens through that join, not a denormalized backlink column — one extra query per source, which is acceptable and keeps the rows from rotting.
+- **Section 7 model line is superseded:** `anthropic/claude-sonnet-4.6` no longer exists in the config. Steps default to `anthropic/claude-sonnet-5`, and the `@todo` downgrade targets now include `openai/gpt-5.6-luna` (proven adequate for tool-loop reasoning on the distillation side) ahead of `openai/gpt-5.4-nano` for the mechanical steps.
+- Arktype union properties in query tool schemas must use `describe(text, "union")` — see the distillation plan §13.

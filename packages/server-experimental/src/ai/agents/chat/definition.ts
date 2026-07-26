@@ -70,7 +70,7 @@ const chatAgent = new ToolLoopAgent({
     id: chatAgentId,
 
     model: createOpenrouterChatModel({
-        modelId: "anthropic/claude-sonnet-4.6"
+        modelId: "anthropic/claude-sonnet-5"
     }),
 
     tools: { ...chatToolSet, ...chatAdminToolSet },
@@ -138,7 +138,7 @@ const chatAgent = new ToolLoopAgent({
             model: createOpenrouterChatModel({
                 modelId:
                     context.user.planId === "paid"
-                        ? "anthropic/claude-sonnet-4.6"
+                        ? "anthropic/claude-sonnet-5"
                         : "openai/gpt-5.4-nano"
             }),
 

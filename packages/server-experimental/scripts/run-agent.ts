@@ -4,13 +4,12 @@
 
 import "dotenv/config"
 
-import { mkdir, writeFile } from "node:fs/promises"
-import { join } from "node:path"
 import { parseArgs } from "node:util"
 import { ArkErrors, type } from "arktype"
 import { chatAgent } from "../src/ai/agents/chat/definition"
 import { createChatAgentInstructions } from "../src/ai/agents/chat/instructions/composition"
 import { prepareMessagesForGeneration } from "../src/ai/generate/prepare-messages"
+import { writeAgentRunLog } from "../src/ai/observability/write-run-log"
 import {
     formatOpenRouterCost,
     parseOpenrouterProviderMetadata
@@ -112,7 +111,7 @@ const mockDatabaseMessages: ChatMessage[] = [
 ]
 
 const modelMessages = prepareMessagesForGeneration(mockDatabaseMessages, {
-    modelId: "anthropic/claude-sonnet-4.6",
+    modelId: "anthropic/claude-sonnet-5",
     enableExplicitCacheControl: { anthropic: true }
 })
 
@@ -264,19 +263,11 @@ const logData = {
     }
 }
 
-const logDirectory = join(
-    process.cwd(),
-    ".logs",
-    "agents",
-    chatAgent.id ?? "unknown",
-    "runs"
-)
-
-const logFileName = `${STARTED_AT.toISOString().replace(/[:.]/g, "-")}.json`
-const logFilePath = join(logDirectory, logFileName)
-
-await mkdir(logDirectory, { recursive: true })
-await writeFile(logFilePath, `${JSON.stringify(logData, null, 4)}\n`)
+const logFilePath = await writeAgentRunLog({
+    agentId: chatAgent.id ?? "unknown",
+    startedAt: STARTED_AT,
+    data: logData
+})
 
 console.log("[scripts:run-agent] Agent run completed.")
 console.log(`[scripts:run-agent] Log file: file://${logFilePath}`)
