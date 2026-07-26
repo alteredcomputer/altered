@@ -372,4 +372,12 @@ Open TODOs:
 - `chat/messages/to-plain-text.ts` — extract `type: "text"` parts only (drops reasoning / tool parts that also carry `.text`).
 - `chat/messages/strip-for-persistence.ts` — `stripMessagesForPersistence`: keep user/assistant plain-text rows; drop tool/system; empty after strip → omit.
 - Wired into `build-response.ts`: after `chatAgent.generate`, persist stripped `response.messages` assistant rows (fallback to `generatedText`). Still returns `generatedText` for the iMessage send body.
-- Next chunk: extract `distillChatMessage` from `tmp-distill-poc` + on-save schedule (`afterResponse` / `waitUntil`). Keywords-on-save and reindex remain later.
+
+## 20. Amendments — 2026-07-26 (on-save distill trigger)
+
+- Extracted `ai/memory/distillation/run-for-chat-message.ts` (`distillChatMessage`) — production orchestration (chunk loop, persist, optional keyword index, agent_runs, file log).
+- `ai/memory/distillation/schedule.ts` — fire-and-forget `scheduleDistillationForMessage` (persist + index by default). Failures log only.
+- `build-response.ts` schedules distill after each saved user and assistant row.
+- `tmp-distill-poc.ts` thinned to a CLI wrapper over `distillChatMessage`.
+- `@todo P1`: plumb Vercel `waitUntil` into the schedule path so serverless does not kill the job after the HTTP response.
+- Next: reindex-conversation script.

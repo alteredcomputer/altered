@@ -2,6 +2,7 @@ import { getEnvironmentConfig } from "@altered/core-experimental/config/environm
 import { NEW_CONVERSATION_TRIGGER_PHRASES } from "@altered/server-experimental/chat/messages/commands/definitions"
 import { chatAgent } from "../../../../../ai/agents/chat/definition"
 import { prepareMessagesForGeneration } from "../../../../../ai/generate/prepare-messages"
+import { scheduleDistillationForMessage } from "../../../../../ai/memory/distillation/schedule"
 import {
     formatOpenRouterCost,
     parseOpenrouterProviderMetadata
@@ -45,13 +46,15 @@ async function buildDirectMessageResponse({
         threadId: thread.id
     })
 
-    await saveChatMessage({
+    const savedUserMessage = await saveChatMessage({
         brainId: null,
         content: inboundMessageText,
         conversationId: conversation.id,
         role: "user",
         userId: null
     })
+
+    scheduleDistillationForMessage(savedUserMessage.id)
 
     const chatMessages = await listChatMessagesForConversation(conversation.id)
 
@@ -134,6 +137,8 @@ async function buildDirectMessageResponse({
             role: row.role,
             userId: null
         })
+
+        scheduleDistillationForMessage(savedAssistantMessage.id)
     }
 
     if (!savedAssistantMessage)
