@@ -383,8 +383,8 @@ Open TODOs:
 
 ## 21. Amendments — 2026-07-26 (Hono distill job route)
 
-- `POST /jobs/distill-message` in `@altered/api-experimental` — auth via `x-altered-job-secret` / `SHARED_JOBS_SECRET`.
-- Accepts **202**, then `waitUntil(dispatchDistillationJob)` inside the **job** invocation (Fluid Compute `maxDuration: 800`).
-- `scheduleDistillationForMessage` HTTP-enqueues to that route; empty secret = skip (cost gate).
+- `POST /jobs/distill-message` in `@altered/api-experimental` — auth via `x-altered-job-secret` / required `SHARED_JOBS_SECRET`.
+- Returns **200** immediately, then `waitUntil(dispatchDistillationJob)` inside the **job** invocation (Fluid Compute `maxDuration: 800`).
+- `scheduleDistillationForMessage` awaits the short HTTP accept (errors logged, chat continues).
 - CLI (`tmp-distill-poc`) still calls `distillChatMessage` directly.
 - Next: reindex-conversation script.

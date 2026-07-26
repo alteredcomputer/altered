@@ -11,25 +11,24 @@ const JOB_SECRET_HEADER = "x-altered-job-secret" as const
 /**
  * Dispatch distillation after a chat message is saved.
  *
- * @remarks HTTP-dispatches to `POST /jobs/distill-message` when
- * `SHARED_JOBS_SECRET` is set. Empty secret = no-op (cost gate).
+ * @remarks Awaits the short HTTP accept from `POST /jobs/distill-message`
+ * (job route returns immediately and runs distill under `waitUntil`).
  * See `.context/_generated/plans/distillation-job-dispatch.md`.
- *
- * @todo P2: Wrap the short dispatch `fetch` in webhook `waitUntil` if accepts
- * are dropped under load. Do not run the distill loop under `waitUntil`.
  *
  * @todo P2: Optionally put QStash in front of the job route for retries.
  */
-const scheduleDistillationForMessage = (
+const scheduleDistillationForMessage = async (
     messageId: string,
     options: ScheduleDistillationOptions = {}
-): void => {
-    void enqueueDistillationJob({
-        messageId,
-        indexKeywords: options.indexKeywords ?? true
-    }).catch(error => {
+): Promise<void> => {
+    try {
+        await enqueueDistillationJob({
+            messageId,
+            indexKeywords: options.indexKeywords ?? true
+        })
+    } catch (error) {
         console.error(`[distill] dispatch failed for ${messageId}`, error)
-    })
+    }
 }
 
 /**
@@ -49,16 +48,7 @@ const enqueueDistillationJob = async (input: {
     messageId: string
     indexKeywords?: boolean
 }): Promise<void> => {
-    const secret = getEnvironmentConfig().shared.jobs.secret.trim()
-
-    if (!secret) {
-        console.warn(
-            `[distill] skipped ${input.messageId} - SHARED_JOBS_SECRET unset`
-        )
-
-        return
-    }
-
+    const secret = getEnvironmentConfig().shared.jobs.secret
     const origin = resolveApiOrigin({ target: "api" })
     const base = origin.endsWith("/") ? origin.slice(0, -1) : origin
     const url = `${base}/jobs/distill-message`

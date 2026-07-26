@@ -54,7 +54,7 @@ async function buildDirectMessageResponse({
         userId: null
     })
 
-    scheduleDistillationForMessage(savedUserMessage.id)
+    await scheduleDistillationForMessage(savedUserMessage.id)
 
     const chatMessages = await listChatMessagesForConversation(conversation.id)
 
@@ -138,7 +138,7 @@ async function buildDirectMessageResponse({
             userId: null
         })
 
-        scheduleDistillationForMessage(savedAssistantMessage.id)
+        await scheduleDistillationForMessage(savedAssistantMessage.id)
     }
 
     if (!savedAssistantMessage)

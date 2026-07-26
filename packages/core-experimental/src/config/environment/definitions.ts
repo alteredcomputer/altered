@@ -8,59 +8,55 @@ import { type } from "arktype"
 const environmentConfigSchema = type({
     shared: {
         config: {
-            env: "string"
+            env: "string > 0"
         },
 
         admin: {
-            phoneNumber: "string"
+            phoneNumber: "string > 0"
         },
 
-        /**
-         * @remarks Empty `secret` disables HTTP job dispatch (including on-save
-         * distillation). Set `SHARED_JOBS_SECRET` to enable.
-         */
         jobs: {
-            secret: "string"
+            secret: "string > 0"
         },
 
         storage: {
             database: {
-                url: "string"
+                url: "string > 0"
             },
             kv: {
-                url: "string"
+                url: "string > 0"
             }
         },
 
         providers: {
             sendblue: {
-                public: "string",
-                secret: "string",
-                number: "string",
-                signing: "string"
+                public: "string > 0",
+                secret: "string > 0",
+                number: "string > 0",
+                signing: "string > 0"
             },
             openrouter: {
-                secret: "string"
+                secret: "string > 0"
             },
             ngrok: {
-                url: "string",
-                secret: "string"
+                url: "string > 0",
+                secret: "string > 0"
             },
             upstash: {
                 redis: {
-                    url: "string",
-                    secret: "string"
+                    url: "string > 0",
+                    secret: "string > 0"
                 }
             },
             vercel: {
                 team: {
-                    id: "string"
+                    id: "string > 0"
                 },
-                secret: "string"
+                secret: "string > 0"
             },
             github: {
                 repository: {
-                    id: "string"
+                    id: "string > 0"
                 }
             }
         }

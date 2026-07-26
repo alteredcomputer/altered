@@ -42,8 +42,8 @@ Fine for tiny post-response chores (preference write, forward webhook). Wrong lo
 ## Implementation checklist
 
 - [x] Add authenticated Hono job route (`POST /jobs/distill-message`); `maxDuration: 800` on api-experimental.
-- [x] Flip `scheduleDistillationForMessage` to HTTP dispatch. Gate: empty `SHARED_JOBS_SECRET` → no-op.
-- [x] Job route returns **202** then runs `dispatchDistillationJob` under `waitUntil` (correct use: finish *this* job invocation after accept).
+- [x] Flip `scheduleDistillationForMessage` to HTTP dispatch. `SHARED_JOBS_SECRET` is required (`string > 0`).
+- [x] Job route returns **200** immediately, then runs `dispatchDistillationJob` under `waitUntil`. Chat **awaits** the short enqueue accept (not the distill loop).
 - [ ] Ensure `agent_runs` row is created **at job start** before heavy work (already first step inside `distillChatMessage`; verify under kill tests).
 - [ ] CLI re-run path for failed `agent_runs` / message ids.
 - [ ] Optional: QStash publish instead of bare `fetch`.

@@ -4,7 +4,7 @@ Last updated: 2026-07-26
 
 ## Focus
 
-Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Non-chat workers default to **`deepseek/deepseek-v4-flash`**. Keywords are single-word only. On-save distill dispatches to `POST /jobs/distill-message` when `SHARED_JOBS_SECRET` is set (else no-op). Next: **reindex script**.
+Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Non-chat workers default to **`deepseek/deepseek-v4-flash`**. Keywords are single-word only. On-save distill awaits HTTP accept to `POST /jobs/distill-message` (`SHARED_JOBS_SECRET` required). Next: **reindex script**.
 
 ## Plan linkage
 

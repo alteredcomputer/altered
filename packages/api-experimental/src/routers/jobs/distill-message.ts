@@ -14,15 +14,15 @@ const app = new Hono()
 /**
  * Internal worker for chat-message distillation.
  *
- * @remarks Authenticate with `x-altered-job-secret`. Accepts with 202, then
- * finishes the distill loop under `waitUntil` within this job invocation
+ * @remarks Authenticate with `x-altered-job-secret`. Returns 200 immediately,
+ * then finishes the distill loop under `waitUntil` within this job invocation
  * (Fluid Compute `maxDuration`). See `distillation-job-dispatch.md`.
  */
 app.post("/", async context => {
-    const expectedSecret = getEnvironmentConfig().shared.jobs.secret.trim()
-    const providedSecret = context.req.header("x-altered-job-secret")?.trim()
+    const expectedSecret = getEnvironmentConfig().shared.jobs.secret
+    const providedSecret = context.req.header("x-altered-job-secret")
 
-    if (!expectedSecret || providedSecret !== expectedSecret)
+    if (providedSecret !== expectedSecret)
         return context.json({ error: "Unauthorized." }, 401)
 
     const body = distillMessageJobBodySchema(await context.req.json())
@@ -48,7 +48,7 @@ app.post("/", async context => {
             })
     )
 
-    return context.json({ accepted: true, messageId: body.messageId }, 202)
+    return context.json({ accepted: true, messageId: body.messageId }, 200)
 })
 
 export { app as distillMessageJobRouter }
