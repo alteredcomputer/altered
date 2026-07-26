@@ -31,13 +31,16 @@ const languageModelIds = [
 
     "openai/gpt-5.6-luna",
     "openai/gpt-5.4-nano",
+    "openai/gpt-oss-120b",
 
     "google/gemini-3.1-flash-lite",
+    "google/gemini-2.5-flash-lite",
 
     "deepseek/deepseek-v4-flash",
 
     "tencent/hy3-preview",
 
+    "xiaomi/mimo-v2.5",
     "xiaomi/mimo-v2.5-pro"
 ] as const satisfies `${ModelVendorID}/${string}`[]
 
@@ -211,6 +214,36 @@ const languageModelDefinitions = {
         }
     },
 
+    "openai/gpt-oss-120b": {
+        id: "openai/gpt-oss-120b",
+        vendorId: "openai",
+
+        name: "gpt-oss-120b",
+        vendorName: "OpenAI",
+
+        inferenceProviders: ["openai"],
+
+        modalities: {
+            input: ["text"],
+            output: ["text"]
+        },
+
+        contextLimits: {
+            totalTokens: 131_000,
+            outputTokens: 131_000
+        },
+
+        cost: {
+            input: 0.03,
+            output: 0.18,
+
+            cache: {
+                read: 0.03,
+                write: null
+            }
+        }
+    },
+
     "google/gemini-3.1-flash-lite": {
         id: "google/gemini-3.1-flash-lite",
         vendorId: "google",
@@ -244,6 +277,36 @@ const languageModelDefinitions = {
         }
     },
 
+    "google/gemini-2.5-flash-lite": {
+        id: "google/gemini-2.5-flash-lite",
+        vendorId: "google",
+
+        name: "Gemini 2.5 Flash Lite",
+        vendorName: "Google",
+
+        inferenceProviders: ["google-vertex"],
+
+        modalities: {
+            input: ["text", "image", "file", "audio", "video"],
+            output: ["text"]
+        },
+
+        contextLimits: {
+            totalTokens: 1_050_000,
+            outputTokens: 65_500
+        },
+
+        cost: {
+            input: 0.1,
+            output: 0.4,
+
+            cache: {
+                read: 0.01,
+                write: null
+            }
+        }
+    },
+
     "deepseek/deepseek-v4-flash": {
         id: "deepseek/deepseek-v4-flash",
         vendorId: "deepseek",
@@ -264,11 +327,11 @@ const languageModelDefinitions = {
         },
 
         cost: {
-            input: 0.14,
-            output: 0.28,
+            input: 0.09,
+            output: 0.18,
 
             cache: {
-                read: 0.028,
+                read: 0.018,
                 write: null
             }
         }
@@ -304,6 +367,36 @@ const languageModelDefinitions = {
         }
     },
 
+    "xiaomi/mimo-v2.5": {
+        id: "xiaomi/mimo-v2.5",
+        vendorId: "xiaomi",
+
+        name: "MiMo-V2.5",
+        vendorName: "Xiaomi",
+
+        inferenceProviders: [],
+
+        modalities: {
+            input: ["text"],
+            output: ["text"]
+        },
+
+        contextLimits: {
+            totalTokens: 1_050_000,
+            outputTokens: 131_100
+        },
+
+        cost: {
+            input: 0.105,
+            output: 0.28,
+
+            cache: {
+                read: 0.01,
+                write: null
+            }
+        }
+    },
+
     "xiaomi/mimo-v2.5-pro": {
         id: "xiaomi/mimo-v2.5-pro",
         vendorId: "xiaomi",
@@ -324,8 +417,8 @@ const languageModelDefinitions = {
         },
 
         cost: {
-            input: 0.435,
-            output: 0.87,
+            input: 0.348,
+            output: 0.696,
 
             cache: {
                 read: 0.0036,
@@ -398,8 +491,36 @@ const languageModelConfigurations = {
         }
     },
 
+    "openai/gpt-oss-120b": {
+        id: "openai/gpt-oss-120b",
+
+        isEnabled: true,
+
+        allowedInferenceProviders: null,
+
+        ratings: {
+            speed: null,
+            intelligence: null,
+            cost: null
+        }
+    },
+
     "google/gemini-3.1-flash-lite": {
         id: "google/gemini-3.1-flash-lite",
+
+        isEnabled: true,
+
+        allowedInferenceProviders: null,
+
+        ratings: {
+            speed: null,
+            intelligence: null,
+            cost: null
+        }
+    },
+
+    "google/gemini-2.5-flash-lite": {
+        id: "google/gemini-2.5-flash-lite",
 
         isEnabled: true,
 
@@ -428,6 +549,20 @@ const languageModelConfigurations = {
 
     "tencent/hy3-preview": {
         id: "tencent/hy3-preview",
+
+        isEnabled: true,
+
+        allowedInferenceProviders: null,
+
+        ratings: {
+            speed: null,
+            intelligence: null,
+            cost: null
+        }
+    },
+
+    "xiaomi/mimo-v2.5": {
+        id: "xiaomi/mimo-v2.5",
 
         isEnabled: true,
 

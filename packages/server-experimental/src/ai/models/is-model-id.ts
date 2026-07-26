@@ -1,4 +1,4 @@
-const LLM_PROVIDERS = ["anthropic"] as const
+const LLM_PROVIDERS = ["anthropic", "deepseek"] as const
 
 type LLMProvider = (typeof LLM_PROVIDERS)[number]
 

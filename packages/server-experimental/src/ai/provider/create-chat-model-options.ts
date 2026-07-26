@@ -12,6 +12,10 @@ function createOpenRouterChatModelOptions({
         providers: ["anthropic"]
     })
 
+    const isDeepSeekModelId = isLargeLanguageModelId(modelId, {
+        providers: ["deepseek"]
+    })
+
     if (isAnthropicModelId) {
         providerOptions = {
             /**
@@ -20,6 +24,14 @@ function createOpenRouterChatModelOptions({
              * @see https://github.com/OpenRouterTeam/ai-sdk-provider/issues/499
              */
             only: ["anthropic"]
+        }
+    } else if (isDeepSeekModelId) {
+        providerOptions = {
+            /**
+             * @remarks Pin DeepInfra FP4 for cost + cache locality on distillation-volume DeepSeek traffic.
+             */
+            only: ["deepinfra"],
+            quantizations: ["fp4"]
         }
     }
 

@@ -241,9 +241,9 @@ Known bug (separate fix): the ephemeral timestamp header (`[Wednesday, 2026-06-2
 Models (supersedes §9's "4.6 for every step"):
 
 - `anthropic/claude-sonnet-4.6` is **removed** from the model config; every prior usage (chat agent, iMessage response builder, both scripts) now runs `anthropic/claude-sonnet-5` — newer and cheaper ($2/$10 vs $3/$15).
-- Distillation defaults to **`openai/gpt-5.6-luna`** ($1/$6), configurable via `createDistillationAgent({ modelId })` and `--model` on the script. Rationale: highest Artificial Analysis intelligence index inside the attractive cost quadrant (~52, on par with Grok 4.5 high, above GLM-5.2 / Gemini 3.1 Pro / Kimi K2.6) at a third of Sonnet's input price. Measured: **$0.0224 for 5 chunks (~$0.0045/chunk)** against ~$0.02+/chunk on Sonnet 4.6, with output matching the hand-written target thoughts.
-- `xiaomi/mimo-v2.5-pro` ($0.435/$0.87) was added and **tested first — it fails this workload**: malformed tool-call JSON (truncated strings), no loop termination, 45 duplicate thoughts, $0.058 for the same 3 chunks. Cheap models with weak structured tool calling are not viable for a forced-tool loop. Kept in the config as a benchmark reference for mechanical steps (keyword expansion, relevance strips).
-- `deepseek/deepseek-v4-flash` cost corrected to $0.14/$0.28.
+- Distillation initially defaulted to **`openai/gpt-5.6-luna`** ($1/$6). Measured: **$0.0224 for 5 chunks (~$0.0045/chunk)**. Superseded by §14.
+- `xiaomi/mimo-v2.5-pro` ($0.348/$0.696) was **tested — it fails this workload**: malformed tool-call JSON (truncated strings), no loop termination, 45 duplicate thoughts. Kept for later mechanical-step benchmarks. Non-pro `xiaomi/mimo-v2.5` ($0.105/$0.28) is also in config, untested on this loop.
+- `deepseek/deepseek-v4-flash` OpenRouter list price is **$0.09/$0.18** (was incorrectly noted as $0.14/$0.28).
 
 Backlinks (supersedes §12's span shape):
 
@@ -286,3 +286,32 @@ Open TODOs recorded in code:
 - `@todo P2` live-test `fetchPreviousSource` against a conversation where the referent only resolves two or more sources back (currently only one-source-back is exercised).
 - `@todo P1` on `to-model-messages.ts`: ephemeral timestamp header still leaks into persisted assistant content — audit the save / message-mirroring path (DB rows were hand-edited; the bug remains).
 - Test corpus: pick a better multi-thought message (~5 chunks) as the standing regression case once the model choice is locked and persistence lands.
+
+## 14. Amendments — 2026-07-26 (cheap-model ladder; supersedes §13 model default)
+
+Ladder order tested / reserved:
+
+1. **`deepseek/deepseek-v4-flash`** ($0.09/$0.18 list; DeepInfra FP4 often cheaper with cache) — **adopted as default**. Three live runs on `SPHoc7rk6RMmuldo5W-8y` (5 chunks): **$0.0031–$0.0034 total (~$0.00066/chunk)**, ~7× cheaper than Luna, 0 catastrophic failures. Occasional excerpt miss is retried successfully. Output quality close enough for POC.
+2. `openai/gpt-oss-120b` ($0.03/$0.18) — added to config; **not needed** once DeepSeek held.
+3. `google/gemini-2.5-flash-lite` ($0.10/$0.40) — added; reserved fallback.
+4. `google/gemini-3.1-flash-lite` ($0.25/$1.50) — already in config; reserved fallback.
+5. `xiaomi/mimo-v2.5` / `xiaomi/mimo-v2.5-pro` — keep for later; Pro already known-bad on forced tool loops.
+
+Provider lock:
+
+- All DeepSeek model IDs route through OpenRouter with `provider.only: ["deepinfra"]` + `provider.quantizations: ["fp4"]` (`create-chat-model-options.ts`) — cost + cache locality, not a quality gate.
+
+Instruction stabilizers added with the DeepSeek swap (keep for regression context):
+
+- Skip lead-ins / headings / "about to say…" announcements — call `complete` immediately with nothing recorded; do not expand forward just to discover what the lead-in introduces.
+- No gloss elaborations ("meaning we should…", "rather than…") — state the conclusion itself in one short sentence.
+- Prefer short verbatim excerpts; never paste a long multi-sentence excerpt when a few words locate the span.
+- `update-thought` cannot remove a thought — mistaken lead-in records must be left alone and `complete`d.
+- Style pref: single ASCII hyphen only (no em/en/`--`).
+
+Remaining flake (explicit TODOs):
+
+- `@todo P2` on `instructions/agent.ts`: lead-in / heading chunks (e.g. `Here's the sharp take:`) still intermittently record a meta-thought instead of skipping. Observed across the three DeepSeek runs (run 2 skipped cleanly; runs 1 and 3 recorded). Re-tune the skip rule and/or add a structural heuristic once a standing ~5-chunk regression corpus exists.
+- `@todo P2` (paired): decide whether mistaken lead-in thoughts should be deletable in-loop (today: no — `update-thought` is refine-only) or filtered post-hoc before persistence.
+
+`createDistillationAgent` default is now `deepseek/deepseek-v4-flash`; `--model` still overrides.

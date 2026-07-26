@@ -8,7 +8,7 @@
 const userLanguageStylePreferences = `
 User language style preferences:
 
-- Use hyphens instead of other dash-style characters.
+- Use a single ASCII hyphen (-) only. Never use em dashes, en dashes, or double-hyphen (--) stand-ins.
 `.trim()
 
 export { userLanguageStylePreferences }

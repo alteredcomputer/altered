@@ -15,7 +15,8 @@ const distillationAgentId = "distillation" as const
 /**
  * @remarks Distillation is a high-volume, small-context loop, so it runs a cheaper model than the chat agent. Re-benchmark before raising it.
  */
-const DEFAULT_DISTILLATION_MODEL_ID: LanguageModelID = "openai/gpt-5.6-luna"
+const DEFAULT_DISTILLATION_MODEL_ID: LanguageModelID =
+    "deepseek/deepseek-v4-flash"
 
 const distillationAgentCallOptionsSchema = type({
     context: distillationAgentContextSchema
