@@ -366,3 +366,10 @@ Open TODOs:
 - Introduced `DEFAULT_WORKER_MODEL_ID = deepseek/deepseek-v4-flash` for non-chat agents (distillation, keywords, future mechanical agents). Override only when intelligence demands it.
 - Distillation `DEFAULT_DISTILLATION_MODEL_ID` aliases the worker default.
 - Keyword conceptual correction: one word per keyword (plan §6.3 + pipeline prompts/schema).
+
+## 19. Amendments — 2026-07-26 (save-path stripping — phase 5 start)
+
+- `chat/messages/to-plain-text.ts` — extract `type: "text"` parts only (drops reasoning / tool parts that also carry `.text`).
+- `chat/messages/strip-for-persistence.ts` — `stripMessagesForPersistence`: keep user/assistant plain-text rows; drop tool/system; empty after strip → omit.
+- Wired into `build-response.ts`: after `chatAgent.generate`, persist stripped `response.messages` assistant rows (fallback to `generatedText`). Still returns `generatedText` for the iMessage send body.
+- Next chunk: extract `distillChatMessage` from `tmp-distill-poc` + on-save schedule (`afterResponse` / `waitUntil`). Keywords-on-save and reindex remain later.

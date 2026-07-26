@@ -11,6 +11,7 @@ import { startNewConversationForThread } from "../../../../conversations/start-n
 import { containsCommandTriggerPhrases } from "../../../../messages/commands/contains-trigger-phrases"
 import { listChatMessagesForConversation } from "../../../../messages/list-for-conversation"
 import { saveChatMessage } from "../../../../messages/save"
+import { stripMessagesForPersistence } from "../../../../messages/strip-for-persistence"
 import type { ChatResponseContext } from "../../behaviors/type-and-respond"
 import { getImessagePhoneNumberByThread } from "../../get-phone-number-by-thread"
 import {
@@ -82,7 +83,7 @@ async function buildDirectMessageResponse({
 
         finishReason,
         totalUsage: usage,
-        response: { modelId },
+        response: { modelId, messages: responseMessages },
 
         providerMetadata
     } = await chatAgent.generate({
@@ -110,13 +111,35 @@ async function buildDirectMessageResponse({
 
     const generationElapsedMs = performance.now() - generationStartedAt
 
-    const savedAssistantMessage = await saveChatMessage({
-        brainId: null,
-        content: generatedText,
-        conversationId: conversation.id,
-        role: "assistant",
-        userId: null
-    })
+    const assistantRows = stripMessagesForPersistence(responseMessages).filter(
+        row => row.role === "assistant"
+    )
+
+    const fallbackRows =
+        generatedText.trim().length > 0
+            ? [{ role: "assistant" as const, content: generatedText }]
+            : []
+
+    const rowsToSave = assistantRows.length > 0 ? assistantRows : fallbackRows
+
+    let savedAssistantMessage: Awaited<
+        ReturnType<typeof saveChatMessage>
+    > | null = null
+
+    for (const row of rowsToSave) {
+        savedAssistantMessage = await saveChatMessage({
+            brainId: null,
+            content: row.content,
+            conversationId: conversation.id,
+            role: row.role,
+            userId: null
+        })
+    }
+
+    if (!savedAssistantMessage)
+        throw new Error(
+            "Chat generation produced no persistable assistant text."
+        )
 
     const {
         inputTokenDetails: {
