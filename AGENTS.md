@@ -16,7 +16,7 @@ Welcome to the ALTERED codebase! We're building the next generation of knowledge
 
 - For a user-defined, macro-level definition of the direction and goal for the project, read `.context/CURRENT.md`. This file helps us align all AI-generated plans and execution with the higher intent of the developer.
 
-- While ALTERED memory is still a work in progress, for all previous in-depth notes and thoughts, search my Apple Notes exports: `/Users/inducingchaos/Workspace/ingest/apple-notes-exports/`.
+- While ALTERED memory is still a work in progress, for all previous in-depth notes and thoughts, search my Apple Notes exports: `/Users/inducingchaos/Workspace/storage/apple-notes-exports/`.
 
 - For any development-related problems we may have faced in the past, search my previous Cursor chats (associated with any `altered-*` project).
 
