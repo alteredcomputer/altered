@@ -1,7 +1,7 @@
 /**
- * Backlink shapes shared by distillation and (later) the thoughts model.
+ * In-memory backlink shapes for a distillation run (`sourceIndex` is run-local).
  *
- * @todo P1: Relocate to `src/models/thoughts/` once the schema lands - backlinks are a thought concern, not a distillation one.
+ * @todo P1: Align with / convert via `models/thoughts/persisted-backlinks.ts` on save; persisted rows live in `models/backlinks/storage/schema.ts`.
  */
 
 import { type } from "arktype"

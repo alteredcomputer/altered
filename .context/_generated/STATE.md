@@ -4,7 +4,7 @@ Last updated: 2026-07-26
 
 ## Focus
 
-Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Phase 3 loop + §12–§14: distillation default is now **`deepseek/deepseek-v4-flash`** (~$0.00066/chunk on the 5-chunk fixture; ~7× cheaper than Luna, tool retries hold). Config also has `openai/gpt-oss-120b`, `google/gemini-2.5-flash-lite`, `google/gemini-3.1-flash-lite`, `xiaomi/mimo-v2.5` (+pro) as ladder/fallbacks. Log-only; no thought persistence yet. Next: persist derived thoughts + backlink rows + `agent_runs`, then keyword job / save-path integration.
+Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Distillation loop live on **`deepseek/deepseek-v4-flash`** (DeepInfra FP4). Persistence (§15): dedicated `backlinks` table (not attributes) + `saveDerivedThought` + `getOrCreateDerivedDataset` — **not yet wired** into `tmp-distill-poc` / `agent_runs`. Next: `db:push` if needed → wire script → save + agent_runs → keyword job / save-path integration.
 
 ## Plan linkage
 
@@ -129,7 +129,7 @@ Current focus is the distillation + memory-query POC (3–7 day timebox): auto-d
 
 ## Next execution order
 
-1. Distillation POC per `thought-distillation-poc.md`: Phase 3 loop refined per §12–§14, defaulted to DeepSeek V4 Flash and live-tested → pick a standing ~5-chunk regression message → persist derived thoughts + backlink rows (`single`/`continuous`) + agent_runs → keyword job → save-path integration → reindex script → Apple Notes upload utility.
+1. Distillation POC per `thought-distillation-poc.md`: DeepSeek default locked → persistence helpers landed (§15) → wire `tmp-distill-poc` + `agent_runs` → standing ~5-chunk regression message → keyword job → save-path integration → reindex script → Apple Notes upload utility.
 
 2. Memory query POC per `memory-query-poc.md`: retrieval SQL + exclusion window (simple 512-token v1) → keyword inference (shared codepath) → relevance pass → replace `query-memory` placeholder → E2E.
 

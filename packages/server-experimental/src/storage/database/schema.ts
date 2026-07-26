@@ -2,6 +2,7 @@ import { conversations } from "../../chat/conversations/schema"
 import { chatMessages } from "../../chat/messages/schema"
 import { agentRuns } from "../../models/agent-runs/storage/schema"
 import { attributes } from "../../models/attributes/storage/schema"
+import { backlinks } from "../../models/backlinks/storage/schema"
 import { datasets } from "../../models/datasets/storage/schema"
 import { tags } from "../../models/tags/storage/schema"
 import { thoughts } from "../../models/thoughts/storage/schema"
@@ -15,6 +16,7 @@ const schema = {
     thoughts,
     thoughtsToDatasets,
     attributes,
+    backlinks,
     tags,
     agentRuns,
     externalResources

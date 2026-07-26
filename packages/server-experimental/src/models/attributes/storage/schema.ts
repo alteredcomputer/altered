@@ -22,13 +22,21 @@ type AttributeValueType = (typeof ATTRIBUTE_VALUE_TYPES)[number]
 type AttributeReferenceType = (typeof ATTRIBUTE_REFERENCE_TYPES)[number]
 
 /**
- * @remarks Keys reserved by the derived-thought source-link contract. These could either become hardcoded 'Schema' types, or global application-level, validated builtin Schema constants used where needed.
+ * Abandoned: derived source-links as attributes.
+ *
+ * @remarks Flat keys `source` / `source-start-position` / `source-end-position`
+ * cannot express multi-span or `continuous` cross-source backlinks under
+ * `unique(thoughtId, key)` (at most one value per key per thought). A single
+ * JSON `backlinks` attribute would work for storage but kills indexed overlap /
+ * by-source lookups. Source spans now live in `models/backlinks/storage/schema.ts`.
+ *
+ * Possible attribute-layer fixes (not chosen):
+ * - Drop `unique(thoughtId, key)` and add a group/index column (weak; attributes stay a KV bag).
+ * - Indexed keys (`source:0`, …) — awkward and still poor for range queries.
+ * - One JSON blob attribute — simple writes, no DB-native span search.
+ *
+ * @todo P3: Delete this note once nothing references the old attribute contract.
  */
-const DERIVED_ATTRIBUTE_KEYS = {
-    source: "source",
-    sourceStartPosition: "source-start-position",
-    sourceEndPosition: "source-end-position"
-} as const
 
 const attributes = pgTable(
     "attributes",
@@ -79,6 +87,5 @@ export {
     type Attribute,
     type AttributeReferenceType,
     type AttributeValueType,
-    attributes,
-    DERIVED_ATTRIBUTE_KEYS
+    attributes
 }

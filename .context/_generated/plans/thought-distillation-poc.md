@@ -59,10 +59,8 @@ File placement: `src/models/<entity>/storage/schema.ts` style inside `@altered/s
 - **datasets** + **thoughts_to_datasets** — user-land structures, represented per the product model (datasets are themselves thought-like tags).
   - One **reserved system dataset `derived`**. Every derived thought receives it. The dataset assignment *is* the source-link contract: **removing the dataset removes the link to the source and all associated attributes.**
   - Attribute-schema association is **name-based only** for now — no literal schema enforcement. Conceptually: the dataset has N associated attribute IDs; a thought holding the dataset without those attributes is invalid / a "draft" (term to be renamed if unfit). Enforcement comes later.
-- **attributes** — stub of the future scalable-thought-columns table. Backlinks are stored **here, not in a dedicated backlinks table**:
-  - `source` — polymorphic reference: type + id (e.g., `chat-message` | `thought`), validated at the application level. A `type=reference, value=...` column setup or a serialized object is acceptable — optimize when implementing.
-  - `source-start-position` / `source-end-position` — numbers; if line+char coordinates are needed, a serialized object is fine for now.
-  - Frontends can render the source ID however they like and use it to look up the raw thought / chat message.
+- **attributes** — stub of the future scalable-thought-columns table (user/schema KV). **Not** used for source backlinks — see `backlinks` + §15.
+- **backlinks** — dedicated system table for derived-thought source spans (indexed overlap / by-source lookup). One logical backlink = `groupId`; parts are rows. Supersedes the earlier "store backlinks as attributes" stub (see §15 for the constraint and rejected alternatives).
 - **tags** — the keyword table, associated to thoughts. Thought-scoped, never source-scoped (rationale in section 7).
 - **agent_runs** — one shared table for BOTH distillation and query runs. Naming rationale: "runs" alone is ambiguous; "agent_runs" clearly means AI-agent executions, storing statistics/metrics about generations, not the generations themselves. Fields: type discriminator, model, token/cost stats, status, timestamps, and relations to whatever the cost is associated with (conversation, thought, source) — polymorphic column or multi-column relations, whichever is simplest; app-level relation discernment is fine. Requirements: duplicated re-distill outputs tie to a run id so they can be filtered, reviewed/compared, and deleted; batched runs (reindex) must be distinguishable from single-message runs.
 
@@ -315,3 +313,33 @@ Remaining flake (explicit TODOs):
 - `@todo P2` (paired): decide whether mistaken lead-in thoughts should be deletable in-loop (today: no — `update-thought` is refine-only) or filtered post-hoc before persistence.
 
 `createDistillationAgent` default is now `deepseek/deepseek-v4-flash`; `--model` still overrides.
+
+## 15. Amendments — 2026-07-26 (persistence encoding)
+
+### Constraint: attributes cannot host multi-span backlinks cleanly
+
+Original stub stored source links as attribute keys `source` / `source-start-position` / `source-end-position`. That fails under `unique(thoughtId, key)`: at most one value per key per thought, so multi-span thoughts and `continuous` cross-source parts cannot be represented.
+
+Attribute-layer options considered and **rejected** for the system path:
+
+| Approach | Why not |
+|---|---|
+| Drop uniqueness + add group/index columns on attributes | Attributes stay a generic KV bag; range/overlap queries stay awkward |
+| Indexed keys (`source:0`, …) | Awkward naming; still no native span search |
+| One JSON `backlinks` blob attribute | Fine for writes; kills indexed by-source / overlap lookups |
+
+### Chosen: dedicated `backlinks` table
+
+- Table: `models/backlinks/storage/schema.ts` — system-level, indexed.
+- One logical backlink = one `groupId`; each part is a row (`kind`, `partIndex`, `sourceType`, `sourceId`, `start`, `end`).
+- `continuous` parts share `groupId` and must never render as separate references.
+- Indexes: `thoughtId`, `groupId`, `(sourceType, sourceId)`, `(sourceType, sourceId, start, end)` for future overlap queries (dedupe-on-create, query filtering).
+- App shape + flatten helper: `models/thoughts/persisted-backlinks.ts` (`toBacklinkInsertValues`).
+- `saveDerivedThought` writes thought + `derived` dataset membership + backlink rows in one transaction.
+- Reserved system dataset id+alias `derived` via `getOrCreateDerivedDataset` (stable id avoids NULL-`brainId` unique-index duplicates).
+
+Open TODOs:
+
+- `@todo P1`: cascade-delete backlink rows when `derived` dataset membership is removed.
+- `@todo P2`: wire `agentRunId` into `saveDerivedThought` / `resultThoughtIds`.
+- Not yet wired: `tmp-distill-poc` → save path, keyword job.
