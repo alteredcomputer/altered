@@ -390,10 +390,12 @@ Open TODOs:
 
 ## 22. Amendments — 2026-07-26 (reindex-conversation script)
 
-- `pnpm run:reindex-conversation -- --conversation-id <id> --mode skip|overwrite|duplicate [--index] [--max-messages N] [--dry-run]`
+- `pnpm run:reindex-conversation -- --conversation-id <id> --mode skip|overwrite|duplicate [--index] [--dry-run]`
+- Window: `--from oldest|newest` (default oldest), `--limit`, `--offset` **or** `--page` (1-based; requires `--limit`).
+- Parallelism: **all messages by default** (`Promise.allSettled`). Optional `--concurrency N` only if limits force a cap. Paid OpenRouter models have no platform RPM/RPD (free-model caps only); 429s retry with exponential backoff + jitter via `withRateLimitRetry`.
 - Shared `batchId` on every `agent_runs` row in the pass (`distillChatMessage` accepts `batchId`).
-- `skip`: succeeded distillation run for that message → leave alone.
+- `skip`: succeeded distillation run for that message → leave alone (use after slice tests for a full pass).
 - `overwrite`: delete derived thoughts backlinked to the message, then distill.
 - `duplicate`: distill again (prior thoughts kept; filterable by `batchId` / run id).
-- Helpers: `listDistilledChatMessageIds`, `deleteDerivedThoughtsForChatMessage`.
+- Helpers: `listDistilledChatMessageIds`, `deleteDerivedThoughtsForChatMessage`, `selectMessageWindow`.
 - Next: Apple Notes upload utility (after corpus tuning), or memory-query POC.

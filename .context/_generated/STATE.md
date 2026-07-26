@@ -4,7 +4,7 @@ Last updated: 2026-07-26
 
 ## Focus
 
-Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Non-chat workers default to **`deepseek/deepseek-v4-flash`**. Keywords are single-word only. On-save distill + `run:reindex-conversation` (§22) landed. Next: dry-run/backfill a thread, then Apple Notes upload **or** memory-query POC.
+Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Non-chat workers default to **`deepseek/deepseek-v4-flash`**. Keywords are single-word only. On-save distill + `run:reindex-conversation` (§22: window + unbounded parallel by default, optional concurrency, 429 backoff) landed. Next: slice-test a thread, then full `--mode skip` pass → Apple Notes upload **or** memory-query POC.
 
 ## Plan linkage
 
