@@ -20,7 +20,7 @@ type SaveDerivedThoughtInput = {
  *
  * @todo P1: Cascade-delete backlink rows when the `derived` dataset membership is removed.
  *
- * @todo P2: Accept `agentRunId` and append the thought id onto that run's `resultThoughtIds`.
+ * @todo P2: Optionally accept `agentRunId` for per-thought association; batch runs currently set `resultThoughtIds` via `completeDistillationAgentRun`.
  */
 const saveDerivedThought = async (
     input: SaveDerivedThoughtInput

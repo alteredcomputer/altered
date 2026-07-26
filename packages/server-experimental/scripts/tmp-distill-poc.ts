@@ -1,9 +1,9 @@
 /**
  * Scratchpad for the distillation POC. Loads one chat message, chunks it, and
- * runs the distillation subagent sequentially per chunk. Thoughts are logged
- * only - persistence lands in a later phase.
+ * runs the distillation subagent sequentially per chunk.
  *
- * @remarks The full trace goes to `.logs/agents/distillation/runs/`; the console keeps only what is worth watching live.
+ * @remarks Pass `--persist` to write derived thoughts + an `agent_runs` row.
+ * The full trace always goes to `.logs/agents/distillation/runs/`.
  */
 
 import "dotenv/config"
@@ -29,17 +29,31 @@ import {
     parseOpenrouterProviderMetadata
 } from "../src/ai/provider/metadata"
 import { type ChatMessage, chatMessages } from "../src/chat/messages/schema"
+import {
+    completeDistillationAgentRun,
+    startDistillationAgentRun
+} from "../src/models/agent-runs/save-distillation"
+import { saveDerivedThought } from "../src/models/thoughts/save-derived"
+import { toPersistedBacklinks } from "../src/models/thoughts/to-persisted-backlinks"
 import { getDatabase } from "../src/storage/database/connection"
 
 const { values } = parseArgs({
     options: {
         "message-id": { type: "string" },
         "max-chunks": { type: "string" },
-        model: { type: "string" }
+        model: { type: "string" },
+        persist: { type: "boolean", default: false }
     }
 })
 
 const STARTED_AT = new Date()
+
+type UsageTotals = {
+    cost: number
+    inputTokens: number
+    outputTokens: number
+    totalTokens: number
+}
 
 const toPlainText = (content: unknown): string => {
     if (typeof content === "string") return content
@@ -68,7 +82,7 @@ const condense = (value: unknown, max = 120): string => {
     return text.length > max ? `${text.slice(0, max)}...` : text
 }
 
-const main = async () => {
+const loadMessage = async (): Promise<ChatMessage> => {
     const database = getDatabase()
 
     const [message] = values["message-id"]
@@ -91,6 +105,99 @@ const main = async () => {
 
     if (!message) throw new Error("No chat message found to distill.")
 
+    return message
+}
+
+const summarizeSteps = (
+    steps: {
+        stepNumber: number
+        finishReason: string
+        providerMetadata?: Parameters<typeof parseOpenrouterProviderMetadata>[0]
+        toolCalls: { toolName: string; input: unknown }[]
+        toolResults: { toolName: string; output: unknown }[]
+        content: { type: string; toolName?: string; error?: unknown }[]
+        text: string
+    }[],
+    totals: UsageTotals
+) =>
+    steps.map(step => {
+        const usage = parseOpenrouterProviderMetadata(step.providerMetadata)
+            ?.openrouter?.usage
+
+        const cost = usage?.cost ?? 0
+
+        totals.cost += cost
+        totals.inputTokens += usage?.promptTokens ?? 0
+        totals.outputTokens += usage?.completionTokens ?? 0
+        totals.totalTokens += usage?.totalTokens ?? 0
+
+        return {
+            stepNumber: step.stepNumber,
+            finishReason: step.finishReason,
+
+            toolCalls: step.toolCalls.map(call => ({
+                toolName: call.toolName,
+                input: call.input
+            })),
+
+            toolResults: step.toolResults.map(toolResult => ({
+                toolName: toolResult.toolName,
+                output: toolResult.output
+            })),
+
+            toolErrors: step.content
+                .filter(part => part.type === "tool-error")
+                .map(part => ({
+                    toolName: part.toolName ?? "unknown",
+                    error: String(part.error)
+                })),
+
+            text: step.text,
+            cost
+        }
+    })
+
+const logStepActivity = (
+    steps: ReturnType<typeof summarizeSteps>,
+    thoughts: CollectedThought[]
+) => {
+    for (const step of steps) {
+        for (const call of step.toolCalls)
+            console.log(`  ${call.toolName} ${condense(call.input)}`)
+
+        for (const toolError of step.toolErrors)
+            console.log(
+                `  ERROR ${toolError.toolName}: ${condense(toolError.error, 200)}`
+            )
+    }
+
+    for (const thought of thoughts) console.log(`  + ${thought.content}`)
+}
+
+const persistCollectedThoughts = async (
+    sources: DistillationSource[],
+    thoughts: CollectedThought[]
+): Promise<string[]> => {
+    const savedThoughtIds: string[] = []
+
+    for (const thought of thoughts) {
+        const saved = await saveDerivedThought({
+            content: thought.content,
+            backlinks: toPersistedBacklinks(sources, thought.backlinks)
+        })
+
+        savedThoughtIds.push(saved.id)
+        console.log(`  saved ${saved.id}`)
+    }
+
+    return savedThoughtIds
+}
+
+const main = async () => {
+    const database = getDatabase()
+    const shouldPersist = values.persist === true
+    const message = await loadMessage()
+
     let earliestLoaded = message
 
     const sourceText = toPlainText(message.content)
@@ -107,6 +214,14 @@ const main = async () => {
 
     const modelId = (values.model ??
         DEFAULT_DISTILLATION_MODEL_ID) as LanguageModelID
+
+    const agentRun = shouldPersist
+        ? await startDistillationAgentRun({
+              model: modelId,
+              conversationId: message.conversationId,
+              chatMessageId: message.id
+          })
+        : null
 
     const agent = createDistillationAgent({
         modelId,
@@ -150,143 +265,144 @@ const main = async () => {
     const processedChunks = Math.min(maxChunks, sourceZero.chunks.length)
 
     console.log(
-        `[distill] message ${message.id} (${message.role}) - ${sourceText.length} chars, ${sourceZero.chunks.length} chunks, running ${processedChunks} on ${modelId}`
+        `[distill] message ${message.id} (${message.role}) - ${sourceText.length} chars, ${sourceZero.chunks.length} chunks, running ${processedChunks} on ${modelId}${shouldPersist ? " (persist)" : ""}`
     )
 
     const chunkLogs: unknown[] = []
-    let totalCost = 0
-    let totalSteps = 0
-
-    for (const chunk of sourceZero.chunks.slice(0, processedChunks)) {
-        const thoughtCountBefore = collectedThoughts.length
-
-        console.log(`\n[chunk ${chunk.index}] ${JSON.stringify(chunk.text)}`)
-
-        const result = await agent.generate({
-            options: {
-                context: {
-                    sources: loadedSources,
-                    chunkIndex: chunk.index,
-                    collectedThoughts
-                }
-            },
-
-            messages: [
-                {
-                    role: "system",
-                    content: [
-                        "Distillation target:",
-                        "- Source type: Koa iMessage chat message",
-                        `- Source 0 author: ${sourceZero.author}`,
-                        `- Chunk ${chunk.index + 1} of ${sourceZero.chunks.length} (index ${chunk.index}, kind: ${chunk.kind})`,
-                        `- Chunk spans characters ${chunk.start}-${chunk.end} of source 0`,
-                        "The next user message is the exact chunk text, verbatim (it may include leading whitespace)."
-                    ].join("\n")
-                },
-                { role: "user", content: chunk.text }
-            ]
-        })
-
-        const steps = result.steps.map(step => {
-            const cost =
-                parseOpenrouterProviderMetadata(step.providerMetadata)
-                    ?.openrouter?.usage?.cost ?? 0
-
-            totalCost += cost
-
-            return {
-                stepNumber: step.stepNumber,
-                finishReason: step.finishReason,
-
-                toolCalls: step.toolCalls.map(call => ({
-                    toolName: call.toolName,
-                    input: call.input
-                })),
-
-                toolResults: step.toolResults.map(toolResult => ({
-                    toolName: toolResult.toolName,
-                    output: toolResult.output
-                })),
-
-                toolErrors: step.content
-                    .filter(part => part.type === "tool-error")
-                    .map(part => ({
-                        toolName: part.toolName,
-                        error: String(part.error)
-                    })),
-
-                text: step.text,
-                cost
-            }
-        })
-
-        totalSteps += steps.length
-
-        for (const step of steps) {
-            for (const call of step.toolCalls)
-                console.log(`  ${call.toolName} ${condense(call.input)}`)
-
-            for (const toolError of step.toolErrors)
-                console.log(
-                    `  ERROR ${toolError.toolName}: ${condense(toolError.error, 200)}`
-                )
-        }
-
-        for (const thought of collectedThoughts.slice(thoughtCountBefore))
-            console.log(`  + ${thought.content}`)
-
-        chunkLogs.push({
-            index: chunk.index,
-            kind: chunk.kind,
-            start: chunk.start,
-            end: chunk.end,
-            text: chunk.text,
-
-            steps,
-            recordedThoughtCount: collectedThoughts.length - thoughtCountBefore
-        })
+    const totals: UsageTotals = {
+        cost: 0,
+        inputTokens: 0,
+        outputTokens: 0,
+        totalTokens: 0
     }
+    let totalSteps = 0
+    let savedThoughtIds: string[] = []
 
-    const thoughts = collectedThoughts.map(thought => ({
-        content: thought.content,
-        thinking: thought.thinking,
-        backlinks: thought.backlinks.map(backlink =>
-            readBacklink(loadedSources, backlink)
-        )
-    }))
+    try {
+        for (const chunk of sourceZero.chunks.slice(0, processedChunks)) {
+            const thoughtCountBefore = collectedThoughts.length
 
-    const logPath = await writeAgentRunLog({
-        agentId: distillationAgentId,
-        startedAt: STARTED_AT,
+            console.log(
+                `\n[chunk ${chunk.index}] ${JSON.stringify(chunk.text)}`
+            )
 
-        data: {
-            agentId: distillationAgentId,
-            createdAt: STARTED_AT.toISOString(),
-            modelId,
+            const result = await agent.generate({
+                options: {
+                    context: {
+                        sources: loadedSources,
+                        chunkIndex: chunk.index,
+                        collectedThoughts
+                    }
+                },
 
-            sources: loadedSources.map(source => ({
-                index: source.index,
-                id: source.id,
-                author: source.author,
-                text: source.text,
-                chunkCount: source.chunks.length
-            })),
+                messages: [
+                    {
+                        role: "system",
+                        content: [
+                            "Distillation target:",
+                            "- Source type: Koa iMessage chat message",
+                            `- Source 0 author: ${sourceZero.author}`,
+                            `- Chunk ${chunk.index + 1} of ${sourceZero.chunks.length} (index ${chunk.index}, kind: ${chunk.kind})`,
+                            `- Chunk spans characters ${chunk.start}-${chunk.end} of source 0`,
+                            "The next user message is the exact chunk text, verbatim (it may include leading whitespace)."
+                        ].join("\n")
+                    },
+                    { role: "user", content: chunk.text }
+                ]
+            })
 
-            chunks: chunkLogs,
-            thoughts,
+            const steps = summarizeSteps(result.steps, totals)
+            totalSteps += steps.length
 
-            summary: {
-                thoughtCount: thoughts.length,
-                stepCount: totalSteps,
-                cost: formatOpenRouterCost(totalCost)
-            }
+            logStepActivity(steps, collectedThoughts.slice(thoughtCountBefore))
+
+            chunkLogs.push({
+                index: chunk.index,
+                kind: chunk.kind,
+                start: chunk.start,
+                end: chunk.end,
+                text: chunk.text,
+                steps,
+                recordedThoughtCount:
+                    collectedThoughts.length - thoughtCountBefore
+            })
         }
-    })
 
-    console.log(
-        `\n[distill] ${thoughts.length} thoughts, ${totalSteps} steps, ${formatOpenRouterCost(totalCost)}`
-    )
-    console.log(`[distill] Log file: file://${logPath}`)
+        if (shouldPersist)
+            savedThoughtIds = await persistCollectedThoughts(
+                loadedSources,
+                collectedThoughts
+            )
+
+        if (agentRun)
+            await completeDistillationAgentRun({
+                id: agentRun.id,
+                status: "succeeded",
+                resultThoughtIds: savedThoughtIds,
+                cost: totals.cost,
+                inputTokens: totals.inputTokens,
+                outputTokens: totals.outputTokens,
+                totalTokens: totals.totalTokens
+            })
+
+        const thoughts = collectedThoughts.map(thought => ({
+            content: thought.content,
+            thinking: thought.thinking,
+            backlinks: thought.backlinks.map(backlink =>
+                readBacklink(loadedSources, backlink)
+            )
+        }))
+
+        const logPath = await writeAgentRunLog({
+            agentId: distillationAgentId,
+            startedAt: STARTED_AT,
+
+            data: {
+                agentId: distillationAgentId,
+                createdAt: STARTED_AT.toISOString(),
+                modelId,
+                agentRunId: agentRun?.id ?? null,
+                persistedThoughtIds: savedThoughtIds,
+
+                sources: loadedSources.map(source => ({
+                    index: source.index,
+                    id: source.id,
+                    author: source.author,
+                    text: source.text,
+                    chunkCount: source.chunks.length
+                })),
+
+                chunks: chunkLogs,
+                thoughts,
+
+                summary: {
+                    thoughtCount: thoughts.length,
+                    stepCount: totalSteps,
+                    cost: formatOpenRouterCost(totals.cost)
+                }
+            }
+        })
+
+        console.log(
+            `\n[distill] ${thoughts.length} thoughts, ${totalSteps} steps, ${formatOpenRouterCost(totals.cost)}${shouldPersist ? `, saved ${savedThoughtIds.length}` : ""}`
+        )
+        if (agentRun) console.log(`[distill] Agent run: ${agentRun.id}`)
+        console.log(`[distill] Log file: file://${logPath}`)
+    } catch (error) {
+        if (agentRun)
+            await completeDistillationAgentRun({
+                id: agentRun.id,
+                status: "failed",
+                resultThoughtIds: savedThoughtIds,
+                cost: totals.cost,
+                inputTokens: totals.inputTokens,
+                outputTokens: totals.outputTokens,
+                totalTokens: totals.totalTokens,
+                error: error instanceof Error ? error.message : String(error)
+            })
+
+        throw error
+    }
 }
 
 main().catch(error => {

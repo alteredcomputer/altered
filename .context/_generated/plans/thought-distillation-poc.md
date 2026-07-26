@@ -343,3 +343,9 @@ Open TODOs:
 - `@todo P1`: cascade-delete backlink rows when `derived` dataset membership is removed.
 - `@todo P2`: wire `agentRunId` into `saveDerivedThought` / `resultThoughtIds`.
 - Not yet wired: `tmp-distill-poc` → save path, keyword job.
+
+## 16. Amendments — 2026-07-26 (script → DB wire)
+
+- `tmp-distill-poc --persist` starts an `agent_runs` row (`type: distillation`, `status: running`), saves each collected thought via `saveDerivedThought`, then completes the run with cost/tokens/`resultThoughtIds` (or `failed` + error on throw). Default remains log-only.
+- Run-local `sourceIndex` backlinks convert through `toPersistedBacklinks` (chat-message ids) before insert.
+- File traces under `.logs/agents/distillation/runs/` still written; they now include `agentRunId` + `persistedThoughtIds` when persisting.

@@ -4,7 +4,7 @@ Last updated: 2026-07-26
 
 ## Focus
 
-Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Distillation loop live on **`deepseek/deepseek-v4-flash`** (DeepInfra FP4). Persistence (§15): dedicated `backlinks` table (not attributes) + `saveDerivedThought` + `getOrCreateDerivedDataset` — **not yet wired** into `tmp-distill-poc` / `agent_runs`. Next: `db:push` if needed → wire script → save + agent_runs → keyword job / save-path integration.
+Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Distillation on **`deepseek/deepseek-v4-flash`** (DeepInfra FP4). Persistence wired (§15–§16): `backlinks` table + `saveDerivedThought` + `tmp-distill-poc --persist` → `agent_runs`. Next: live-verify persist run → keyword job → save-path integration → reindex script.
 
 ## Plan linkage
 
@@ -129,7 +129,7 @@ Current focus is the distillation + memory-query POC (3–7 day timebox): auto-d
 
 ## Next execution order
 
-1. Distillation POC per `thought-distillation-poc.md`: DeepSeek default locked → persistence helpers landed (§15) → wire `tmp-distill-poc` + `agent_runs` → standing ~5-chunk regression message → keyword job → save-path integration → reindex script → Apple Notes upload utility.
+1. Distillation POC per `thought-distillation-poc.md`: DeepSeek default locked → persistence helpers + `--persist` wire (§15–§16) → live-verify persist → standing ~5-chunk regression message → keyword job → save-path integration → reindex script → Apple Notes upload utility.
 
 2. Memory query POC per `memory-query-poc.md`: retrieval SQL + exclusion window (simple 512-token v1) → keyword inference (shared codepath) → relevance pass → replace `query-memory` placeholder → E2E.
 
