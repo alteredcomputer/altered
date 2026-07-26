@@ -380,4 +380,11 @@ Open TODOs:
 - `build-response.ts` schedules distill after each saved user and assistant row.
 - `tmp-distill-poc.ts` thinned to a CLI wrapper over `distillChatMessage`.
 - **Job dispatch direction supersedes "plumb waitUntil":** see `distillation-job-dispatch.md`. v1 = internal Hono job route + fire-and-forget `fetch` under Fluid Compute; `agent_runs` is the status ledger; QStash optional for retries; Trigger.dev / Upstash Workflows deferred. `waitUntil`/`afterResponse` are for finishing the *current* request, not for job dispatch.
-- Next: either implement the job route, or proceed to reindex-conversation script (CLI can keep calling `distillChatMessage` directly).
+
+## 21. Amendments — 2026-07-26 (Hono distill job route)
+
+- `POST /jobs/distill-message` in `@altered/api-experimental` — auth via `x-altered-job-secret` / `SHARED_JOBS_SECRET`.
+- Accepts **202**, then `waitUntil(dispatchDistillationJob)` inside the **job** invocation (Fluid Compute `maxDuration: 800`).
+- `scheduleDistillationForMessage` HTTP-enqueues to that route; empty secret = skip (cost gate).
+- CLI (`tmp-distill-poc`) still calls `distillChatMessage` directly.
+- Next: reindex-conversation script.

@@ -15,6 +15,14 @@ const environmentConfigSchema = type({
             phoneNumber: "string"
         },
 
+        /**
+         * @remarks Empty `secret` disables HTTP job dispatch (including on-save
+         * distillation). Set `SHARED_JOBS_SECRET` to enable.
+         */
+        jobs: {
+            secret: "string"
+        },
+
         storage: {
             database: {
                 url: "string"
@@ -72,6 +80,10 @@ function assertEnvironmentConfig(): EnvironmentConfig {
 
             admin: {
                 phoneNumber: process.env.SHARED_ADMIN_PHONE_NUMBER
+            },
+
+            jobs: {
+                secret: process.env.SHARED_JOBS_SECRET
             },
 
             storage: {
