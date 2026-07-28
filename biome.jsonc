@@ -7,6 +7,9 @@
     ],
 
     "files": {
+        /**
+         * @remarks `ultracite/biome/core` includes the patterns `["**", "!!**\/build"]`, so all files are included by default, but every folder named 'build' is excluded. `files.includes` extends Ultracite here to fix this, and does not override it.
+         */
         "includes": ["packages/tooling/src/build/**"]
     },
 
@@ -61,6 +64,21 @@
                  * @remarks A sequenced negation is often more intuitive than a grouped negation.
                  */
                 "useSimplifiedLogicExpression": "off"
+            },
+
+            "suspicious": {
+                /**
+                 * @remarks Left on per Ultracite default, however stubbing out files with comments is useful and should not cause errors.
+                 */
+                "noEmptySource": {
+                    "level": "error",
+
+                    "options": { "allowComments": true }
+                }
+            },
+
+            "nursery": {
+                "noFloatingPromises": "error"
             }
         }
     },

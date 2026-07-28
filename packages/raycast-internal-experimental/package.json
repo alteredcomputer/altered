@@ -1,0 +1,39 @@
+{
+    "name": "@altered/raycast-internal-experimental",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        "./*.ts": {
+            "types": "./src/*.ts",
+            "bundler": "./src/*.ts",
+            "import": "./dist/*.js"
+        },
+        "./*.tsx": {
+            "types": "./src/*.tsx",
+            "bundler": "./src/*.tsx",
+            "import": "./dist/*.js"
+        }
+    },
+    "scripts": {
+        "dev": "tsc -p tsconfig.build.json --watch",
+
+        "check:types": "tsc",
+
+        "clean": "altered-clean-package",
+
+        "build": "tsc -p tsconfig.build.json"
+    },
+    "dependencies": {
+        "@altered/core-experimental": "workspace:*",
+        "@raycast/api": "catalog:raycast",
+        "@raycast/utils": "catalog:raycast",
+        "arktype": "catalog:",
+        "nanoid": "catalog:"
+    },
+    "devDependencies": {
+        "@altered/tooling": "workspace:*",
+        "@types/node": "catalog:raycast",
+        "typescript": "catalog:"
+    }
+}

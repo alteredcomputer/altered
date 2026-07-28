@@ -1,0 +1,76 @@
+{
+    "$schema": "https://www.raycast.com/schemas/extension.json",
+    "name": "altered-raycast-internal-experimental",
+    "title": "ALTERED Internal",
+    "description": "Knowledge orchestration infrastructure.",
+    "icon": "raycast-internal-experimental-icon-tmp.png",
+    "author": "altered",
+    "owner": "inducingchaos",
+    "access": "public",
+    "license": "MIT",
+    "platforms": [
+        "macOS"
+    ],
+    "categories": [
+        "Applications",
+        "Data",
+        "Documentation",
+        "Media",
+        "Productivity",
+        "System",
+        "Web",
+        "Other"
+    ],
+    "keywords": [
+        "altered",
+        "knowledge",
+        "orchestration",
+        "infrastructure",
+
+        "thoughts",
+        "systems",
+        "schemas",
+        "interfaces",
+        "datasets",
+        "attributes",
+
+        "workflows",
+        "agents"
+    ],
+    "commands": [
+        {
+            "mode": "view",
+            "name": "action-palette",
+            "title": "Action Palette",
+            "description": "Use your ALTERED Systems.",
+            "keywords": [
+                "systems"
+            ]
+        }
+    ],
+    "preferences": [],
+    "tools": [],
+    "ai": {},
+    "external": [],
+    "scripts": {
+        "dev": "WATCH_PATHS=../../packages/raycast-internal-experimental/dist,../../packages/core-experimental/dist ray develop",
+
+        "check:types": "tsc --noEmit",
+
+        "clean": "altered-clean-package",
+
+        "build": "ray build",
+
+        "publish": "pnpm dlx @raycast/api@latest publish"
+    },
+    "dependencies": {
+        "@altered/raycast-internal-experimental": "workspace:*",
+        "@raycast/api": "catalog:raycast"
+    },
+    "devDependencies": {
+        "@altered/tooling": "workspace:*",
+        "@types/node": "catalog:raycast",
+        "@types/react": "catalog:react",
+        "typescript": "catalog:"
+    }
+}
