@@ -4,7 +4,7 @@ Last updated: 2026-07-26
 
 ## Focus
 
-Current focus is the distillation + memory-query POC (3–7 day timebox): auto-distill Koa chat messages into indexed thoughts, then keyword-based querying — targeting a usable infinite-memory loop for the V1 marketing push. Non-chat workers default to **`deepseek/deepseek-v4-flash`**. Keywords are single-word only. On-save distill + `run:reindex-conversation` (§22: window + unbounded parallel by default, optional concurrency, 429 backoff) landed. Next: slice-test a thread, then full `--mode skip` pass → Apple Notes upload **or** memory-query POC.
+Current focus is the distillation correction loop after slice-10 review. Mindset shifts: distill = full source→thought translation ("I" / Koa-attributed; no phatic skip); keyword costs must be metered; jobs vs runs schema pending Q&A. Sub-plan: `.context/_generated/plans/distillation-correction-slice.md`. Next: lock answers → Wave A instruction/metric tweaks → re-overwrite first 10 → then schema/full backfill.
 
 ## Plan linkage
 
@@ -134,7 +134,7 @@ Current focus is the distillation + memory-query POC (3–7 day timebox): auto-d
 
 ## Next execution order
 
-1. Distillation POC per `thought-distillation-poc.md`: save-path + job route + reindex (§19–§22) landed → backfill Koa thread → Apple Notes upload utility.
+1. Distillation POC per `thought-distillation-poc.md`: save-path + job route + reindex (§19–§22) landed; 10-msg slice verified → full Koa backfill → Apple Notes upload utility.
 
 2. Memory query POC per `memory-query-poc.md`: retrieval SQL + exclusion window (simple 512-token v1) → keyword inference (shared codepath) → relevance pass → replace `query-memory` placeholder → E2E. Can overlap once a distilled corpus exists.
 
