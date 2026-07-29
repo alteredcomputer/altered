@@ -1,5 +1,12 @@
-import { writeFile } from "node:fs/promises"
-import { type LaunchProps, LaunchType, showToast, Toast } from "@raycast/api"
+import { copyFile, mkdir, writeFile } from "node:fs/promises"
+import { join } from "node:path"
+import {
+    environment,
+    type LaunchProps,
+    LaunchType,
+    showToast,
+    Toast
+} from "@raycast/api"
 import { createDeeplink, DeeplinkType } from "@raycast/utils"
 import {
     createShortcutScriptCommandFilePath,
@@ -10,7 +17,7 @@ import { createShortcutScriptCommand } from "./create-script-command"
 import {
     SHORTCUT_AUTHOR,
     SHORTCUT_AUTHOR_URL,
-    SHORTCUT_ICON_PATH,
+    SHORTCUT_ICON_FILE_NAME,
     SHORTCUT_SUBTITLE
 } from "./definitions"
 
@@ -76,11 +83,27 @@ async function installShortcutScriptCommand({
                 throw new Error("This should never happen.")
         }
 
+        const extensionAssetsIconPath = join(
+            environment.assetsPath,
+            SHORTCUT_ICON_FILE_NAME
+        )
+
+        const supportAssetsDirectory = join(environment.supportPath, "assets")
+
+        const supportAssetsIconPath = join(
+            supportAssetsDirectory,
+            SHORTCUT_ICON_FILE_NAME
+        )
+        const supportAssetsRelativeIconPath = `../../assets/${SHORTCUT_ICON_FILE_NAME}`
+
+        await mkdir(supportAssetsDirectory, { recursive: true })
+        await copyFile(extensionAssetsIconPath, supportAssetsIconPath)
+
         await writeFile(
             scriptCommandPath,
 
             createShortcutScriptCommand({
-                icon: SHORTCUT_ICON_PATH,
+                icon: supportAssetsRelativeIconPath,
                 title,
                 subtitle: SHORTCUT_SUBTITLE,
 
@@ -89,7 +112,9 @@ async function installShortcutScriptCommand({
                 author: SHORTCUT_AUTHOR,
                 authorUrl: SHORTCUT_AUTHOR_URL,
                 description
-            })
+            }),
+
+            { mode: 0o755 }
         )
 
         await showToast({
