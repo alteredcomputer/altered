@@ -28,8 +28,7 @@
         "@altered/core-experimental": "workspace:*",
         "@raycast/api": "catalog:raycast",
         "@raycast/utils": "catalog:raycast",
-        "arktype": "catalog:",
-        "nanoid": "catalog:"
+        "arktype": "catalog:"
     },
     "devDependencies": {
         "@altered/tooling": "workspace:*",
