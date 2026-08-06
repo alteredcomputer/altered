@@ -16,6 +16,14 @@ Welcome to the ALTERED codebase! We're building the next generation of knowledge
 
 - For a user-defined, macro-level definition of the direction and goal for the project, read `.context/CURRENT.md`. This file helps us align all AI-generated plans and execution with the higher intent of the developer.
 
+- While ALTERED memory is still a work in progress, for all previous in-depth notes and thoughts, search my Apple Notes exports: `/Users/inducingchaos/Workspace/storage/apple-notes-exports/`.
+
+- For any development-related problems we may have faced in the past, search my previous Cursor chats (associated with any `altered-*` project).
+
+- For my latest personal, alignment-focused conversations with Koa (my iMessage agent), you can make a read-only query to the database directly using the `SHARED_STORAGE_DATABASE_URL` environment variable. Suggested query: where the table is `chat_messages`, `user_id` is `null`, sorted by `created_at` in descending order.
+
+- For any high-signal context such as the last few messages of a conversation, make sure to read the content in full. For less-significant context such as past messages, make multiple queries if needed to explore further.
+
 # Chat
 
 - If you see a flaw or de-optimization in the user's choices, point them out with no mercy. Be raw, clear, and effective. Question directly when needed.
@@ -36,7 +44,7 @@ Welcome to the ALTERED codebase! We're building the next generation of knowledge
 
 - Never add extra placeholder code or demonstrative cruft unless told to do so. I would prefer an incomplete or even non-functioning half-chunk of useful code, over a pile of useless showy code.
 
-- The following glob patterns represent the blacklist for modifying files - never touch them without explicit instruction: `.context/**`, `AGENTS.md`. Exceptions: `.context/generated/**`.
+- The following glob patterns represent the blacklist for modifying files - never touch them without explicit instruction: `.context/**`, `AGENTS.md`. Exceptions: `.context/generated/**`, `.context/*-generated/**`.
 
 - When saving a plan to the workspace, do so in `.context/_generated/plans`.
 
@@ -144,7 +152,7 @@ Welcome to the ALTERED codebase! We're building the next generation of knowledge
 
 - Server vs client (and shared): split for data & credential security, source code privacy, runtime isolation, and separation of concerns.
 
-- 3-tier quality grade separation & release channel staging: stable (default - aligned, perfected, low churn), pre-release (generally useful & reliable, may be pruned/revised), and experimental (initial working, human-approved prototype).
+- 4-tier quality grade separation & release channel staging: stable (default - aligned, perfected, low churn), pre-release (generally useful & reliable, may be pruned/revised), experimental (initial working, human-approved prototype), generated (autonomously-written by AI).
 
 - Public vs internal features: defines a build variant that extends the app with team-only behavior.
 
@@ -155,3 +163,41 @@ Welcome to the ALTERED codebase! We're building the next generation of knowledge
 - For each tiered package variant, each less-refined edition should import and extend its successor. An example of this could be `@altered/core-experimental` importing `@altered/core-pre-release`, or `@altered/core-pre-release` importing `@altered/core` (stable). Composition packages follow the same pattern as scoped packages to form a layered inheritance graph without code duplication.
 
 - Secondary variant chains such as `internal` are stacked as their own standalone inheritance tree - defining a separate layer for each variant rather than extending the primary code path (the release channel chain). Then, at the composition layer (the top-level packages that apps import), these layers are merged with the primary code path in their respective variants.
+
+---
+
+# 2026-08-06 AMENDMENTS
+
+## Generated tier scope
+
+- A fourth quality tier exists below experimental: `*-generated` (promotion chain: generated → experimental → pre-release → stable). AI agents building in this repo may create and modify **only** `*-generated` packages and apps (e.g. `apps/api-generated`, `apps/web-generated`, `apps/raycast-internal-generated`, `packages/*-generated`), plus `.context/*-generated/**` docs.
+
+- Allowed without asking: creating `*-generated` apps/packages; `pnpm` package install/uninstall; catalog modifications in `pnpm-workspace.yaml`; per-package `turbo.json` files inside `*-generated` packages.
+
+- Forbidden (request from the developer instead, as an explicit list at turn end): root `turbo.json`; `.env.example`; any new environment variables (naming + provisioning are operator-owned); any file outside the generated tier and its context folders; all git write operations.
+
+- Generated code may import from `*-experimental` (and higher) packages, never the reverse.
+
+## Generated data layer
+
+- The generated tier uses its own database (`GENERATED_DATABASE_URL` - request provisioning from the operator). **Extend-only:** never copy upper-tier tables. Build on upper-tier data in-sync via the experimental ORM/data-access imports, using dual queries + transform/polyfill adapters to merge results (translate → omit → special-case). Design every schema addition for a trivially simple eventual migration upward.
+
+## Revision pass (every chunk, mandatory)
+
+At the end of every generated feature or chunk: (1) conformance refactor toward the existing repo style (read neighboring experimental code; match shape, conciseness, naming, comment rules); (2) verification - tests for every major operation touching user data, manual verification for UX paths; (3) safety scan - error + abort wiring, security edges, boundary validation, no silent data-mutation paths; (4) update `.context/plans-generated/graph.md` (see below); (5) emit the developer-request list + context-file update suggestions.
+
+## Feature/issue graph
+
+`.context/plans-generated/graph.md` is a strict, concise conceptual mirror of the generated codebase: every feature, edge case, quality pass, issue, and remark, tied to a unique purpose and its dependent features. Any code not represented on the graph is either deleted or added to the graph in the same turn. Integrate divergence into this single doc rather than splitting.
+
+## Step-back guardrail
+
+For medium-significance-or-larger problems: before assuming a conclusion, step back and consider all options including reframings of the parent directive itself, on micro and macro levels. Prefer built-in library capabilities over invented machinery (reference cases: TanStack Query cancel/invalidate vs mutex nests; single-ENV watcher patch vs package consolidation hacks).
+
+## Copy rules (all user-facing or marketing text)
+
+- No em dashes - hyphens only. Demographic phrase is "detail-obsessed founders", all-in or all-out. Messaging must trace to `.context/strategy-generated/frameworks/OFFER.md`; never introduce claims outside the offer stack.
+
+## Inviolables
+
+- No unintended mutation or loss of user inputs/data (source or downstream effects). No missing metric collection on funnel-relevant events. No instruction taint that can corrupt a chat's responses. Breach of any of these is a stop-and-report, not a workaround.
