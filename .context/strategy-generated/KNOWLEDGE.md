@@ -36,7 +36,7 @@ Details and intermediary thinking from the master GTM chat that must not be re-d
 - All no-going-back, deeply-interdependent decisions are locked in the master chat; fresh chats per TODO plan afterwards (master thread is expensive).
 - Planning depth: operator spent ~4h on one answer round — acceptable for critical initial planning only; once rails are in, planning must run alongside background agent builds.
 - Question-tool UI is buggy (drops custom responses) — use plain chat messages with options.
-- Git: read-only for agents; operator commits. Current state: uncommitted docs on `feat/initial-distillation` (kept clean; AGENTS.md branch-local updates viewable until new drafts land).
+- Git: mode-dependent since the S44 restructure - MANUAL tiers stay read-only (operator commits); AUTO (`*-generated`) agents branch/commit/push/merge autonomously per `.agents/workflows/auto.md`. Orchestrator chat works on branches; operator merges.
 - Landing inspo images: operator has examples — **ask for them when building the landing**.
 
 ## Scheduling references (S31)

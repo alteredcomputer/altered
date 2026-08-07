@@ -355,6 +355,8 @@ The MANUAL mode gains an explicit promotion procedure: 1) always search lower ti
 
 ## Working notes (2026-08-07)
 
+- S44 restructure shipped (PR #24): root `AGENTS.md` = shared rules + mode routing; `.agents/workflows/manual.md` (+ S47 procedure); `.agents/workflows/auto.md` (tier rules + git autonomy + S43/S46). Mode files are reference-loaded, not auto-applied - if an AUTO build chat visibly ignores the routing, add nested `AGENTS.md` pointers inside each `*-generated` app (deferred until evidence).
+
 - Build-agent WIP from chat `f1263f9a` (Internal raycast implementation) stashed on main as: *"WIP: raycast-internal build agent (chat f1263f9a)..."* - pop when that thread resumes. **The base-init stash referenced by `stubs/internal-raycast.md` is now `stash@{1}`** - reference stashes by message/branch, never index.
 - pnpm anomaly to investigate: version skew (11.13.0 on distill branch vs 11.8.0 on main; possibly corepack-installed locally), and a `.pnpm-store` created at repo root during the build-agent run - suspected Cursor sandbox behavior (manual `pnpm i` after deleting the folder did NOT recreate it). Determine if a preventive guard is worth adding.
 
