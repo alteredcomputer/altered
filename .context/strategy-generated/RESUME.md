@@ -25,8 +25,8 @@ Locks and frameworks only (S37): settle interdependent decisions via concise let
 
 ## Immediate next actions (ordered)
 
-1. **AGENTS restructure (blocks all building):** root AGENTS.md = shared rules; sub-instruction files for MANUAL vs AUTO workflow modes (S44, S47, `agents/generated-tier.md` as the AUTO base). AUTO = branch/commit/push/merge autonomously, no chunk stops, few-sentence summaries, escalation rules. Operator merges. **Status: drafted on branch `docs/agents-workflow-modes`** (root AGENTS.md + `.agents/workflows/{manual,auto}.md`) - pending operator merge; on merge, proceed to item 2.
-2. **Raycast-thread resume snippet:** after (1) merges, issue the MD copy-block for the operator to resume chat f1263f9a (pop its stash, pull new AGENTS, continue `stubs/internal-raycast.md` under AUTO mode).
+1. ~~**AGENTS restructure**~~ **DONE (2026-08-07, PR #24 on main):** root AGENTS.md = shared rules + mode routing; `.agents/workflows/manual.md` (operator flow + S47 promotion procedure); `.agents/workflows/auto.md` (generated-tier scope/data/revision/graph + S44 git autonomy + S43/S46). `.agents/**` added to the modification blacklist.
+2. ~~**Raycast-thread resume snippet**~~ **ISSUED (2026-08-07):** copy-block delivered to the operator for chat f1263f9a (pull new AGENTS, AUTO mode, pop its stash by message, continue `stubs/internal-raycast.md`). Build presumed in flight - check graph.md/branches for its progress before re-issuing.
 3. **pnpm investigation:** version skew + root `.pnpm-store` anomaly (S47 working notes) - decide if a guard is warranted.
 4. **Cloud-steering + backup pass (S45):** adjacent repos' branches pushed, stashes → branches, GH token env for `usealtered`/`inducingchaos`, notes sync, plan/chat export pipeline.
 5. **Propagate S43** (isolated Sendblue vars) into chat-hardening/sales-agent build chats.
