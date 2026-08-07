@@ -28,7 +28,7 @@ The autonomous workflow for the `*-generated` tier. Applies whenever the task cr
 
 # Data Layer
 
-- The generated tier uses its own database (`GENERATED_DATABASE_URL` - request provisioning from the operator if missing). **Extend-only:** never copy upper-tier tables. Build on upper-tier data in-sync via the experimental ORM/data-access imports, using dual queries + transform/polyfill adapters to merge results (translate → omit → special-case). Design every schema addition for a trivially simple eventual migration upward.
+- The generated tier uses its own database (`SHARED_GENERATED_STORAGE_DATABASE_URL` - request provisioning from the operator if missing). **Extend-only:** never copy upper-tier tables. Build on upper-tier data in-sync via the experimental ORM/data-access imports, using dual queries + transform/polyfill adapters to merge results (translate → omit → special-case). Design every schema addition for a trivially simple eventual migration upward.
 
 # iMessage Resources
 

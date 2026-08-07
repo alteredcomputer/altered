@@ -79,7 +79,7 @@
             "type": "password",
             "name": "apiKey",
             "title": "Internal API Key",
-            "description": "Bearer token matching GENERATED_INTERNAL_API_KEY.",
+            "description": "Bearer token matching SHARED_GENERATED_PROVIDER_INTERNAL_API_SECRET.",
             "required": true
         }
     ],

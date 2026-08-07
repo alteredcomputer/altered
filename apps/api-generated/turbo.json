@@ -8,7 +8,7 @@
                 "$TURBO_EXTENDS$",
                 "API_*",
                 "SHARED_GENERATED_STORAGE_DATABASE_URL",
-                "GENERATED_INTERNAL_API_KEY"
+                "SHARED_GENERATED_PROVIDER_INTERNAL_API_SECRET"
             ]
         }
     }
