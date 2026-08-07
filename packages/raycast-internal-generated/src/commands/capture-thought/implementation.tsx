@@ -1,16 +1,9 @@
-import {
-    Action,
-    ActionPanel,
-    closeMainWindow,
-    Form,
-    PopToRootType,
-    showToast,
-    Toast
-} from "@raycast/api"
+import { Action, ActionPanel, Form, showToast, Toast } from "@raycast/api"
 import { FormValidation, useForm } from "@raycast/utils"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ApiProvider } from "../../api/provider"
 import { api } from "../../api/react"
+import { dismissWithSuccessToast } from "../../utils/dismiss-with-success-toast"
 
 function CaptureThoughtForm() {
     const queryClient = useQueryClient()
@@ -30,15 +23,7 @@ function CaptureThoughtForm() {
             try {
                 await createThought.mutateAsync({ content: values.content })
 
-                await closeMainWindow({
-                    popToRootType: PopToRootType.Immediate,
-                    clearRootSearch: true
-                })
-
-                await showToast({
-                    style: Toast.Style.Success,
-                    title: "Thought captured"
-                })
+                await dismissWithSuccessToast({ title: "Thought captured" })
             } catch (error) {
                 await showToast({
                     style: Toast.Style.Failure,

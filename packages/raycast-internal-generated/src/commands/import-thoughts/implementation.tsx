@@ -1,16 +1,9 @@
-import {
-    Action,
-    ActionPanel,
-    closeMainWindow,
-    Form,
-    PopToRootType,
-    showToast,
-    Toast
-} from "@raycast/api"
+import { Action, ActionPanel, Form, showToast, Toast } from "@raycast/api"
 import { FormValidation, useForm } from "@raycast/utils"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ApiProvider } from "../../api/provider"
 import { api } from "../../api/react"
+import { dismissWithSuccessToast } from "../../utils/dismiss-with-success-toast"
 import {
     expandFilesystemPaths,
     getFileExtension,
@@ -70,13 +63,7 @@ function ImportThoughtsForm() {
 
                 await createMany.mutateAsync({ contents })
 
-                await closeMainWindow({
-                    popToRootType: PopToRootType.Immediate,
-                    clearRootSearch: true
-                })
-
-                await showToast({
-                    style: Toast.Style.Success,
+                await dismissWithSuccessToast({
                     title: "Thoughts imported",
                     message: `${contents.length} file(s)`
                 })
