@@ -23,6 +23,6 @@ Wave 0 / internal-raycast substrate for the `*-generated` tier under AUTO mode: 
 ## Blocked on operator
 
 - Provision `SHARED_GENERATED_STORAGE_DATABASE_URL` (and add to `.env.example`).
-- Provision `GENERATED_INTERNAL_API_KEY` + add to `.env.example`.
+- `SHARED_GENERATED_PROVIDER_INTERNAL_API_SECRET` provisioned (see `.env.example`).
 - Optional: Raycast `WATCH_PATHS` patch from `feat/raycast-internal-base-init`.
 - Optional: Vercel project/domain for `api-generated`.
