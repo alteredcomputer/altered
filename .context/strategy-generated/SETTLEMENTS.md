@@ -327,6 +327,39 @@ Content agent is built **right after** the DM agent, but only once DMs are **eff
 
 ---
 
+# Round 6 settlements (2026-08-07)
+
+## S43 — Isolated generated iMessage resources
+
+**Verdict:** The generated tier gets its own Sendblue number/credentials (operator provisioned the env vars). This number serves real users AND any `*-generated` iMessage testing - but prefer **simulation scripts and repo tests** over live-number testing wherever possible. Build chats must wire these generated-scoped vars, never the experimental ones.
+
+## S44 — AUTO workflow mode for `*-generated`
+
+**Verdict:** Generated builds run at **lowest operator input**: agent creates a branch, commits in small operator-style commits, pushes, merges (or opens a PR if merge isn't configurable) - **no chunk-stop reviews**, no long completion reports (few-sentence summary unless asked). Escalate ONLY: (a) deep, hard, newly-uncovered conceptual barriers → return to the orchestrator chat; (b) out-of-bounds/sensitive actions (service provisioning, root config, env values) → operator.
+
+**Root cause of the current failure (recorded):** manual-workflow instructions in AGENTS.md drowned the auto context - agents stopped at every chunk like the manual flow. **Fix:** restructure AGENTS into root = shared rules + referenced sub-instruction files per workflow mode (**MANUAL** for operator-driven tiers, **AUTO** for `*-generated`). The manual workflow persists untouched for human-tier work.
+
+**Target UX:** operator opens Cursor iOS, says "find the next non-completed task or plan and finish it," and returns to a polished, guardrailed, finished feature.
+
+## S45 — Cloud/iOS steerability requirements
+
+Everything orchestration- and build-relevant must be reachable from non-local cloud instances: local Cursor plans/chats exported to the repo (GTM-repo style as inspiration; export FROM latest); notes not yet in the database synced (from disk or GTM repo); adjacent repos (`altered-again`, GTM repo, etc.) fully backed up - **all branches pushed to GitHub, stashes backed up to branches**; Cursor configured with a GitHub token env var granting agents access to all repos under the `usealtered` and `inducingchaos` accounts/orgs.
+
+## S46 — Sanitation rule (incident-driven)
+
+**Incident:** database credentials were exposed in this master chat's tool calls and persisted into the committed transcript snapshot. Operator rolled the keys. **Rule (permanent):** anything saved to the repo that originated from chats/tool output (transcripts, exports, logs) gets a **credential-scrub pass before commit** (connection strings, tokens, key-shaped strings). Agents must also avoid echoing secrets into tool calls when avoidable (read env indirectly). Transcript snapshots are sanitized on every refresh.
+
+## S47 — Manual workflow: tier-promotion extension (for AGENTS update)
+
+The MANUAL mode gains an explicit promotion procedure: 1) always search lower tiers for rougher/current implementations to migrate, refactor, and promote; 2) craft the plan within the target scope from those findings; 3) implement in the promoted tier; 4) migrate any data/services cleanly and seamlessly; 5) import the promoted tier at its highest possible abstraction back down to replace the rougher code in the previous tier.
+
+## Working notes (2026-08-07)
+
+- Build-agent WIP from chat `f1263f9a` (Internal raycast implementation) stashed on main as: *"WIP: raycast-internal build agent (chat f1263f9a)..."* - pop when that thread resumes. **The base-init stash referenced by `stubs/internal-raycast.md` is now `stash@{1}`** - reference stashes by message/branch, never index.
+- pnpm anomaly to investigate: version skew (11.13.0 on distill branch vs 11.8.0 on main; possibly corepack-installed locally), and a `.pnpm-store` created at repo root during the build-agent run - suspected Cursor sandbox behavior (manual `pnpm i` after deleting the folder did NOT recreate it). Determine if a preventive guard is worth adding.
+
+---
+
 ## S34 — Meta-insight: the narrowing process is product
 
 The settlement Q&A process itself (full memory → metaphysically-framed questions → dependency ordering → informed recommendations → persisted verdicts) produced the furthest offer clarity ALTERED has ever reached. **Study it; fold the mechanisms into Koa.** Future marketing angle preserved: "This single sentence made me $1m. Here's how I created it (and what came from it)."
