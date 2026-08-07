@@ -1,0 +1,41 @@
+{
+    "name": "@altered/server-generated",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        "./*": {
+            "types": "./src/*.ts",
+            "bundler": "./src/*.ts",
+            "import": "./dist/*.js"
+        }
+    },
+    "scripts": {
+        "dev": "tsc -p tsconfig.build.json --watch",
+
+        "check:types": "tsc",
+
+        "test": "tsx --test src/**/*.test.ts",
+
+        "clean": "altered-clean-package",
+
+        "push:db": "drizzle-kit push",
+        "view:db": "drizzle-kit studio",
+
+        "build": "tsc -p tsconfig.build.json"
+    },
+    "dependencies": {
+        "drizzle-orm": "catalog:",
+        "nanoid": "catalog:",
+        "pg": "catalog:"
+    },
+    "devDependencies": {
+        "@altered/tooling": "workspace:*",
+        "@types/node": "catalog:",
+        "@types/pg": "catalog:",
+        "dotenv": "catalog:",
+        "drizzle-kit": "catalog:",
+        "tsx": "catalog:",
+        "typescript": "catalog:"
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "$schema": "https://turborepo.com/schema.json",
+    "extends": ["//"],
+
+    "tasks": {
+        "build": {
+            "env": [
+                "$TURBO_EXTENDS$",
+                "API_*",
+                "GENERATED_DATABASE_URL",
+                "GENERATED_INTERNAL_API_KEY"
+            ]
+        }
+    }
+}

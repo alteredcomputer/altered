@@ -1,0 +1,110 @@
+{
+    "$schema": "https://www.raycast.com/schemas/extension.json",
+    "name": "altered-raycast-internal-generated",
+    "title": "ALTERED Internal (Generated)",
+    "description": "Operator cockpit for the generated-tier ALTERED substrate.",
+    "icon": "raycast-internal-generated-icon-tmp.png",
+    "author": "altered",
+    "owner": "inducingchaos",
+    "access": "public",
+    "license": "MIT",
+    "platforms": [
+        "macOS"
+    ],
+    "categories": [
+        "Productivity",
+        "Developer Tools"
+    ],
+    "keywords": [
+        "altered",
+        "koa",
+        "thoughts",
+        "internal"
+    ],
+    "commands": [
+        {
+            "mode": "view",
+            "name": "ping-api",
+            "title": "Ping Generated API",
+            "description": "Verify connectivity to the generated API.",
+            "keywords": [
+                "health",
+                "api"
+            ]
+        },
+        {
+            "mode": "view",
+            "name": "capture-thought",
+            "title": "Capture Thought",
+            "description": "Capture a raw thought into the generated database.",
+            "keywords": [
+                "thought",
+                "capture",
+                "note"
+            ]
+        },
+        {
+            "mode": "view",
+            "name": "view-thoughts",
+            "title": "View Thoughts",
+            "description": "List raw thoughts from the generated database.",
+            "keywords": [
+                "thought",
+                "list"
+            ]
+        },
+        {
+            "mode": "view",
+            "name": "import-thoughts",
+            "title": "Import Thoughts",
+            "description": "Import raw thoughts from text or markdown files.",
+            "keywords": [
+                "thought",
+                "import",
+                "notes",
+                "upload"
+            ]
+        }
+    ],
+    "preferences": [
+        {
+            "type": "textfield",
+            "name": "apiBaseUrl",
+            "title": "Generated API Base URL",
+            "description": "Origin of apps/api-generated (no trailing slash).",
+            "required": true,
+            "default": "http://127.0.0.1:3000"
+        },
+        {
+            "type": "password",
+            "name": "apiKey",
+            "title": "Internal API Key",
+            "description": "Bearer token matching GENERATED_INTERNAL_API_KEY.",
+            "required": true
+        }
+    ],
+    "tools": [],
+    "ai": {},
+    "external": [],
+    "scripts": {
+        "dev": "WATCH_PATHS=../../packages/raycast-internal-generated/dist ray develop",
+
+        "check:types": "tsc --noEmit",
+
+        "clean": "altered-clean-package",
+
+        "build": "ray build",
+
+        "publish": "pnpm dlx @raycast/api@latest publish"
+    },
+    "dependencies": {
+        "@altered/raycast-internal-generated": "workspace:*",
+        "@raycast/api": "catalog:raycast"
+    },
+    "devDependencies": {
+        "@altered/tooling": "workspace:*",
+        "@types/node": "catalog:raycast",
+        "@types/react": "catalog:react",
+        "typescript": "catalog:"
+    }
+}

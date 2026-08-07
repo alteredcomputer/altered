@@ -1,0 +1,43 @@
+{
+    "name": "@altered/api-generated",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./src/index.ts",
+            "bundler": "./src/index.ts",
+            "import": "./dist/index.js"
+        },
+        "./*": {
+            "types": "./src/*.ts",
+            "bundler": "./src/*.ts",
+            "import": "./dist/*.js"
+        }
+    },
+    "scripts": {
+        "dev": "tsc -p tsconfig.build.json --watch",
+
+        "check:types": "tsc",
+
+        "test": "tsx --test src/**/*.test.ts",
+
+        "clean": "altered-clean-package",
+
+        "build": "tsc -p tsconfig.build.json"
+    },
+    "dependencies": {
+        "@altered/core-experimental": "workspace:*",
+        "@altered/server-generated": "workspace:*",
+        "@hono/node-server": "catalog:",
+        "@orpc/server": "catalog:orpc",
+        "arktype": "catalog:",
+        "hono": "catalog:"
+    },
+    "devDependencies": {
+        "@altered/tooling": "workspace:*",
+        "@types/node": "catalog:",
+        "tsx": "catalog:",
+        "typescript": "catalog:"
+    }
+}

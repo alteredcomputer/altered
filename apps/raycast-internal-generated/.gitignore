@@ -1,0 +1,6 @@
+.raycast-swift-build/
+.swiftpm/
+
+compiled_raycast_rust/
+compiled_raycast_swift/
+raycast-env.d.ts
