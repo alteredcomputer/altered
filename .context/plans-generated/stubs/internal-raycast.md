@@ -10,7 +10,7 @@ Inherits: S5, S10, S27, S28, S30. Cap: 1 off-day combined with Wave 0 scaffold. 
 
 - oRPC v2 `@beta` inside Hono; docs: https://v2.orpc.dev/llms.txt (fallback https://orpc.dev/llms.txt). TanStack Query on the Raycast side, wired like the old repo (`altered-again`) launcher - reference its patterns for optimistic updates; use built-in query cancel/invalidate/wait, never mutex/useEffect nests (S9 guardrail).
 - Auth: Better Auth per old repo setup, **API key instead of OIDC** for the internal extension. Key stored via Raycast preferences password field (https://developers.raycast.com/api-reference/preferences).
-- Raycast app: copy tree from branch `feat/raycast-internal-base-init`, rename experimental→generated, **apply stash 0 (never drop/pop)** - treat as inspiration/demo baseline.
+- Raycast app: copy tree from branch `feat/raycast-internal-base-init`, rename experimental→generated, and **apply (never drop/pop) the stash titled "WIP: Raycast hardcoded Action Palette + MicroRenderer (id-path nav)..." on that branch** - reference stashes by message, never by index (indices shift). Treat as inspiration/demo baseline.
 - Database: `GENERATED_DATABASE_URL` (operator provisions; separate DB, extend-only per S28 - import experimental ORM for upper-tier data, polyfill adapters for shape mismatches).
 - Also port: the old repo's notes/thoughts upload launcher command (UI + upload mechanics), conformed to current "raw" thought heuristics (S11) - feeds memory-rag.
 
