@@ -1,132 +1,28 @@
 # PLAN STATE (Generated)
 
-Last updated: 2026-05-24
+Last updated: 2026-08-07
 
 ## Focus
 
-Current focus is the iMessage POC path with production webhook flow, owned Postgres memory, and controlled local-dev routing for rapid message testing.
+Wave 0 / internal-raycast substrate for the `*-generated` tier under AUTO mode: `apps/api-generated` + `apps/raycast-internal-generated` with oRPC v2, Bearer API-key auth, `raw_thoughts` CRUD, and notes import.
 
 ## Plan linkage
 
-- Primary vertical scaffold:
-  - `.context/_generated/plans/imessage-server-poc.md`
-
-- Preview promotion and stable domain strategy (api-experimental MVP):
-  - `.context/_generated/plans/vercel-preview-promotion-api-experimental.md`
-
-- Detailed adapter/history resolution:
-  - `.context/_generated/plans/chat-sdk-history-sendblue-adapter-resolution.md`
-
-- Architecture constraints:
-  - `.context/_generated/plans/monorepo-architecture.md`
-
-- Human pacing / multi-bubble roadmap (not MVP timing engine):
-  - `.context/_generated/plans/imessage-human-timing-emulation.md`
+- Primary stub: `.context/plans-generated/stubs/internal-raycast.md`
+- Roadmap: `.context/plans-generated/ROADMAP.md` (Wave 0)
+- Feature/issue graph: `.context/plans-generated/graph.md`
 
 ## Confirmed status
 
-- Adapter fork baseline and DM routing for direct messages: **completed**.
+- Generated shells: api / server / raycast (app + composition packages).
+- Catalogs: `orpc`, `raycast`, `react`; `@tanstack/react-query` in root catalog.
+- Auth rejection unit tests present.
+- Import Thoughts command ports old-repo filesystem upload (supported text extensions only).
+- Thoughts DB integration test skips until `GENERATED_DATABASE_URL` is provisioned.
 
-- Drizzle CLI integration in `@altered/server-experimental`:
-  - `drizzle.config.ts` with repo-root `.env` load and required `SHARED_STORAGE_DATABASE_URL`.
-  - Scripts: `push:db`, `view:db` (+ root aliases `db:push`, `db:studio`).
-  - Package-level `turbo.json` env wiring for DB tasks.
-  - `pnpm check`: **passing**.
+## Blocked on operator
 
-- Owned history data-access layer:
-  - Conversation resolution by thread id via `external_resources`.
-  - Reset/new conversation flow by re-pointing active thread anchor.
-  - Message save/list helpers and message-to-model transform.
-
-- Memory-backed AI response loop:
-  - Persist inbound user message.
-  - Load conversation history from Postgres.
-  - Generate assistant reply from model messages.
-  - Persist assistant reply.
-  - Status: **working in manual verification**.
-
-- Command trigger behavior:
-  - `/reset`, `/new`, `/clear` behavior corrected in latest iteration.
-
-## Repository layout (this slice)
-
-- **Environment/config:** `packages/core-experimental/src/config/environment.ts` (includes **`shared.identity.adminPhoneNumber`** from **`SHARED_ADMIN_PHONE_NUMBER`**, defaults to **`""`** when unset to disable gated behavior).
-
-- **AI generation:** `packages/server-experimental/src/ai/generate/response-from-model-messages.ts`.
-
-- **Chat persistence helpers:**
-  - `packages/server-experimental/src/chat/conversations/get-or-create-active-for-thread.ts`
-  - `packages/server-experimental/src/chat/conversations/start-new-for-thread.ts`
-  - `packages/server-experimental/src/chat/messages/save.ts`
-  - `packages/server-experimental/src/chat/messages/list-for-conversation.ts`
-  - `packages/server-experimental/src/chat/messages/to-model-messages.ts`
-
-- **iMessage direct-message flow:**
-  - `packages/server-experimental/src/chat/providers/imessage/events/direct-message/handler.ts`
-  - `packages/server-experimental/src/chat/providers/imessage/events/direct-message/build-response.ts`
-  - `packages/server-experimental/src/chat/providers/imessage/events/direct-message/is-command-trigger.ts`
-
-- **Database schema wiring:**
-  - `packages/server-experimental/src/storage/database/schema.ts` now exports `{ conversations, chatMessages, externalResources }`.
-  - `packages/server-experimental/src/storage/database/relations.ts` aligned to `chatMessages`.
-  - `packages/server-experimental/src/storage/database/external-resources/*` includes `thread` type and provider-aware id resolution.
-
-## Completion map (high-level)
-
-- Owned Postgres history schema + relations + data access: **completed for POC scope**.
-
-- Memory-backed direct-message response path: **completed for POC scope**.
-
-- Message-id dedupe for replay/webhook duplicates: **queued (not started)**.
-
-- Production-to-dev rerouting from one webhook endpoint: **next planned work**.
-
-- Preview deployment promotion pipeline (api-experimental):
-  - Plan captured; Phase 0 passed.
-  - Initial implementation landed in `@altered/tooling`:
-    - `altered-preview-promote` CLI (manual commit/branch/current-branch promotion path).
-    - Vercel SDK-based deployment create + ready-state polling + domain alias assignment for `api-experimental`.
-    - Root command: `pnpm preview:promote:api-experimental --commit <commit-sha>` or `--branch <branch-name>`, with no args defaulting to the current non-`main` branch.
-    - CLI verifies commit/branch sync with origin before calling Vercel.
-    - CLI hardening: branch-name validation, local branch existence checks, detached-HEAD guard, and authenticated GitHub commit existence checks via `SHARED_PROVIDER_GITHUB_SECRET`.
-  - Workflow automation consolidated into one pipeline:
-    - `.github/workflows/ci.yml`
-  - `Manage Deployments / Deploy & Promote Preview` now waits on `Code Quality / Check Types` and `Code Quality / Lint & Format`.
-  - Shared GitHub Actions setup logic extracted into:
-    - `.github/actions/setup-ci/action.yml`
-  - Deploy/promote preview routes through `pnpm preview:promote` (`--all-apps`) with workflow-dispatch support (`branch`, `commit`) and push branch promotion via explicit `github.ref_name`.
-  - Workflow still needs first live run verification.
-
-- Admin webhook forwarding preference and control path:
-  - Redis-backed persisted forwarding target added for admin phone numbers: `preview-development` or implicit `none` (missing key).
-  - Admin command detection moved to an ephemeral natural-language flow powered by lightweight model classification (`openai/gpt-5.4-nano` via OpenRouter) with high-confidence gating.
-  - Added a mock AI SDK tool-calling path (`orderCoffee`) for admin-only immediate-task testing, with optional `type` input and ephemeral confirmation response.
-  - Preference updates respond directly over iMessage and skip DB history persistence for both command messages and confirmations.
-  - Forwarded webhook metadata now includes explicit target header (`x-altered-forwarded-target`) in addition to forwarded marker.
-  - Failure mode hardened: if KV read/write or forwarding fails, ingress still returns provider-facing `200 OK`; production ingestion remains bypassed during active forwarding attempts.
-
-- Preview deployment management direction (2026-05-24):
-  - Build minimal MVP for `api-experimental` first, while shaping code for multi-app extension.
-  - Use a stable preview domain target per app with auto-promote on non-main pushes and manual commit re-promote support.
-  - Keep Vercel branch auto previews disabled; deploy manually through GitHub Actions + TypeScript scripts.
-  - Keep webhook ingress behavior as `200 OK` to provider while handling forwarding failures internally.
-
-- Effect conversion/retries/hardening pass: **deferred until post-POC stabilization**.
-
-## Current risks and caveats
-
-- Dedupe is not implemented yet; duplicate provider deliveries can still create repeated message rows/replies.
-
-- Natural-language admin command routing currently only handles webhook forwarding target changes; `/new` conversation resets still use slash triggers.
-
-- Keep Chat SDK thread iterators out of LLM truth path; Postgres remains canonical for context.
-
-## Next execution order
-
-1. Expand the admin lightweight-model command surface beyond forwarding target updates (replace remaining slash commands where needed, including `/new` if product confirms).
-
-2. Add provider message-id dedupe guards in persistence path.
-
-3. POC solidification: multi-bubble send pipeline (defer full timing emulation; see `.context/_generated/plans/imessage-human-timing-emulation.md`).
-
-4. Final refactor/polish, then evaluate Effect migration effort for retries and error handling.
+- Provision `GENERATED_DATABASE_URL` (and add to `.env.example`; supersedes `SHARED_GENERATED_STORAGE_DATABASE_URL` naming for generated code).
+- Provision `GENERATED_INTERNAL_API_KEY` + add to `.env.example`.
+- Optional: Raycast `WATCH_PATHS` patch from `feat/raycast-internal-base-init`.
+- Optional: Vercel project/domain for `api-generated`.
