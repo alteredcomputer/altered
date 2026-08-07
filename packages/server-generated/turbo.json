@@ -4,11 +4,11 @@
 
     "tasks": {
         "push:db": {
-            "env": ["GENERATED_DATABASE_URL"]
+            "env": ["SHARED_GENERATED_STORAGE_DATABASE_URL"]
         },
 
         "view:db": {
-            "env": ["GENERATED_DATABASE_URL"]
+            "env": ["SHARED_GENERATED_STORAGE_DATABASE_URL"]
         }
     }
 }
