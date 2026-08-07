@@ -1,0 +1,6 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "extends": "@altered/tooling/typescript/config/build.json",
+
+    "exclude": ["${configDir}/src/**/*.test.ts"]
+}
