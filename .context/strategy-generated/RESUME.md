@@ -25,7 +25,7 @@ Locks and frameworks only (S37): settle interdependent decisions via concise let
 
 ## Immediate next actions (ordered)
 
-1. **AGENTS restructure (blocks all building):** root AGENTS.md = shared rules; sub-instruction files for MANUAL vs AUTO workflow modes (S44, S47, `agents/generated-tier.md` as the AUTO base). AUTO = branch/commit/push/merge autonomously, no chunk stops, few-sentence summaries, escalation rules. Operator merges.
+1. **AGENTS restructure (blocks all building):** root AGENTS.md = shared rules; sub-instruction files for MANUAL vs AUTO workflow modes (S44, S47, `agents/generated-tier.md` as the AUTO base). AUTO = branch/commit/push/merge autonomously, no chunk stops, few-sentence summaries, escalation rules. Operator merges. **Status: drafted on branch `docs/agents-workflow-modes`** (root AGENTS.md + `.agents/workflows/{manual,auto}.md`) - pending operator merge; on merge, proceed to item 2.
 2. **Raycast-thread resume snippet:** after (1) merges, issue the MD copy-block for the operator to resume chat f1263f9a (pop its stash, pull new AGENTS, continue `stubs/internal-raycast.md` under AUTO mode).
 3. **pnpm investigation:** version skew + root `.pnpm-store` anomaly (S47 working notes) - decide if a guard is warranted.
 4. **Cloud-steering + backup pass (S45):** adjacent repos' branches pushed, stashes → branches, GH token env for `usealtered`/`inducingchaos`, notes sync, plan/chat export pipeline.
