@@ -4,7 +4,7 @@ Inherits: S1 (do-or-die week), S13 (hard split), S18/S39 (first sale week 1, hou
 
 ## Wave 0 - Foundation (off-day 1, ~half day)
 
-1. Operator: review + install AGENTS spec (`strategy-generated/agents/generated-tier.md`), switch branches, commit docs, provision `GENERATED_DATABASE_URL` + Zernio + QStash keys.
+1. Operator: review + install AGENTS spec (`strategy-generated/agents/generated-tier.md`), switch branches, commit docs, provision `SHARED_GENERATED_STORAGE_DATABASE_URL` + Zernio + QStash keys.
 2. Delegate: scaffold `apps/api-generated` (Hono + oRPC v2 @beta + Better Auth API-key mode) per `stubs/internal-raycast.md` §foundation.
 3. Delegate: `apps/raycast-internal-generated` from `feat/raycast-internal-base-init` (copy tree, rename, apply stash 0 - never drop/pop) + oRPC/TanStack Query wiring.
 

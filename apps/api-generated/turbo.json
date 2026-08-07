@@ -7,7 +7,7 @@
             "env": [
                 "$TURBO_EXTENDS$",
                 "API_*",
-                "GENERATED_DATABASE_URL",
+                "SHARED_GENERATED_STORAGE_DATABASE_URL",
                 "GENERATED_INTERNAL_API_KEY"
             ]
         }

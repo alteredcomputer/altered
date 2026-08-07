@@ -4,7 +4,7 @@ import { createRawThought } from "./create"
 import { createRawThoughtsMany } from "./create-many"
 import { listRawThoughts } from "./list"
 
-const databaseUrl = process.env.GENERATED_DATABASE_URL?.trim()
+const databaseUrl = process.env.SHARED_GENERATED_STORAGE_DATABASE_URL?.trim()
 
 describe("raw thoughts data access", { skip: !databaseUrl }, () => {
     it("creates then lists a raw thought", async () => {
