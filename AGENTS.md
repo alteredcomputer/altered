@@ -2,6 +2,16 @@
 
 Welcome to the ALTERED codebase! We're building the next generation of knowledge infrastructure. Since we are a data-first generalist platform... the foundations really matter. Let's aim for functional perfection.
 
+# Workflow Modes
+
+- Every task runs in exactly one workflow mode. Determine the mode before doing anything else, read the referenced instruction file in full, and follow it for the rest of the session.
+
+- **AUTO** - the task creates or modifies `*-generated` apps/packages (or `.context/*-generated/**` docs). Read `.agents/workflows/auto.md`. Autonomous git, no chunk-stop reviews, minimal reporting.
+
+- **MANUAL** (default) - everything else: operator-driven work in the stable, pre-release, experimental, and internal tiers. Read `.agents/workflows/manual.md`. Read-only git, chunked generation with operator review.
+
+- The rules in this file are shared by both modes. Where a mode file conflicts with this file, the mode file wins.
+
 # \[TEMPORARY\] Codebase Migration
 
 - We are currently working to re-build the ALTERED app from scratch in this repo (often referenced as the "old" codebase). For any given implementation, first inspect the project for any relevant patterns (including relevant git branches and stashes) at `/Users/inducingchaos/Workspace/containers/altered-again/`, and copy the code directly in a way that fits the current objective. There are other `altered-*/` projects also in `containers/` (as well as a sub-path inside the `rileybarabash/` project), each an older version that I rebuilt from scratch in search of a better architecture - these older projects will rarely be useful, but can be referenced for tougher problems or deeper inspiration. Weigh their significance using the average date of the last 2-3 developmental commits.
@@ -9,8 +19,6 @@ Welcome to the ALTERED codebase! We're building the next generation of knowledge
 - If you have suggestions for better naming, structuring, or any other sort of improvements over the old codebase, always suggest them before copying the existing patterns.
 
 # Context
-
-- Before planning or implementation, always read `.context/_generated/STATE.md` and update it after each substantial turn to keep the plan execution synchronized.
 
 - Read `.context/PRODUCT.md` before starting any product or domain-specific work.
 
@@ -34,23 +42,29 @@ Welcome to the ALTERED codebase! We're building the next generation of knowledge
 
 - Always use `pnpm exec` or `pnpm dlx` over `npx` and alternatives.
 
-- Interact with Git in a read-only way unless the user makes an explicit request.
+- Git policy is defined by the active workflow mode (MANUAL: read-only; AUTO: autonomous on branches). See the mode files.
 
 - Always run a typecheck, lint, and format pass after every reasonable set of changes with `pnpm check`.
 
 - Prefer more fine-grained files over less all-in-one files.
 
-- Generate code in small, manageable chunks of 2-3 main functions, files, or topics at a time - then end your turn so that the code can be manually reviewed and committed. Never generate more than 80 lines or so unless the intent is explicit.
-
 - Never add extra placeholder code or demonstrative cruft unless told to do so. I would prefer an incomplete or even non-functioning half-chunk of useful code, over a pile of useless showy code.
 
-- The following glob patterns represent the blacklist for modifying files - never touch them without explicit instruction: `.context/**`, `AGENTS.md`. Exceptions: `.context/generated/**`, `.context/*-generated/**`.
-
-- When saving a plan to the workspace, do so in `.context/_generated/plans`.
-
-- ALWAYS provide a reminder at the end of each code generation turn for the user to review and update the agent context files. Pull all critical points from the latest messages and code changes into a list of suggestions, then provide them to the user within the chat.
+- The following glob patterns represent the blacklist for modifying files - never touch them without explicit instruction: `.context/**`, `.agents/**`, `AGENTS.md`. Exceptions: `.context/generated/**`, `.context/*-generated/**`.
 
 - For database migrations with Drizzle, we should use `pnpm db:push` instead of manually writing migrations unless absolutely necessary.
+
+# Step-Back Guardrail
+
+- For medium-significance-or-larger problems: before assuming a conclusion, step back and consider all options including reframings of the parent directive itself, on micro and macro levels. Prefer built-in library capabilities over invented machinery (reference cases: TanStack Query cancel/invalidate vs mutex nests; single-ENV watcher patch vs package consolidation hacks).
+
+# Copy Rules (all user-facing or marketing text)
+
+- No em dashes - hyphens only. Demographic phrase is "detail-obsessed founders", all-in or all-out. Messaging must trace to `.context/strategy-generated/frameworks/OFFER.md`; never introduce claims outside the offer stack.
+
+# Inviolables
+
+- No unintended mutation or loss of user inputs/data (source or downstream effects). No missing metric collection on funnel-relevant events. No instruction taint that can corrupt a chat's responses. Breach of any of these is a stop-and-report, not a workaround.
 
 # Style
 
@@ -163,41 +177,3 @@ Welcome to the ALTERED codebase! We're building the next generation of knowledge
 - For each tiered package variant, each less-refined edition should import and extend its successor. An example of this could be `@altered/core-experimental` importing `@altered/core-pre-release`, or `@altered/core-pre-release` importing `@altered/core` (stable). Composition packages follow the same pattern as scoped packages to form a layered inheritance graph without code duplication.
 
 - Secondary variant chains such as `internal` are stacked as their own standalone inheritance tree - defining a separate layer for each variant rather than extending the primary code path (the release channel chain). Then, at the composition layer (the top-level packages that apps import), these layers are merged with the primary code path in their respective variants.
-
----
-
-# 2026-08-06 AMENDMENTS
-
-## Generated tier scope
-
-- A fourth quality tier exists below experimental: `*-generated` (promotion chain: generated → experimental → pre-release → stable). AI agents building in this repo may create and modify **only** `*-generated` packages and apps (e.g. `apps/api-generated`, `apps/web-generated`, `apps/raycast-internal-generated`, `packages/*-generated`), plus `.context/*-generated/**` docs.
-
-- Allowed without asking: creating `*-generated` apps/packages; `pnpm` package install/uninstall; catalog modifications in `pnpm-workspace.yaml`; per-package `turbo.json` files inside `*-generated` packages.
-
-- Forbidden (request from the developer instead, as an explicit list at turn end): root `turbo.json`; `.env.example`; any new environment variables (naming + provisioning are operator-owned); any file outside the generated tier and its context folders; all git write operations.
-
-- Generated code may import from `*-experimental` (and higher) packages, never the reverse.
-
-## Generated data layer
-
-- The generated tier uses its own database (`GENERATED_DATABASE_URL` - request provisioning from the operator). **Extend-only:** never copy upper-tier tables. Build on upper-tier data in-sync via the experimental ORM/data-access imports, using dual queries + transform/polyfill adapters to merge results (translate → omit → special-case). Design every schema addition for a trivially simple eventual migration upward.
-
-## Revision pass (every chunk, mandatory)
-
-At the end of every generated feature or chunk: (1) conformance refactor toward the existing repo style (read neighboring experimental code; match shape, conciseness, naming, comment rules); (2) verification - tests for every major operation touching user data, manual verification for UX paths; (3) safety scan - error + abort wiring, security edges, boundary validation, no silent data-mutation paths; (4) update `.context/plans-generated/graph.md` (see below); (5) emit the developer-request list + context-file update suggestions.
-
-## Feature/issue graph
-
-`.context/plans-generated/graph.md` is a strict, concise conceptual mirror of the generated codebase: every feature, edge case, quality pass, issue, and remark, tied to a unique purpose and its dependent features. Any code not represented on the graph is either deleted or added to the graph in the same turn. Integrate divergence into this single doc rather than splitting.
-
-## Step-back guardrail
-
-For medium-significance-or-larger problems: before assuming a conclusion, step back and consider all options including reframings of the parent directive itself, on micro and macro levels. Prefer built-in library capabilities over invented machinery (reference cases: TanStack Query cancel/invalidate vs mutex nests; single-ENV watcher patch vs package consolidation hacks).
-
-## Copy rules (all user-facing or marketing text)
-
-- No em dashes - hyphens only. Demographic phrase is "detail-obsessed founders", all-in or all-out. Messaging must trace to `.context/strategy-generated/frameworks/OFFER.md`; never introduce claims outside the offer stack.
-
-## Inviolables
-
-- No unintended mutation or loss of user inputs/data (source or downstream effects). No missing metric collection on funnel-relevant events. No instruction taint that can corrupt a chat's responses. Breach of any of these is a stop-and-report, not a workaround.
