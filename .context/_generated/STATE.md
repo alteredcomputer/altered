@@ -18,11 +18,11 @@ Wave 0 / internal-raycast substrate for the `*-generated` tier under AUTO mode: 
 - Catalogs: `orpc`, `raycast`, `react`; `@tanstack/react-query` in root catalog.
 - Auth rejection unit tests present.
 - Import Thoughts command ports old-repo filesystem upload (supported text extensions only).
-- Thoughts DB integration test skips until `GENERATED_DATABASE_URL` is provisioned.
+- Thoughts DB integration test skips until `SHARED_GENERATED_STORAGE_DATABASE_URL` is provisioned.
 
 ## Blocked on operator
 
-- Provision `GENERATED_DATABASE_URL` (and add to `.env.example`; supersedes `SHARED_GENERATED_STORAGE_DATABASE_URL` naming for generated code).
+- Provision `SHARED_GENERATED_STORAGE_DATABASE_URL` (and add to `.env.example`).
 - Provision `GENERATED_INTERNAL_API_KEY` + add to `.env.example`.
 - Optional: Raycast `WATCH_PATHS` patch from `feat/raycast-internal-base-init`.
 - Optional: Vercel project/domain for `api-generated`.

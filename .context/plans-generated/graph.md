@@ -11,9 +11,9 @@ Format per node: `id · purpose · depends-on · status · remarks`.
 - `g-rpc-router` · oRPC v2 beta (`health.ping`, `thoughts.create|createMany|list`) · `g-server-thoughts`, `g-auth-api-key` · done · ArkType inputs; public ping; authed thoughts
 - `g-auth-api-key` · Timing-safe Bearer vs `GENERATED_INTERNAL_API_KEY` · - · done · Single-admin v1; BA plugin deferred
 - `g-auth-reject` · Auth rejection unit tests · `g-auth-api-key` · done · Missing / wrong / non-Bearer → `UNAUTHORIZED`
-- `g-server-db` · Generated DB via `GENERATED_DATABASE_URL` · - · done · Extend-only; no upper-tier copies
+- `g-server-db` · Generated DB via `SHARED_GENERATED_STORAGE_DATABASE_URL` · - · done · Extend-only; no upper-tier copies
 - `g-server-thoughts` · `raw_thoughts` schema + create/createMany/list · `g-server-db` · done · Draft-only content; migrate-upward path
-- `g-server-thoughts-test` · Create/list integration test (skips without DB URL) · `g-server-thoughts` · partial · Needs provisioned `GENERATED_DATABASE_URL` + `push:db`
+- `g-server-thoughts-test` · Create/list integration test (skips without DB URL) · `g-server-thoughts` · partial · Needs provisioned `SHARED_GENERATED_STORAGE_DATABASE_URL` + `push:db`
 - `g-raycast-app` · Raycast shell + password prefs · `g-raycast-pkg` · done · Plain commands (no MicroRenderer)
 - `g-raycast-pkg` · oRPC client + TanStack Query + commands · `g-rpc-router` · done · Invalidate via `api.thoughts.key()`
 - `g-raycast-ping` · Connectivity command · `g-raycast-pkg` · done · Manual UX pending
@@ -27,7 +27,7 @@ Format per node: `id · purpose · depends-on · status · remarks`.
 
 - **oRPC:** `@orpc/*@2.0.0-beta.25` via `catalogs.orpc`. Client uses `origin` + `url: "/rpc"` (v2 split).
 - **Auth v1:** Custom timing-safe Bearer (old-repo API-key shape), not Better Auth yet.
-- **DB ENV:** `GENERATED_DATABASE_URL` (mandated). `.env.example` still has `SHARED_GENERATED_STORAGE_DATABASE_URL` - operator must align.
+- **DB ENV:** `SHARED_GENERATED_STORAGE_DATABASE_URL` (from `.env.example`).
 - **API key ENV:** `GENERATED_INTERNAL_API_KEY` (requested; not yet in `.env.example`).
 - **Raycast UI:** Plain commands only - MicroRenderer stash used as inspiration only (never popped).
 - **Local origin:** Serve reuses `API_CONFIG_PORT`; prod/preview use `API_GENERATED_ORIGIN_*`.

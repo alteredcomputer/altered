@@ -7,10 +7,10 @@ config({
     path: resolve(dirname(fileURLToPath(import.meta.url)), "../../.env")
 })
 
-const url = process.env.GENERATED_DATABASE_URL?.trim()
+const url = process.env.SHARED_GENERATED_STORAGE_DATABASE_URL?.trim()
 
 if (!url)
-    throw new Error("'GENERATED_DATABASE_URL' environment variable is missing.")
+    throw new Error("'SHARED_GENERATED_STORAGE_DATABASE_URL' environment variable is missing.")
 
 export default defineConfig({
     schema: "./src/**/schema.ts",

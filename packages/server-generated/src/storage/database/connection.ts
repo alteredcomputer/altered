@@ -2,11 +2,11 @@ import { drizzle } from "drizzle-orm/node-postgres"
 import { schema } from "./schema"
 
 function createDatabase() {
-    const url = process.env.GENERATED_DATABASE_URL?.trim()
+    const url = process.env.SHARED_GENERATED_STORAGE_DATABASE_URL?.trim()
 
     if (!url)
         throw new Error(
-            "'GENERATED_DATABASE_URL' environment variable is missing."
+            "'SHARED_GENERATED_STORAGE_DATABASE_URL' environment variable is missing."
         )
 
     return drizzle({
