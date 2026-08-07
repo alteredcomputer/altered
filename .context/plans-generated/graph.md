@@ -20,7 +20,10 @@ Format per node: `id · purpose · depends-on · status · remarks`.
 - `g-raycast-capture` · Capture Thought → `thoughts.create` · `g-raycast-pkg`, `g-server-thoughts` · done · Manual round-trip pending
 - `g-raycast-view` · View Thoughts → `thoughts.list` · `g-raycast-pkg`, `g-server-thoughts` · done · Manual round-trip pending
 - `g-raycast-import` · Import Thoughts (files/folders → `createMany`) · `g-raycast-pkg`, `g-server-thoughts` · done · `.txt`/`.md`/`.markdown`/`.mdc` only; S11 raw heuristics
-- `g-watch-paths` · Raycast hot-reload for composition `dist/` · `g-raycast-app` · blocked · Needs `@raycast/api` WATCH_PATHS patch (operator; outside generated)
+- `g-watch-paths` · Raycast hot-reload via `WATCH_PATHS` + `@raycast/api` patch · `g-raycast-app` · done · Patch at `patches/@raycast__api@1.104.20.patch`; app `dev` watches composition + api `dist/`
+- `g-dev-scripts` · Root `dev:generated` / `push:db:generated` · - · done · Manual-mode root scripts for generated filter
+- `g-raycast-dev-origin` · Dev Raycast defaults to `http://127.0.0.1:4200` via `environment.isDevelopment` · `g-raycast-pkg` · done · Pref override when set; port constant matches `API_CONFIG_PORT`
+- `g-api-deploy` · Generated API on Vercel production origin · `g-api-app` · done · Operator provisioned; Raycast non-dev uses pref = `API_GENERATED_ORIGIN_PRODUCTION`
 - `g-better-auth` · Full Better Auth for generated tier · `g-auth-api-key` · queued · When web-generated needs sessions
 
 ## Recorded verdicts
