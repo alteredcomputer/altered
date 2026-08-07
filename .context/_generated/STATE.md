@@ -4,7 +4,7 @@ Last updated: 2026-08-07
 
 ## Focus
 
-Wave 0 / internal-raycast substrate for the `*-generated` tier under AUTO mode: `apps/api-generated` + `apps/raycast-internal-generated` with oRPC v2, Bearer API-key auth, `raw_thoughts` CRUD, and notes import.
+Wave 0 / internal-raycast substrate: local `pnpm dev:generated` loop + deployed `api-generated` for non-dev Raycast hits.
 
 ## Plan linkage
 
@@ -14,15 +14,13 @@ Wave 0 / internal-raycast substrate for the `*-generated` tier under AUTO mode: 
 
 ## Confirmed status
 
-- Generated shells: api / server / raycast (app + composition packages).
-- Catalogs: `orpc`, `raycast`, `react`; `@tanstack/react-query` in root catalog.
-- Auth rejection unit tests present.
-- Import Thoughts command ports old-repo filesystem upload (supported text extensions only).
-- Thoughts DB integration test skips until `SHARED_GENERATED_STORAGE_DATABASE_URL` is provisioned.
+- Generated API + Raycast cockpit + `raw_thoughts` on main (PRs #26-#29).
+- `api-generated` deployed; `API_GENERATED_ORIGIN_PRODUCTION` set.
+- Root scripts: `dev:generated`, `push:db:generated`, `view:db:generated`.
+- Raycast WATCH_PATHS patch wired; icons refreshed; dev origin uses `environment.isDevelopment` → `http://127.0.0.1:4200` (matches `API_CONFIG_PORT`).
 
-## Blocked on operator
+## Operator / next
 
-- Provision `SHARED_GENERATED_STORAGE_DATABASE_URL` (and add to `.env.example`).
-- `SHARED_GENERATED_PROVIDER_INTERNAL_API_SECRET` provisioned (see `.env.example`).
-- Optional: Raycast `WATCH_PATHS` patch from `feat/raycast-internal-base-init`.
-- Optional: Vercel project/domain for `api-generated`.
+- `pnpm push:db:generated` if schema not pushed yet.
+- `pnpm dev:generated` + Raycast prefs (empty base URL locally; API secret set) → ping/capture/import/view.
+- For installed/non-dev Raycast: set API Base URL to production `API_GENERATED_ORIGIN_PRODUCTION`.
