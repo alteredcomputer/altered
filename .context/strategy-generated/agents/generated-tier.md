@@ -1,6 +1,6 @@
 # AGENTS Spec Draft: `*-generated` Tier
 
-Status: DRAFT for operator review. Install as additions to root `AGENTS.md` (or a nested `AGENTS.md` in generated apps/packages) when switching branches. Inherits: S5, S27, S28, PRODUCT.md.
+Status: INSTALLED (2026-08-07) via the S44 restructure - shared pieces (step-back, copy rules, inviolables) live in root `AGENTS.md`; tier scope/data/revision/graph rules live in `.agents/workflows/auto.md` alongside the AUTO git + escalation behavior. This file is retained as the source draft. Inherits: S5, S27, S28, S43, S44, S46, PRODUCT.md.
 
 ---
 
