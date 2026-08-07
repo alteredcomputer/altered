@@ -1,0 +1,28 @@
+{
+    "name": "altered-api-generated",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "tsx watch --env-file=../../.env --include ../../.env src/index.ts",
+
+        "check:types": "tsc",
+
+        "clean": "altered-clean-package",
+
+        "build": "altered-bundle-application",
+
+        "start": "node dist/index.js"
+    },
+    "dependencies": {
+        "@altered/api-generated": "workspace:*",
+        "hono": "catalog:"
+    },
+    "devDependencies": {
+        "@altered/core-experimental": "workspace:*",
+        "@altered/tooling": "workspace:*",
+        "@types/node": "catalog:",
+        "tsx": "catalog:",
+        "typescript": "catalog:"
+    }
+}
