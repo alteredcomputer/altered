@@ -97,6 +97,9 @@ catalogs:
       specifier: 19.0.10
       version: 19.0.10
 
+patchedDependencies:
+  '@raycast/api@1.104.20': be5fe32fda86831db8353534be150ef135a37b1349b427e91c9471821ab93ce5
+
 importers:
 
   .:
@@ -174,7 +177,7 @@ importers:
         version: link:../../packages/raycast-internal-generated
       '@raycast/api':
         specifier: catalog:raycast
-        version: 1.104.20(@types/node@22.19.17)(@types/react@19.0.10)(supports-color@8.1.1)
+        version: 1.104.20(patch_hash=be5fe32fda86831db8353534be150ef135a37b1349b427e91c9471821ab93ce5)(@types/node@22.19.17)(@types/react@19.0.10)(supports-color@8.1.1)
     devDependencies:
       '@altered/tooling':
         specifier: workspace:*
@@ -283,10 +286,10 @@ importers:
         version: 2.0.0-beta.25(@opentelemetry/api@1.9.0)(@tanstack/query-core@5.101.4)
       '@raycast/api':
         specifier: catalog:raycast
-        version: 1.104.20(@types/node@22.19.17)(@types/react@19.0.10)(supports-color@8.1.1)
+        version: 1.104.20(patch_hash=be5fe32fda86831db8353534be150ef135a37b1349b427e91c9471821ab93ce5)(@types/node@22.19.17)(@types/react@19.0.10)(supports-color@8.1.1)
       '@raycast/utils':
         specifier: catalog:raycast
-        version: 2.2.6(@raycast/api@1.104.20(@types/node@22.19.17)(@types/react@19.0.10))(react@19.0.0)
+        version: 2.2.6(@raycast/api@1.104.20(patch_hash=be5fe32fda86831db8353534be150ef135a37b1349b427e91c9471821ab93ce5)(@types/node@22.19.17)(@types/react@19.0.10))(react@19.0.0)
       '@tanstack/react-query':
         specifier: 'catalog:'
         version: 5.101.4(react@19.0.0)
@@ -3319,7 +3322,7 @@ snapshots:
       - fastify
       - swagger-ui
 
-  '@raycast/api@1.104.20(@types/node@22.19.17)(@types/react@19.0.10)(supports-color@8.1.1)':
+  '@raycast/api@1.104.20(patch_hash=be5fe32fda86831db8353534be150ef135a37b1349b427e91c9471821ab93ce5)(@types/node@22.19.17)(@types/react@19.0.10)(supports-color@8.1.1)':
     dependencies:
       '@oclif/core': 4.13.3
       '@oclif/plugin-autocomplete': 3.2.55(supports-color@8.1.1)
@@ -3333,9 +3336,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@raycast/utils@2.2.6(@raycast/api@1.104.20(@types/node@22.19.17)(@types/react@19.0.10))(react@19.0.0)':
+  '@raycast/utils@2.2.6(@raycast/api@1.104.20(patch_hash=be5fe32fda86831db8353534be150ef135a37b1349b427e91c9471821ab93ce5)(@types/node@22.19.17)(@types/react@19.0.10))(react@19.0.0)':
     dependencies:
-      '@raycast/api': 1.104.20(@types/node@22.19.17)(@types/react@19.0.10)(supports-color@8.1.1)
+      '@raycast/api': 1.104.20(patch_hash=be5fe32fda86831db8353534be150ef135a37b1349b427e91c9471821ab93ce5)(@types/node@22.19.17)(@types/react@19.0.10)(supports-color@8.1.1)
       dequal: 2.0.3
     optionalDependencies:
       react: 19.0.0

@@ -71,9 +71,9 @@
             "type": "textfield",
             "name": "apiBaseUrl",
             "title": "Generated API Base URL",
-            "description": "Origin of apps/api-generated (no trailing slash).",
-            "required": true,
-            "default": "http://127.0.0.1:3000"
+            "description": "Origin of apps/api-generated (no trailing slash). Leave empty in Raycast development to use local API (see LOCAL_GENERATED_API_PORT in preferences.ts; must match API_CONFIG_PORT).",
+            "required": false,
+            "default": ""
         },
         {
             "type": "password",
@@ -87,7 +87,7 @@
     "ai": {},
     "external": [],
     "scripts": {
-        "dev": "WATCH_PATHS=../../packages/raycast-internal-generated/dist ray develop",
+        "dev": "WATCH_PATHS=../../packages/raycast-internal-generated/dist,../../packages/api-generated/dist ray develop",
 
         "check:types": "tsc --noEmit",
 

@@ -8,6 +8,7 @@
 
         "dev": "turbo dev --filter=!*pre-release --filter=!*experimental --filter=!*internal*",
         "dev:experimental": "turbo dev --filter=*experimental",
+        "dev:generated": "turbo dev --filter=*generated",
 
         "check:types": "turbo check:types",
         "check:style": "ultracite check",
@@ -17,7 +18,9 @@
         "fix": "turbo fix:style",
 
         "push:db": "turbo push:db",
+        "push:db:generated": "turbo push:db --filter=@altered/server-generated",
         "view:db": "turbo view:db",
+        "view:db:generated": "turbo view:db --filter=@altered/server-generated",
 
         "clean": "altered-clean-package -w",
 
