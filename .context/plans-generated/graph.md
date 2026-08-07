@@ -16,10 +16,12 @@ Format per node: `id · purpose · depends-on · status · remarks`.
 - `g-server-thoughts-test` · Create/list integration test (skips without DB URL) · `g-server-thoughts` · partial · Needs provisioned `SHARED_GENERATED_STORAGE_DATABASE_URL` + `push:db`
 - `g-raycast-app` · Raycast shell + password prefs · `g-raycast-pkg` · done · Plain commands (no MicroRenderer)
 - `g-raycast-pkg` · oRPC client + TanStack Query + commands · `g-rpc-router` · done · Invalidate via `api.thoughts.key()`
-- `g-raycast-ping` · Connectivity command · `g-raycast-pkg` · done · Manual UX pending
-- `g-raycast-capture` · Capture Thought → `thoughts.create` · `g-raycast-pkg`, `g-server-thoughts` · done · Manual round-trip pending
-- `g-raycast-view` · View Thoughts → `thoughts.list` · `g-raycast-pkg`, `g-server-thoughts` · done · Manual round-trip pending
-- `g-raycast-import` · Import Thoughts (files/folders → `createMany`) · `g-raycast-pkg`, `g-server-thoughts` · done · `.txt`/`.md`/`.markdown`/`.mdc` only; S11 raw heuristics
+- `g-raycast-ping` · Connectivity command · `g-raycast-pkg` · done · Operator verified
+- `g-raycast-capture` · Capture Thought → `thoughts.create` · `g-raycast-pkg`, `g-server-thoughts` · done · Operator verified; toast via suspend+pop
+- `g-raycast-view` · View Thoughts → `thoughts.list` · `g-raycast-pkg`, `g-server-thoughts` · done · Operator verified
+- `g-raycast-import` · Import Thoughts (files/folders → `createMany`) · `g-raycast-pkg`, `g-server-thoughts` · done · Same toast pattern as capture
+- `g-raycast-toast-dismiss` · Suspend pop-to-root → toast → manual `popToRoot` · `g-raycast-capture`, `g-raycast-import` · done · Raycast 2.0 Immediate pop discards toast
+- `g-raycast-optimistic` · Optimistic create/import updates · `g-raycast-capture`, `g-raycast-import` · queued · Optional later; latency noticeable but not blocking
 - `g-watch-paths` · Raycast hot-reload via `WATCH_PATHS` + `@raycast/api` patch · `g-raycast-app` · done · Patch at `patches/@raycast__api@1.104.20.patch`; app `dev` watches composition + api `dist/`
 - `g-dev-scripts` · Root `dev:generated` / `push:db:generated` · - · done · Manual-mode root scripts for generated filter
 - `g-raycast-dev-origin` · Dev Raycast defaults to `http://127.0.0.1:4200` via `environment.isDevelopment` · `g-raycast-pkg` · done · Pref override when set; port constant matches `API_CONFIG_PORT`
