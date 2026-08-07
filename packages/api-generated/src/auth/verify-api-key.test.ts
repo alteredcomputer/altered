@@ -5,11 +5,12 @@ import { verifyApiKey } from "./verify-api-key"
 
 describe("verifyApiKey", () => {
     before(() => {
-        process.env.GENERATED_INTERNAL_API_KEY = "test-key-value"
+        process.env.SHARED_GENERATED_PROVIDER_INTERNAL_API_SECRET =
+            "test-key-value"
     })
 
     after(() => {
-        delete process.env.GENERATED_INTERNAL_API_KEY
+        delete process.env.SHARED_GENERATED_PROVIDER_INTERNAL_API_SECRET
     })
 
     it("accepts a matching Bearer token", () => {

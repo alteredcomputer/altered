@@ -10,7 +10,9 @@ config({
 const url = process.env.SHARED_GENERATED_STORAGE_DATABASE_URL?.trim()
 
 if (!url)
-    throw new Error("'SHARED_GENERATED_STORAGE_DATABASE_URL' environment variable is missing.")
+    throw new Error(
+        "'SHARED_GENERATED_STORAGE_DATABASE_URL' environment variable is missing."
+    )
 
 export default defineConfig({
     schema: "./src/**/schema.ts",
