@@ -23,6 +23,7 @@ Format per node: `id · purpose · depends-on · status · remarks`.
 - `g-watch-paths` · Raycast hot-reload via `WATCH_PATHS` + `@raycast/api` patch · `g-raycast-app` · done · Patch at `patches/@raycast__api@1.104.20.patch`; app `dev` watches composition + api `dist/`
 - `g-dev-scripts` · Root `dev:generated` / `push:db:generated` · - · done · Manual-mode root scripts for generated filter
 - `g-raycast-dev-origin` · Dev Raycast defaults to `http://127.0.0.1:4200` via `environment.isDevelopment` · `g-raycast-pkg` · done · Pref override when set; port constant matches `API_CONFIG_PORT`
+- `g-raycast-pref-undefined` · Optional prefs may be `undefined` - coerce before `.trim()` · `g-raycast-dev-origin` · done · Caused ping/capture crash when base URL left empty
 - `g-api-deploy` · Generated API on Vercel production origin · `g-api-app` · done · Operator provisioned; Raycast non-dev uses pref = `API_GENERATED_ORIGIN_PRODUCTION`
 - `g-better-auth` · Full Better Auth for generated tier · `g-auth-api-key` · queued · When web-generated needs sessions
 
