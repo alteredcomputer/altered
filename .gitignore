@@ -8,6 +8,7 @@
 .logs/
 .next/
 .pnpm-debug.log*
+.pnpm-store/
 .turbo/
 .vercel/
 
