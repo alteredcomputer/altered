@@ -1,128 +1,59 @@
 # PLAN STATE (Generated)
 
-Last updated: 2026-05-24
+Last updated: 2026-07-30
+
+## Active session
+
+- Cursor chat: Raycast hardcoded Action Palette conversion
+
+**Direction change (2026-07-28):** Scrapped the in-progress dynamic thought/builtin renderer + compiler WIP in favor of near-hardcoded Raycast commands. Dynamic definitions remain on another branch for later.
+
+**Hardcoded polish (2026-07-28):** Shared `useCollection()` (List|Grid, 7 cols, Large inset). …
+
+**MicroRenderer (2026-07-30):** Ditched Raycast `push`/`pop`. Root hot-swaps via `path: InterfaceID[]` + `INTERFACE_REGISTRY`. Titles = `path` titles joined with ` / `. Nav via cmd-left / cmd-right (`GoToPreviousAction` / `GoToAction`). Launch deeplink seeds `[action-palette, actionId]`.
 
 ## Focus
 
-Current focus is the iMessage POC path with production webhook flow, owned Postgres memory, and controlled local-dev routing for rapid message testing.
+Secondary active slice: Raycast internal experimental Action Palette — hardcoded command views with shared Raycast Actions, shortcut deeplinks via `launchContext.actionId` (kebab command IDs).
+
+Primary focus remains the iMessage POC path (unchanged).
+
+### Raycast Action Palette (hardcoded)
+
+- Root: `commands/action-palette` — ALTERED Core list/grid of four actions.
+- Commands under `packages/raycast-internal-experimental/src/commands/`:
+  - `capture-thought` — minimal Form POC (content → log / toast / close / popToRoot).
+  - `set-up-shortcuts` — existing markdown + copy-directory/settings flow.
+  - `altered-onboarding` — stub Detail markdown.
+  - `view-thoughts` — nested Distill Message / Query Memory POC Details.
+- Launch: `actionId` still used; values are kebab command folder names. On mount, `useEffect` + `push` opens the matching view (poppable back to the palette list).
+- Shared: `src/actions/*` (close, go-to-previous, toggle layout/icons, install shortcut, copy deeplink, open-in-browser toast stub, copy markdown) + `src/preferences/*`.
+- Deleted: `renderer/`, action-palette `interfaces/`, raycast `data/` resolvers, uncommitted `core-experimental/src/data/**` builtins/access.
+- Dropped unused `@altered/core-experimental` + `nanoid` deps from the Raycast package.
+
+### Raycast monorepo HMR (still in place)
+
+- `@raycast/api@1.104.20` patched via `WATCH_PATHS`; plan: `.context/_generated/plans/raycast-monorepo-dev-watch.md`.
 
 ## Plan linkage
 
-- Primary vertical scaffold:
-  - `.context/_generated/plans/imessage-server-poc.md`
-
-- Preview promotion and stable domain strategy (api-experimental MVP):
-  - `.context/_generated/plans/vercel-preview-promotion-api-experimental.md`
-
-- Detailed adapter/history resolution:
-  - `.context/_generated/plans/chat-sdk-history-sendblue-adapter-resolution.md`
-
-- Architecture constraints:
-  - `.context/_generated/plans/monorepo-architecture.md`
-
-- Human pacing / multi-bubble roadmap (not MVP timing engine):
-  - `.context/_generated/plans/imessage-human-timing-emulation.md`
+- Primary vertical scaffold: `.context/_generated/plans/imessage-server-poc.md`
+- Preview promotion: `.context/_generated/plans/vercel-preview-promotion-api-experimental.md`
+- Chat SDK history: `.context/_generated/plans/chat-sdk-history-sendblue-adapter-resolution.md`
+- Architecture: `.context/_generated/plans/monorepo-architecture.md`
+- Human timing (deferred): `.context/_generated/plans/imessage-human-timing-emulation.md`
+- **Superseded for now:** `.context/_generated/plans/raycast-push-interface-gate.md` (dynamic renderer gate — not applicable to hardcoded path)
 
 ## Confirmed status
 
-- Adapter fork baseline and DM routing for direct messages: **completed**.
-
-- Drizzle CLI integration in `@altered/server-experimental`:
-  - `drizzle.config.ts` with repo-root `.env` load and required `SHARED_STORAGE_DATABASE_URL`.
-  - Scripts: `push:db`, `view:db` (+ root aliases `db:push`, `db:studio`).
-  - Package-level `turbo.json` env wiring for DB tasks.
-  - `pnpm check`: **passing**.
-
-- Owned history data-access layer:
-  - Conversation resolution by thread id via `external_resources`.
-  - Reset/new conversation flow by re-pointing active thread anchor.
-  - Message save/list helpers and message-to-model transform.
-
-- Memory-backed AI response loop:
-  - Persist inbound user message.
-  - Load conversation history from Postgres.
-  - Generate assistant reply from model messages.
-  - Persist assistant reply.
-  - Status: **working in manual verification**.
-
-- Command trigger behavior:
-  - `/reset`, `/new`, `/clear` behavior corrected in latest iteration.
-
-## Repository layout (this slice)
-
-- **Environment/config:** `packages/core-experimental/src/config/environment.ts` (includes **`shared.identity.adminPhoneNumber`** from **`SHARED_ADMIN_PHONE_NUMBER`**, defaults to **`""`** when unset to disable gated behavior).
-
-- **AI generation:** `packages/server-experimental/src/ai/generate/response-from-model-messages.ts`.
-
-- **Chat persistence helpers:**
-  - `packages/server-experimental/src/chat/conversations/get-or-create-active-for-thread.ts`
-  - `packages/server-experimental/src/chat/conversations/start-new-for-thread.ts`
-  - `packages/server-experimental/src/chat/messages/save.ts`
-  - `packages/server-experimental/src/chat/messages/list-for-conversation.ts`
-  - `packages/server-experimental/src/chat/messages/to-model-messages.ts`
-
-- **iMessage direct-message flow:**
-  - `packages/server-experimental/src/chat/providers/imessage/events/direct-message/handler.ts`
-  - `packages/server-experimental/src/chat/providers/imessage/events/direct-message/build-response.ts`
-  - `packages/server-experimental/src/chat/providers/imessage/events/direct-message/is-command-trigger.ts`
-
-- **Database schema wiring:**
-  - `packages/server-experimental/src/storage/database/schema.ts` now exports `{ conversations, chatMessages, externalResources }`.
-  - `packages/server-experimental/src/storage/database/relations.ts` aligned to `chatMessages`.
-  - `packages/server-experimental/src/storage/database/external-resources/*` includes `thread` type and provider-aware id resolution.
-
-## Completion map (high-level)
-
-- Owned Postgres history schema + relations + data access: **completed for POC scope**.
-
-- Memory-backed direct-message response path: **completed for POC scope**.
-
-- Message-id dedupe for replay/webhook duplicates: **queued (not started)**.
-
-- Production-to-dev rerouting from one webhook endpoint: **next planned work**.
-
-- Preview deployment promotion pipeline (api-experimental):
-  - Plan captured; Phase 0 passed.
-  - Initial implementation landed in `@altered/tooling`:
-    - `altered-preview-promote` CLI (manual commit/branch/current-branch promotion path).
-    - Vercel SDK-based deployment create + ready-state polling + domain alias assignment for `api-experimental`.
-    - Root command: `pnpm preview:promote:api-experimental --commit <commit-sha>` or `--branch <branch-name>`, with no args defaulting to the current non-`main` branch.
-    - CLI verifies commit/branch sync with origin before calling Vercel.
-    - CLI hardening: branch-name validation, local branch existence checks, detached-HEAD guard, and authenticated GitHub commit existence checks via `SHARED_PROVIDER_GITHUB_SECRET`.
-  - Workflow automation consolidated into one pipeline:
-    - `.github/workflows/ci.yml`
-  - `Manage Deployments / Deploy & Promote Preview` now waits on `Code Quality / Check Types` and `Code Quality / Lint & Format`.
-  - Shared GitHub Actions setup logic extracted into:
-    - `.github/actions/setup-ci/action.yml`
-  - Deploy/promote preview routes through `pnpm preview:promote` (`--all-apps`) with workflow-dispatch support (`branch`, `commit`) and push branch promotion via explicit `github.ref_name`.
-  - Workflow still needs first live run verification.
-
-- Admin `/dev` forwarding preference:
-  - Redis-backed persisted toggle added for admin phone numbers.
-  - Failure mode hardened: if KV read/write fails, routing falls back to production handling (no webhook crash path).
-
-- Preview deployment management direction (2026-05-24):
-  - Build minimal MVP for `api-experimental` first, while shaping code for multi-app extension.
-  - Use a stable preview domain target per app with auto-promote on non-main pushes and manual commit re-promote support.
-  - Keep Vercel branch auto previews disabled; deploy manually through GitHub Actions + TypeScript scripts.
-  - Keep webhook ingress behavior as `200 OK` to provider while handling forwarding failures internally.
-
-- Effect conversion/retries/hardening pass: **deferred until post-POC stabilization**.
-
-## Current risks and caveats
-
-- Dedupe is not implemented yet; duplicate provider deliveries can still create repeated message rows/replies.
-
-- Local/prod split testing currently requires standard deployment/tunnel switching; no in-band dev forwarding command yet.
-
-- Keep Chat SDK thread iterators out of LLM truth path; Postgres remains canonical for context.
+- iMessage adapter / Drizzle / owned history / memory-backed reply loop: **unchanged from prior STATE**.
+- Raycast package emit + app config: **unchanged**.
+- Action Palette: **hardcoded MVP replacing dynamic renderer WIP**.
+- Shortcut script install: writes `0o755`; copies icon into `supportPath/assets/` and embeds relative `@raycast.icon` (`../../assets/...` from `shortcuts/script-commands/`).
 
 ## Next execution order
 
-1. Implement production webhook forwarding to local tunnel for **admin-only** **`/dev`** messages; strip routing prefix before persistence; on forward success return **`200` `OK`** from prod **without running** Chat SDK ingestion (same shape as `SendblueAdapter.handleWebhook` success responses). **Failure policy:** tunnel unreachable ⇒ return **`200` `OK`**, **no prod ingestion**, **no forward** (fixed response body; no thread side effects).
-
-2. Add provider message-id dedupe guards in persistence path.
-
-3. POC solidification: multi-bubble send pipeline (defer full timing emulation; see `.context/_generated/plans/imessage-human-timing-emulation.md`).
-
-4. Final refactor/polish, then evaluate Effect migration effort for retries and error handling.
+1. Manual Raycast verify: reinstall shortcuts → Reload Script Commands → confirm icons + executability; then list → push commands, cmd+← pop, shortcut deeplink `actionId`, capture form, set-up-shortcuts, view-thoughts nesting, layout/icon toggles.
+2. iMessage: production webhook forwarding to local tunnel for admin-only `/dev` (prior next step).
+3. Provider message-id dedupe.
+4. POC solidification / multi-bubble send.
