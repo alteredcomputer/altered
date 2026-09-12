@@ -14,13 +14,15 @@ Versioning certification (the Commit Covenant). Building the commit gate and mer
 
 ## Confirmed status
 
-- Nothing built yet. No git hooks exist in the repo (`.git/hooks` is all `.sample`).
-- `@clack/prompts@1.2.0` already resolves in `node_modules` transitively via ultracite.
+- No git hooks exist in the repo yet (`.git/hooks` is all `.sample`).
+- `@clack/prompts@1.2.0` is now a direct dependency of `@altered/tooling` plus a `catalog` entry.
+- The commit gate runs end to end via `pnpm exec tsx packages/tooling/bin/certify-commit.ts`, bin `altered-certify-commit`. Frame, four blocking selects, reasoning, oath, signature. Verified rendering; the outcome is not yet recorded anywhere.
+- Tier and code-scope detection was cut entirely. Grade and tier language lives only in the prompt copy. Deferred as an opt-in plugin.
 - TTY refusal verified: an agent shell has no usable `/dev/tty`, so `exec < /dev/tty` in a hook blocks both agent commits and piped answers.
 
 ## Next
 
-1. Branch `feat/versioning-certification`: config, hooks, commit gate, trailers, merge gate.
+1. Branch `feat/versioning-certification`: hooks, trailers, bypass lane, merge gate.
 2. Branch `refactor/certification-genesis`: `git rm -r --cached .`, tag `covenant/genesis`, then re-add the tree in certified chunks.
 
 ## Superseded
