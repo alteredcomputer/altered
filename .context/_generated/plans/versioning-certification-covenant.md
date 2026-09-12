@@ -33,7 +33,7 @@ That split also absorbs the rebase, conflict, and replay cases without extra mac
 
 ## Layout
 
-- `packages/tooling/src/versioning/certification/` - shared: `config.ts`, `copy.ts`, `prompts.ts`, `trailers.ts`, `signature.ts`, `staged.ts`
+- `packages/tooling/src/versioning/certification/` - shared: `config.ts`, `copy.ts`, `facts.ts`, `git.ts`, `trailers.ts`
 - `packages/tooling/src/versioning/commits/` - the commit gate
 - `packages/tooling/src/versioning/merges/` - the merge gate
 - `packages/tooling/bin/certify-commit.ts` -> bin `altered-certify-commit`
@@ -46,9 +46,12 @@ That split also absorbs the rebase, conflict, and replay cases without extra mac
 
 Single typed module at `src/versioning/certification/config.ts`:
 
-- `signatories: ["RILEY BARABASH"]` - the typed signature must match one exactly, case sensitive.
-- `bypassBranchPrefixes: ["stash/", "archive/"]` - exception lanes.
-- `tierPaths` - path glob to tier name, feeding the quality prompt.
+- `certificationAllowedSigners: ["RILEY BARABASH"]` - the typed signature must match one exactly, case sensitive.
+- `certificationBypassBranchPrefixes: ["stash/", "archive/"]` - exception lanes.
+- `minimumCommitReasoningLength` - the floor on the reasoning text.
+- `pendingCertificationFileName` - carries answers from `pre-commit` to `commit-msg`, which are separate processes.
+
+No tier or code-scope awareness. The gate does not detect, map, or validate anything about what the code is. Tier and grade language exists only in the prompt copy, where it belongs: if comprehension is honest, the operator already knows which tiers the commit touches, and any machine-derived answer would just be a second source of truth waiting to go stale.
 
 ## Hooks
 
@@ -64,7 +67,7 @@ Every hook starts with `exec < /dev/tty`. This is not agent detection. It is ref
 
 Frame, then seven prompts. Every `select` defaults to the blocking option, so a blind Enter blocks. Question order is fixed and intentional: interrogate the code, then the person, then take the oath. Answer order within a question may shuffle to prevent muscle memory.
 
-**0. Frame.** Branch, tiers touched, and the staged file paths. No line counts, they measure nothing worth remembering.
+**0. Frame.** Branch and the staged file paths. No line counts, they measure nothing worth remembering.
 
 **1. `COMPREHENSION >>> Do you understand every line staged here?`**
 
@@ -74,10 +77,10 @@ Frame, then seven prompts. Every `select` defaults to the blocking option, so a 
 
 The partial answer prints a note before exiting: the pressure that produced it is a workflow defect, not a commit problem, and the fix belongs upstream.
 
-**2. `QUALITY >>> This commit touches <tiers>. Does the code hold that bar?`**
+**2. `QUALITY CONTROL >>> Does the code meet the standards set for its designated quality grade or release tier?`**
 
-- No. It needs work first. *(default, blocks)*
-- Yes.
+- No. The code needs to be changed. *(default, blocks: "Then change it. The tier is a promise, not a label.")*
+- Yes. The code passes all requirements for its designated tier.
 
 **3. `INTENT >>> What is this code doing to the codebase?`**
 
@@ -206,6 +209,7 @@ Allowed, and certified like any other. A `package.json` tweak does not need a br
 
 ## Deferred
 
+- Tier and code-scope detection, as an opt-in plugin rather than core: derive the tiers a commit touches from the workspace names in the staged paths and surface them in the frame. Only worth it if the generalized copy proves too easy to answer on autopilot.
 - CI verification job and a GitHub ruleset. With local merges and direct commits to main, GitHub is a mirror. Revisit if a second machine or contributor appears.
 - Conventional commit enforcement. Branch names and commit messages stay uncontrolled; only bypass prefixes are interpreted.
 - Re-certifying an already-committed bad commit in place, by plucking its changes back into the working tree and replaying everything ahead of it.
