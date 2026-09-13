@@ -3,6 +3,7 @@ import { certificationConfig } from "../certification/config"
 import {
     CERTIFICATION_CANCELLED_PROMPT_MESSAGE,
     CERTIFICATION_INTRO_MESSAGE,
+    CERTIFICATION_NON_INTERACTIVE_REFUSAL_MESSAGE,
     CERTIFICATION_OUTRO_MESSAGE,
     CERTIFICATION_REASONING_STEP_PROMPT,
     CERTIFICATION_SELECT_STEPS,
@@ -14,8 +15,9 @@ import {
     createCertificationStagedPathsNoteTitle
 } from "../certification/copy"
 import { isCancel } from "../certification/utils/clack/is-cancel"
-import { refuseAndExit } from "../certification/utils/clack/refuse-and-exit"
+import { refuseAndFinish } from "../certification/utils/clack/refuse-and-finish"
 import type { GitInformation } from "../certification/utils/get-git-info"
+import { isInteractiveTerminal } from "../certification/utils/is-interactive-terminal"
 
 type CommitCertificationOptions = {
     git: GitInformation
@@ -31,6 +33,11 @@ async function runCommitCertification({
     git
 }: CommitCertificationOptions): Promise<CommitCertificationResult | null> {
     const { minimumReasonLength, allowedSigners } = certificationConfig
+
+    if (!isInteractiveTerminal())
+        return refuseAndFinish({
+            message: CERTIFICATION_NON_INTERACTIVE_REFUSAL_MESSAGE
+        })
 
     intro(CERTIFICATION_INTRO_MESSAGE)
 
@@ -58,14 +65,14 @@ async function runCommitCertification({
         })
 
         if (isCancel(selectStepResult))
-            return refuseAndExit({
+            return refuseAndFinish({
                 message: CERTIFICATION_CANCELLED_PROMPT_MESSAGE
             })
 
         const selectedOption = selectStep.options[selectStepResult]
 
         if (selectedOption?.shouldBlock)
-            return refuseAndExit({ message: selectedOption.refusalMessage })
+            return refuseAndFinish({ message: selectedOption.refusalMessage })
     }
 
     const reasoningStepResult = await text({
@@ -87,7 +94,7 @@ async function runCommitCertification({
     })
 
     if (isCancel(reasoningStepResult))
-        return refuseAndExit({
+        return refuseAndFinish({
             message: CERTIFICATION_CANCELLED_PROMPT_MESSAGE
         })
 
@@ -97,12 +104,12 @@ async function runCommitCertification({
     })
 
     if (isCancel(sourceOfTruthStepResult))
-        return refuseAndExit({
+        return refuseAndFinish({
             message: CERTIFICATION_CANCELLED_PROMPT_MESSAGE
         })
 
     if (!sourceOfTruthStepResult)
-        return refuseAndExit({
+        return refuseAndFinish({
             message: CERTIFICATION_SOURCE_OF_TRUTH_STEP_REFUSAL_MESSAGE
         })
 
@@ -123,7 +130,7 @@ async function runCommitCertification({
     })
 
     if (isCancel(signatureStepResult))
-        return refuseAndExit({
+        return refuseAndFinish({
             message: CERTIFICATION_CANCELLED_PROMPT_MESSAGE
         })
 
