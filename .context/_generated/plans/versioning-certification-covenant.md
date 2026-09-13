@@ -33,8 +33,8 @@ That split also absorbs the rebase, conflict, and replay cases without extra mac
 
 ## Layout
 
-- `packages/tooling/src/versioning/certification/` - shared: `config.ts`, `copy.ts`, `facts.ts`, `git.ts`, `trailers.ts`
-- `packages/tooling/src/versioning/commits/` - the commit gate
+- `packages/tooling/src/versioning/certification/` - shared: `config.ts`, `copy.ts`, `trailers.ts`, `state.ts`, and one function per file under `utils/`
+- `packages/tooling/src/versioning/commits/certify.ts` - the commit gate
 - `packages/tooling/src/versioning/merges/` - the merge gate
 - `packages/tooling/bin/certify-commit.ts` -> bin `altered-certify-commit`
 - `packages/tooling/bin/certify-merge.ts` -> bin `altered-certify-merge`, aliased as root script `pnpm merge`
@@ -44,23 +44,30 @@ That split also absorbs the rebase, conflict, and replay cases without extra mac
 
 ## Config
 
-Single typed module at `src/versioning/certification/config.ts`:
+Single typed `certificationConfig` object at `src/versioning/certification/config.ts`:
 
-- `certificationAllowedSigners: ["RILEY BARABASH"]` - the typed signature must match one exactly, case sensitive.
-- `certificationBypassBranchPrefixes: ["stash/", "archive/"]` - exception lanes.
-- `minimumCommitReasoningLength` - the floor on the reasoning text.
-- `pendingCertificationFileName` - carries answers from `pre-commit` to `commit-msg`, which are separate processes.
+- `allowedSigners: ["RILEY BARABASH"]` - the typed signature must match one exactly, case sensitive.
+- `bypassBranchNamePrefixes: ["stash/", "archive/"]` - exception lanes.
+- `minimumReasonLength` - the floor on the reasoning text.
+- `temporaryStateFileName` - carries answers from `pre-commit` to `commit-msg`, which are separate processes.
 
 No tier or code-scope awareness. The gate does not detect, map, or validate anything about what the code is. Tier and grade language exists only in the prompt copy, where it belongs: if comprehension is honest, the operator already knows which tiers the commit touches, and any machine-derived answer would just be a second source of truth waiting to go stale.
 
 ## Hooks
 
-Tracked `.hooks/` plus a root `prepare` script running `git config core.hooksPath .hooks`. Chosen over husky, which installs a `_/` runtime layer, rewrites hooks on install, and carries its own lifecycle, in exchange for auto-install on clone that the `prepare` script already provides.
+Tracked `.hooks/` plus a root `prepare` script running `git config core.hooksPath .hooks`, guarded with `|| exit 0` so an install without git does not fail.
 
-Every hook starts with `exec < /dev/tty`. This is not agent detection. It is refusal of fabricated input: without it, `printf 'c\nb\n...' | git commit` answers every prompt. Verified empirically that an agent shell has no usable `/dev/tty` (`tty` reports "not a tty", opening the device fails with "device not configured"). The accepted side effect is that GUI commits, including Cursor's Source Control panel, cannot commit. Terminal only.
+Husky and lefthook were both considered and declined. The argument for them - that hook files in `.git/hooks` are not tracked - is real but describes the naive approach, not this one. Husky's entire mechanism *is* `core.hooksPath`: it points git at `.husky/_`, generates shims there, and sources the tracked scripts. It buys a dependency, a generated runtime directory, and an install-time rewrite, in exchange for a `prepare` script one line shorter than the one already written. Lefthook earns its place on polyglot repos that need parallel staged-file linting, which is not this problem. Revisit if formatting or type checks move into `pre-commit`, where a staged-file runner like nano-staged would carry real weight.
 
-- `pre-commit` - the gate. Writes answers to `.git/covenant-pending.json`.
-- `commit-msg` - appends trailers via `git interpret-trailers --in-place`, then deletes the pending file.
+Terminal attachment is split across two layers, which is what makes the failure legible:
+
+- The hook probes `/dev/tty` in a subshell, then attaches it with `exec < /dev/tty`. The probe matters because a bare `exec` redirect that fails kills the shell with a cryptic error, whereas falling through hands the decision to the CLI.
+- The CLI refuses when either end of stdio is not a terminal, and exits 1 with a stated reason rather than hanging on a prompt nobody can see.
+
+Neither layer is agent detection. Both are refusal of fabricated input: without them, `printf 'c\nb\n...' | git commit` answers every prompt. Verified empirically that an agent shell has no usable `/dev/tty` (`tty` reports "not a tty", opening the device fails with "device not configured"). The accepted side effect is that GUI commits, including Cursor's Source Control panel, cannot commit. Terminal only.
+
+- `pre-commit` - the gate. Writes answers into the git directory.
+- `commit-msg` - appends trailers via `git interpret-trailers --in-place`, then deletes the state file.
 - `post-commit` - tripwire. `--no-verify` skips pre-commit and commit-msg but not post-commit, so this is where a bypassed commit gets caught. It cannot block and must never rewrite history. It prints a loud unsigned warning naming the commit.
 
 ## Commit gate sequence
@@ -102,11 +109,11 @@ Block copy: "Nothing here expires tonight. Come back grounded."
 
 **6. `SOURCE OF TRUTH >>> Everything stands on this. Your users, your company, your life, and every tier beneath it. Accept it?`** Confirm, defaults to no.
 
-**7. `SIGNATURE >>> Type your signature to certify every answer above.`** Case-sensitive match against `signatories`. Rejection copy: "Signature rejected."
+**7. `SIGNATURE >>> Type your signature to certify every answer above.`** Case-sensitive match against `allowedSigners`. Rejection copy: "Signature rejected."
 
 ## Bypass lane
 
-On a branch matching `bypassBranchPrefixes`, the frame prints first, then one prompt:
+On a branch matching `bypassBranchNamePrefixes`, the frame prints first, then one prompt:
 
 **`BYPASS >>> Commit without certifying?`**
 
@@ -115,6 +122,12 @@ On a branch matching `bypassBranchPrefixes`, the frame prints first, then one pr
 - Certify instead. *(runs the full sequence)*
 
 Bypassed commits get no trailers. Absence of `Covenant-Signature` is the definition of uncertified, so nothing extra needs recording.
+
+## Handoff state
+
+`pre-commit` and `commit-msg` are separate processes, and only the second one can touch the message, so the answers have to land on disk between them. The file goes in the git directory, resolved with `git rev-parse --absolute-git-dir` rather than a hardcoded `.git`, so worktrees and submodules resolve correctly.
+
+The git directory is the right home, and it is what git itself does: `COMMIT_EDITMSG`, `MERGE_MSG`, and the `rebase-merge/` state all live there for the same reason. It is per-worktree, structurally impossible to commit, and obviously disposable. The repo root with a gitignore entry would put transient state in the tracked tree where it can be staged by a careless `git add -A` and would surface in `git status` on any clone that predates the ignore rule. The OS temp directory loses the per-repo scoping and would need a key derived from the repo path to get it back.
 
 ## Trailers
 
