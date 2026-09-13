@@ -10,7 +10,8 @@
 
         "altered-preview-promote": "./bin/preview-promote.ts",
 
-        "altered-certify-commit": "./bin/certify-commit.ts"
+        "altered-certify-commit": "./bin/certify-commit.ts",
+        "altered-record-certification": "./bin/record-certification.ts"
     },
     "exports": {
         "./*": {

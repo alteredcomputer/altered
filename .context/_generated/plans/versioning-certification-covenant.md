@@ -57,6 +57,10 @@ No tier or code-scope awareness. The gate does not detect, map, or validate anyt
 
 Tracked `.hooks/` plus a root `prepare` script running `git config core.hooksPath .hooks`, guarded with `|| exit 0` so an install without git does not fail.
 
+Hook files carry no extension, and cannot. Git looks for a file named exactly after the hook inside `hooksPath` and does no extension resolution, so `pre-commit.sh` would simply never run. A `.sh` suffix is only appropriate on a helper that a hook sources.
+
+Hooks invoke the scripts by path through `pnpm exec tsx` rather than by bin name. The bin entries still exist and still link on a fresh install, but pnpm skips relinking workspace bins on an incremental install, so a newly added bin can be missing locally while the manifest looks correct. That failure mode is unacceptable for the one code path that stands between the operator and every commit.
+
 Husky and lefthook were both considered and declined. The argument for them - that hook files in `.git/hooks` are not tracked - is real but describes the naive approach, not this one. Husky's entire mechanism *is* `core.hooksPath`: it points git at `.husky/_`, generates shims there, and sources the tracked scripts. It buys a dependency, a generated runtime directory, and an install-time rewrite, in exchange for a `prepare` script one line shorter than the one already written. Lefthook earns its place on polyglot repos that need parallel staged-file linting, which is not this problem. Revisit if formatting or type checks move into `pre-commit`, where a staged-file runner like nano-staged would carry real weight.
 
 Terminal attachment is split across two layers, which is what makes the failure legible:
@@ -67,7 +71,7 @@ Terminal attachment is split across two layers, which is what makes the failure 
 Neither layer is agent detection. Both are refusal of fabricated input: without them, `printf 'c\nb\n...' | git commit` answers every prompt. Verified empirically that an agent shell has no usable `/dev/tty` (`tty` reports "not a tty", opening the device fails with "device not configured"). The accepted side effect is that GUI commits, including Cursor's Source Control panel, cannot commit. Terminal only.
 
 - `pre-commit` - the gate. Writes answers into the git directory.
-- `commit-msg` - appends trailers via `git interpret-trailers --in-place`, then deletes the state file.
+- `commit-msg` - appends trailers via `git interpret-trailers --in-place`, then deletes the state file. Exits early when `MERGE_HEAD` exists, since git runs this hook for merges too and certification there is the merge gate's job.
 - `post-commit` - tripwire. `--no-verify` skips pre-commit and commit-msg but not post-commit, so this is where a bypassed commit gets caught. It cannot block and must never rewrite history. It prints a loud unsigned warning naming the commit.
 
 ## Commit gate sequence
@@ -126,6 +130,8 @@ Bypassed commits get no trailers. Absence of `Covenant-Signature` is the definit
 ## Handoff state
 
 `pre-commit` and `commit-msg` are separate processes, and only the second one can touch the message, so the answers have to land on disk between them. The file goes in the git directory, resolved with `git rev-parse --absolute-git-dir` rather than a hardcoded `.git`, so worktrees and submodules resolve correctly.
+
+The one way a handoff file can lie is by outliving the commit it was answered for: certify, abandon the message at the editor, and the next command that runs `commit-msg` would inherit it. `--no-verify` cannot reach it, since that skips `commit-msg` as well, and an ordinary retry overwrites it in `pre-commit`. The only remaining path was a merge, which the `MERGE_HEAD` check now closes. No tree-hash binding is needed.
 
 The git directory is the right home, and it is what git itself does: `COMMIT_EDITMSG`, `MERGE_MSG`, and the `rebase-merge/` state all live there for the same reason. It is per-worktree, structurally impossible to commit, and obviously disposable. The repo root with a gitignore entry would put transient state in the tracked tree where it can be staged by a careless `git add -A` and would surface in `git status` on any clone that predates the ignore rule. The OS temp directory loses the per-repo scoping and would need a key derived from the repo path to get it back.
 

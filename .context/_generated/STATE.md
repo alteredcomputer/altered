@@ -16,15 +16,16 @@ Versioning certification (the Commit Covenant). Building the commit gate and mer
 
 - No git hooks exist in the repo yet (`.git/hooks` is all `.sample`).
 - `@clack/prompts@1.2.0` is now a direct dependency of `@altered/tooling` plus a `catalog` entry.
-- The commit gate runs end to end, operator-reviewed and committed as `9003c70`. Frame, four blocking selects, reasoning, oath, signature. The outcome is still discarded - nothing is recorded on the commit yet.
-- `.hooks/pre-commit` is live. `core.hooksPath` is set to `.hooks` by the root `prepare` script, so every terminal commit now goes through the gate. Escape hatch is `git commit --no-verify`.
+- The commit gate is live and has certified its own commits. `fc37c43` is the first commit that passed through it.
+- `core.hooksPath` is set to `.hooks` by the root `prepare` script, so every terminal commit goes through the gate. Escape hatch is `git commit --no-verify`.
+- `commit-msg` records the certification as `Covenant-Signature` and `Covenant-Reasoning` trailers, then deletes the handoff state. Verified the `interpret-trailers` invocation and the uncertified path, which leaves the message untouched and exits 0.
 - Non-terminal runs refuse and exit 1 with a stated reason instead of hanging on an invisible prompt. Verified from an agent shell.
 - Husky and lefthook declined. Husky's mechanism is the same `core.hooksPath` this already uses. Reasoning is in the plan's Hooks section.
 - Tier and code-scope detection was cut entirely. Grade and tier language lives only in the prompt copy. Deferred as an opt-in plugin.
 
 ## Next
 
-1. Branch `feat/versioning-certification`: handoff state and trailers, then the bypass lane and the `post-commit` tripwire, then the merge gate.
+1. Branch `feat/versioning-certification`: the bypass lane and the `post-commit` tripwire, then the merge gate.
 2. Branch `refactor/certification-genesis`: `git rm -r --cached .`, tag `covenant/genesis`, then re-add the tree in certified chunks.
 
 ## Superseded
