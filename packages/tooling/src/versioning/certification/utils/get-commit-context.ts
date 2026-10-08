@@ -1,12 +1,12 @@
 import { readGit } from "./read-git"
 
-type GitInformation = {
+type CommitContext = {
     branch: string
 
     stagedPaths: string[]
 }
 
-function getGitInfo(): GitInformation {
+function getCommitContext(): CommitContext {
     return {
         branch: readGit(["rev-parse", "--abbrev-ref", "HEAD"]),
 
@@ -16,4 +16,4 @@ function getGitInfo(): GitInformation {
     }
 }
 
-export { type GitInformation, getGitInfo }
+export { type CommitContext, getCommitContext }

@@ -16,11 +16,18 @@ import {
 } from "../certification/copy"
 import { isCancel } from "../certification/utils/clack/is-cancel"
 import { refuseAndFinish } from "../certification/utils/clack/refuse-and-finish"
-import type { GitInformation } from "../certification/utils/get-git-info"
+import type { CommitContext } from "../certification/utils/get-commit-context"
 import { isInteractiveTerminal } from "../certification/utils/is-interactive-terminal"
 
 type CommitCertificationOptions = {
-    git: GitInformation
+    context: CommitContext & {
+        isAmending: boolean
+
+        /**
+         * @remarks Only relevant when a commit is being amended.
+         */
+        previousCertificationReasoning: string | null
+    }
 }
 
 type CommitCertificationResult = {
@@ -30,7 +37,7 @@ type CommitCertificationResult = {
 }
 
 async function runCommitCertification({
-    git
+    context
 }: CommitCertificationOptions): Promise<CommitCertificationResult | null> {
     const { minimumReasonLength, allowedSigners } = certificationConfig
 
@@ -44,11 +51,14 @@ async function runCommitCertification({
     /**
      * @todo P3: Fix wrapping of overflowing staged paths using the `format` parameter of the `note` prompt.
      */
-    const stagedPathsNoteContent = git.stagedPaths.join("\n")
+    const stagedPathsNoteContent = context.stagedPaths.join("\n")
 
     note(
         stagedPathsNoteContent,
-        createCertificationStagedPathsNoteTitle(git.branch)
+        createCertificationStagedPathsNoteTitle({
+            branchName: context.branch,
+            isAmending: context.isAmending
+        })
     )
 
     for (const selectStep of CERTIFICATION_SELECT_STEPS) {
@@ -78,16 +88,25 @@ async function runCommitCertification({
     const reasoningStepResult = await text({
         message: CERTIFICATION_REASONING_STEP_PROMPT,
 
+        placeholder: context.previousCertificationReasoning ?? undefined,
+        defaultValue: context.previousCertificationReasoning ?? undefined,
+
         validate: value => {
             const lengthErrorMessage =
                 createCertificationReasoningStepValidationErrorMessage(
                     minimumReasonLength
                 )
 
-            if (!value) return lengthErrorMessage
+            /**
+             * @remarks Since Clack applies the default *after* validation, we must apply it manually before validating. This could probably be a GitHub issue.
+             */
+            const resolvedValue =
+                value?.trim() || context.previousCertificationReasoning
 
-            const length = value.trim().length
-            if (length < minimumReasonLength) return lengthErrorMessage
+            if (!resolvedValue) return lengthErrorMessage
+
+            if (resolvedValue.length < minimumReasonLength)
+                return lengthErrorMessage
 
             return
         }

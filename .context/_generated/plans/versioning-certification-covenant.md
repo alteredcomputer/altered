@@ -33,12 +33,13 @@ That split also absorbs the rebase, conflict, and replay cases without extra mac
 
 ## Layout
 
-- `packages/tooling/src/versioning/certification/` - shared: `config.ts`, `copy.ts`, `trailers.ts`, `state.ts`, and one function per file under `utils/`
+- `packages/tooling/src/versioning/certification/` - shared: `config.ts`, `copy.ts`, `trailers/`, and one function per file under `utils/`
 - `packages/tooling/src/versioning/commits/certify.ts` - the commit gate
 - `packages/tooling/src/versioning/merges/` - the merge gate
-- `packages/tooling/bin/certify-commit.ts` -> bin `altered-certify-commit`
-- `packages/tooling/bin/certify-merge.ts` -> bin `altered-certify-merge`, aliased as root script `pnpm merge`
-- `.hooks/pre-commit`, `.hooks/commit-msg`, `.hooks/post-commit`
+- `packages/tooling/bin/versioning/certify-commit.ts` - the hook entrypoint
+- `.hooks/prepare-commit-msg`
+
+Hook entrypoints carry no `bin` entry in the manifest. They are invoked by path and are not meant to be run by hand, so registering a name would advertise a command nobody should type. It also sidesteps a real failure: pnpm skips relinking workspace bins on an incremental install, so a newly added bin can be missing locally while the manifest looks correct. `bin/` still mirrors `src/` so an entrypoint and its module sit at matching paths.
 
 `@clack/prompts@1.2.0` becomes a direct dependency of `@altered/tooling` plus a `catalog` entry in `pnpm-workspace.yaml`. It is already resolved in `node_modules` transitively through ultracite. Swap to hand-built `@clack/core` renderers later if the defaults grate.
 
@@ -49,7 +50,6 @@ Single typed `certificationConfig` object at `src/versioning/certification/confi
 - `allowedSigners: ["RILEY BARABASH"]` - the typed signature must match one exactly, case sensitive.
 - `bypassBranchNamePrefixes: ["stash/", "archive/"]` - exception lanes.
 - `minimumReasonLength` - the floor on the reasoning text.
-- `temporaryStateFileName` - carries answers from `pre-commit` to `commit-msg`, which are separate processes.
 
 No tier or code-scope awareness. The gate does not detect, map, or validate anything about what the code is. Tier and grade language exists only in the prompt copy, where it belongs: if comprehension is honest, the operator already knows which tiers the commit touches, and any machine-derived answer would just be a second source of truth waiting to go stale.
 
@@ -59,9 +59,17 @@ Tracked `.hooks/` plus a root `prepare` script running `git config core.hooksPat
 
 Hook files carry no extension, and cannot. Git looks for a file named exactly after the hook inside `hooksPath` and does no extension resolution, so `pre-commit.sh` would simply never run. A `.sh` suffix is only appropriate on a helper that a hook sources.
 
-Hooks invoke the scripts by path through `pnpm exec tsx` rather than by bin name. The bin entries still exist and still link on a fresh install, but pnpm skips relinking workspace bins on an incremental install, so a newly added bin can be missing locally while the manifest looks correct. That failure mode is unacceptable for the one code path that stands between the operator and every commit.
+Hooks invoke the scripts by path through `pnpm exec tsx` rather than by bin name, for the reasons in Layout above.
 
 Husky and lefthook were both considered and declined. The argument for them - that hook files in `.git/hooks` are not tracked - is real but describes the naive approach, not this one. Husky's entire mechanism *is* `core.hooksPath`: it points git at `.husky/_`, generates shims there, and sources the tracked scripts. It buys a dependency, a generated runtime directory, and an install-time rewrite, in exchange for a `prepare` script one line shorter than the one already written. Lefthook earns its place on polyglot repos that need parallel staged-file linting, which is not this problem. Revisit if formatting or type checks move into `pre-commit`, where a staged-file runner like nano-staged would carry real weight.
+
+The gate is a single `prepare-commit-msg` hook, not the `pre-commit` plus `commit-msg` pair originally planned. Three properties decided it, all verified empirically against git 2.51:
+
+- **`--no-verify` does not skip it.** That flag bypasses `pre-commit` and `commit-msg` only. A non-zero exit from `prepare-commit-msg` aborts the commit even under `--no-verify`, which turns the plan's largest known hole into a closed door. Disabling the gate now takes `git -c core.hooksPath=/dev/null commit`, which nobody types by accident.
+- **The message is already in hand.** The hook receives the message file, its source, and the prior sha. On an amend the file still holds the previous message and its trailers, which is what makes reasoning prefill possible at all.
+- **No handoff.** Answers and trailers are written by the same process, so the state file, its path resolver, its read and write and clear, and the whole class of stale-state bugs are deleted rather than defended against.
+
+The hook exits early when the source is `merge`, since certifying an integration is the merge gate's job. `squash` is deliberately not skipped: that is a real commit being authored.
 
 Terminal attachment is split across two layers, which is what makes the failure legible:
 
@@ -70,9 +78,8 @@ Terminal attachment is split across two layers, which is what makes the failure 
 
 Neither layer is agent detection. Both are refusal of fabricated input: without them, `printf 'c\nb\n...' | git commit` answers every prompt. Verified empirically that an agent shell has no usable `/dev/tty` (`tty` reports "not a tty", opening the device fails with "device not configured"). The accepted side effect is that GUI commits, including Cursor's Source Control panel, cannot commit. Terminal only.
 
-- `pre-commit` - the gate. Writes answers into the git directory.
-- `commit-msg` - appends trailers via `git interpret-trailers --in-place`, then deletes the state file. Exits early when `MERGE_HEAD` exists, since git runs this hook for merges too and certification there is the merge gate's job.
-- `post-commit` - tripwire. `--no-verify` skips pre-commit and commit-msg but not post-commit, so this is where a bypassed commit gets caught. It cannot block and must never rewrite history. It prints a loud unsigned warning naming the commit.
+- `prepare-commit-msg` - the gate, the prefill, and the trailer write, in one process.
+- `post-commit` - tripwire, still unbuilt and now close to redundant, since the bypass it was meant to catch no longer works.
 
 ## Commit gate sequence
 
@@ -111,6 +118,8 @@ Block copy: "Nothing here expires tonight. Come back grounded."
 
 **5. `REASONING >>> Why does this commit exist?`** Free text, minimum length only.
 
+When the message already carries a `Certification-Reasoning` trailer, which is what an amend looks like, it is offered back as a dimmed default: Enter keeps it, typing anything replaces it. Clack substitutes a default *after* validation rather than before, so the minimum-length check has to apply the same fallback or an empty submit is rejected.
+
 **6. `SOURCE OF TRUTH >>> Everything stands on this. Your users, your company, your life, and every tier beneath it. Accept it?`** Confirm, defaults to no.
 
 **7. `SIGNATURE >>> Type your signature to certify every answer above.`** Case-sensitive match against `allowedSigners`. Rejection copy: "Signature rejected."
@@ -127,24 +136,20 @@ On a branch matching `bypassBranchNamePrefixes`, the frame prints first, then on
 
 Bypassed commits get no trailers. Absence of `Covenant-Signature` is the definition of uncertified, so nothing extra needs recording.
 
-## Handoff state
-
-`pre-commit` and `commit-msg` are separate processes, and only the second one can touch the message, so the answers have to land on disk between them. The file goes in the git directory, resolved with `git rev-parse --absolute-git-dir` rather than a hardcoded `.git`, so worktrees and submodules resolve correctly.
-
-The one way a handoff file can lie is by outliving the commit it was answered for: certify, abandon the message at the editor, and the next command that runs `commit-msg` would inherit it. `--no-verify` cannot reach it, since that skips `commit-msg` as well, and an ordinary retry overwrites it in `pre-commit`. The only remaining path was a merge, which the `MERGE_HEAD` check now closes. No tree-hash binding is needed.
-
-The git directory is the right home, and it is what git itself does: `COMMIT_EDITMSG`, `MERGE_MSG`, and the `rebase-merge/` state all live there for the same reason. It is per-worktree, structurally impossible to commit, and obviously disposable. The repo root with a gitignore entry would put transient state in the tracked tree where it can be staged by a careless `git add -A` and would surface in `git status` on any clone that predates the ignore rule. The OS temp directory loses the per-repo scoping and would need a key derived from the repo path to get it back.
-
 ## Trailers
 
-Two keys, appended as the final paragraph, which git separates with a blank line automatically:
+Two keys, written as the final paragraph, which git separates with a blank line automatically:
 
 ```
-Covenant-Signature: RILEY BARABASH
-Covenant-Reasoning: Splits the certification config out so the merge gate can share it.
+Certification-Reasoning: Splits the certification config out so the merge gate can share it.
+Certification-Signature: RILEY BARABASH
 ```
 
 Author, tier, mindset, comprehension, and intent are deliberately dropped. Author is already in git, and the others each have exactly one passing value, so recording them is noise. Only the signature and the reasoning carry information. The keys stay plaintext and greppable for later backwards inspection.
+
+Existing certification trailers are stripped before the new ones are written, so the operation is idempotent and self-healing. `git interpret-trailers` is still what writes them, but it cannot do the clearing: it has no delete operation, and its nearest equivalent, `--if-exists replace`, removes exactly one prior occurrence per key. The default, `addIfDifferentNeighbor`, is worse - it skips a repeat only when it is an identical *immediate* neighbour, which is why amending a commit after reordering the two keys produced a second signature rather than a moved one. Both leave a message that is already duplicated permanently duplicated.
+
+Only the two certification keys are stripped, by exact line prefix, so foreign trailers such as `Co-authored-by` survive. Folded multi-line values would leave orphaned continuation lines, which is safe here because the reasoning is always collapsed to one line before it is written.
 
 ## Merge gate
 
@@ -218,7 +223,9 @@ Rules for the ritual:
 
 ## Known holes
 
-- `--no-verify` cannot be disabled. Git has no config that forces hooks. The post-commit tripwire announces it, and the merge gate refuses it. Commits made directly to main with `--no-verify` are caught only by the tripwire.
+- Hooks can still be disabled wholesale, with `git -c core.hooksPath=/dev/null commit` or by unsetting the config. `--no-verify` no longer works, so a bypass is now a deliberate act rather than a reflex. The merge gate remains the backstop.
+- **Amend shows a partial file list.** The frame lists staged paths, which on an amend are only the newly staged ones, not everything the rewritten commit will contain. Example: commit A touched `x.ts` and `y.ts`; you fix a typo in `z.ts` and amend; the frame shows only `z.ts`, but you are certifying all three. The title says `AMENDING`, but COMPREHENSION is still answered against a partial list. The fix is to also list the files from `HEAD` when amending, with two catches. First, the hook's `commit` source does not mean "amend" alone: `git commit -c <sha>` and `-C <sha>` (reuse another commit's message for a *new* commit) arrive with the same source, and listing `HEAD`'s files there would be wrong. Telling them apart needs the third hook argument or a check of whether `HEAD` is being replaced. Second, amending the very first commit in a repo has no parent to diff against, so the obvious `git diff HEAD^` fails and needs a fallback.
+- **Editor commits show trailers before you write the message.** Only affects `git commit` without `-m`. The gate runs before the editor opens and writes the trailers into the message file right away, so the editor opens with the two trailer lines already at the top, above git's `# Please enter the commit message...` comment lines, and you type your subject above them. Git places them correctly and the final commit is fine - it just looks backwards while editing, and you could accidentally edit or delete the trailers. Irrelevant while commits use `-m`.
 - `git rebase`, `cherry-pick`, and `revert` create commits through git's sequencer, which does not run `pre-commit` or `commit-msg`. Trailers survive rebase, so certified commits stay certified through a replay. Anything the sequencer creates fresh, such as a revert, comes out unsigned and the merge gate rejects it. When a rebase or cherry-pick stops on a conflict and is finished with `git commit`, the hooks run normally.
 - The signature is a semantic boundary, not a cryptographic one. SSH commit signing with a Touch ID backed key is the git-native upgrade and needs no gpg, which is not installed on this machine.
 
