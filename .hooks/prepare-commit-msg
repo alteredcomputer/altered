@@ -1,0 +1,13 @@
+#!/bin/sh
+
+#  We use `prepare-commit-msg` over `pre-commit` because it can't be casually skipped with `--no-verify`.
+
+#  Skip certification for merge commits, since they should be handled by the merge gate.
+
+if [ "$2" = "merge" ]; then exit 0; fi
+
+#  This line alters the Git hook's process by rewiring `stdin` from "/dev/null" to "/dev/tty", so that inputs can be received from our terminal - but first, it attempts to do this in a subshell. That way, if it fails it fails silently and is detected later in our script, rather than nuking the process with a hard-to-read error.
+
+if (exec < /dev/tty) 2>/dev/null; then exec < /dev/tty; fi
+
+pnpm exec tsx packages/tooling/bin/versioning/certification/commit.ts "$1" "$2"

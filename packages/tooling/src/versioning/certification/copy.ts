@@ -22,8 +22,15 @@ type CertificationSelectStep = {
 
 const CERTIFICATION_INTRO_MESSAGE = "[ COMMIT COVENANT ]"
 
-const createCertificationStagedPathsNoteTitle = (branchName: string) =>
-    `STAGED ON ${branchName}`
+const createCertificationStagedPathsNoteTitle = ({
+    branchName,
+
+    isAmending
+}: {
+    branchName: string
+
+    isAmending: boolean
+}) => `${isAmending ? "AMENDING" : "STAGED"} ON ${branchName}`
 
 const CERTIFICATION_SELECT_STEPS: readonly CertificationSelectStep[] = [
     {
