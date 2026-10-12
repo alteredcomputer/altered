@@ -2,6 +2,7 @@ import { confirm, intro, note, outro, select, text } from "@clack/prompts"
 import { certificationConfig } from "../certification/config"
 import {
     CERTIFICATION_CANCELLED_PROMPT_MESSAGE,
+    CERTIFICATION_DIFF_FILE_PATHS_NOTE_NO_CHANGES_MESSAGE,
     CERTIFICATION_INTRO_MESSAGE,
     CERTIFICATION_NON_INTERACTIVE_REFUSAL_MESSAGE,
     CERTIFICATION_OUTRO_MESSAGE,
@@ -11,18 +12,17 @@ import {
     CERTIFICATION_SIGNATURE_STEP_REFUSAL_MESSAGE,
     CERTIFICATION_SOURCE_OF_TRUTH_STEP_PROMPT,
     CERTIFICATION_SOURCE_OF_TRUTH_STEP_REFUSAL_MESSAGE,
-    createCertificationReasoningStepValidationErrorMessage,
-    createCertificationStagedPathsNoteTitle
+    CERTIFICATION_WILL_OPEN_MESSAGE_EDITOR_REFUSAL_MESSAGE,
+    createCertificationDiffFilePathsNoteTitle,
+    createCertificationReasoningStepValidationErrorMessage
 } from "../certification/copy"
 import { isCancel } from "../certification/utils/clack/is-cancel"
 import { refuseAndFinish } from "../certification/utils/clack/refuse-and-finish"
-import type { CommitContext } from "../certification/utils/get-commit-context"
+import type { GitCommitContext } from "../certification/utils/get-commit-context"
 import { isInteractiveTerminal } from "../certification/utils/is-interactive-terminal"
 
 type CommitCertificationOptions = {
-    context: CommitContext & {
-        isAmending: boolean
-
+    context: GitCommitContext & {
         /**
          * @remarks Only relevant when a commit is being amended.
          */
@@ -46,17 +46,24 @@ async function runCommitCertification({
             message: CERTIFICATION_NON_INTERACTIVE_REFUSAL_MESSAGE
         })
 
+    if (context.willOpenMessageEditor)
+        return refuseAndFinish({
+            message: CERTIFICATION_WILL_OPEN_MESSAGE_EDITOR_REFUSAL_MESSAGE
+        })
+
     intro(CERTIFICATION_INTRO_MESSAGE)
 
     /**
-     * @todo P3: Fix wrapping of overflowing staged paths using the `format` parameter of the `note` prompt.
+     * @todo P3: Fix wrapping of overflowing paths using the `format` parameter of the `note` prompt.
      */
-    const stagedPathsNoteContent = context.stagedPaths.join("\n")
+    const pathsNoteContent =
+        context.filePaths.join("\n").trim() ??
+        CERTIFICATION_DIFF_FILE_PATHS_NOTE_NO_CHANGES_MESSAGE
 
     note(
-        stagedPathsNoteContent,
-        createCertificationStagedPathsNoteTitle({
-            branchName: context.branch,
+        pathsNoteContent,
+        createCertificationDiffFilePathsNoteTitle({
+            branch: context.branch,
             isAmending: context.isAmending
         })
     )

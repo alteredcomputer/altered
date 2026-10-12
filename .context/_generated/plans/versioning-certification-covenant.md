@@ -36,7 +36,7 @@ That split also absorbs the rebase, conflict, and replay cases without extra mac
 - `packages/tooling/src/versioning/certification/` - shared: `config.ts`, `copy.ts`, `trailers/`, and one function per file under `utils/`
 - `packages/tooling/src/versioning/commits/certify.ts` - the commit gate
 - `packages/tooling/src/versioning/merges/` - the merge gate
-- `packages/tooling/bin/versioning/certify-commit.ts` - the hook entrypoint
+- `packages/tooling/bin/versioning/certification/commit.ts` - the hook entrypoint
 - `.hooks/prepare-commit-msg`
 
 Hook entrypoints carry no `bin` entry in the manifest. They are invoked by path and are not meant to be run by hand, so registering a name would advertise a command nobody should type. It also sidesteps a real failure: pnpm skips relinking workspace bins on an incremental install, so a newly added bin can be missing locally while the manifest looks correct. `bin/` still mirrors `src/` so an entrypoint and its module sit at matching paths.
@@ -85,7 +85,9 @@ Neither layer is agent detection. Both are refusal of fabricated input: without 
 
 Frame, then seven prompts. Every `select` defaults to the blocking option, so a blind Enter blocks. Question order is fixed and intentional: interrogate the code, then the person, then take the oath. Answer order within a question may shuffle to prevent muscle memory.
 
-**0. Frame.** Branch and the staged file paths. No line counts, they measure nothing worth remembering.
+**0. Frame.** Branch and every path the resulting commit will contain. When amending, that is the index diffed against the amended commit's parent, or the empty tree for a root commit, so already-committed files are certified again rather than hidden. No line counts, they measure nothing worth remembering.
+
+Commits that would open an editor are refused before the frame. The gate runs before the editor, so the message must already be decided, and the trailers would otherwise sit above the subject while editing. Git sets `GIT_EDITOR=:` for hooks whenever no editor will open.
 
 **1. `COMPREHENSION >>> Do you understand every line staged here?`**
 
@@ -118,7 +120,7 @@ Block copy: "Nothing here expires tonight. Come back grounded."
 
 **5. `REASONING >>> Why does this commit exist?`** Free text, minimum length only.
 
-When the message already carries a `Certification-Reasoning` trailer, which is what an amend looks like, it is offered back as a dimmed default: Enter keeps it, typing anything replaces it. Clack substitutes a default *after* validation rather than before, so the minimum-length check has to apply the same fallback or an empty submit is rejected.
+When amending, the `Certification-Reasoning` trailer is read from `HEAD` rather than the message file, since `--amend -m` replaces the message before the hook sees it, and it is offered back as a dimmed default: Enter keeps it, typing anything replaces it. Clack substitutes a default *after* validation rather than before, so the minimum-length check has to apply the same fallback or an empty submit is rejected.
 
 **6. `SOURCE OF TRUTH >>> Everything stands on this. Your users, your company, your life, and every tier beneath it. Accept it?`** Confirm, defaults to no.
 
@@ -224,8 +226,7 @@ Rules for the ritual:
 ## Known holes
 
 - Hooks can still be disabled wholesale, with `git -c core.hooksPath=/dev/null commit` or by unsetting the config. `--no-verify` no longer works, so a bypass is now a deliberate act rather than a reflex. The merge gate remains the backstop.
-- **Amend shows a partial file list.** The frame lists staged paths, which on an amend are only the newly staged ones, not everything the rewritten commit will contain. Example: commit A touched `x.ts` and `y.ts`; you fix a typo in `z.ts` and amend; the frame shows only `z.ts`, but you are certifying all three. The title says `AMENDING`, but COMPREHENSION is still answered against a partial list. The fix is to also list the files from `HEAD` when amending, with two catches. First, the hook's `commit` source does not mean "amend" alone: `git commit -c <sha>` and `-C <sha>` (reuse another commit's message for a *new* commit) arrive with the same source, and listing `HEAD`'s files there would be wrong. Telling them apart needs the third hook argument or a check of whether `HEAD` is being replaced. Second, amending the very first commit in a repo has no parent to diff against, so the obvious `git diff HEAD^` fails and needs a fallback.
-- **Editor commits show trailers before you write the message.** Only affects `git commit` without `-m`. The gate runs before the editor opens and writes the trailers into the message file right away, so the editor opens with the two trailer lines already at the top, above git's `# Please enter the commit message...` comment lines, and you type your subject above them. Git places them correctly and the final commit is fine - it just looks backwards while editing, and you could accidentally edit or delete the trailers. Irrelevant while commits use `-m`.
+- **Amend detection reads Git's process arguments.** Hooks are never told a commit is an amend: the source argument is `message` for `--amend -m`, and `commit` for both `--amend --no-edit` and `-c`/`-C` reuse. The hook passes its `$PPID` and the gate looks for an `--amend` token in that process's arguments. They arrive as one unquoted string, so a message containing a standalone `--amend` is a false positive, and an alias hiding the flag (`amend = commit --amend`) is a false negative that falls back to the partial, staged-only list.
 - `git rebase`, `cherry-pick`, and `revert` create commits through git's sequencer, which does not run `pre-commit` or `commit-msg`. Trailers survive rebase, so certified commits stay certified through a replay. Anything the sequencer creates fresh, such as a revert, comes out unsigned and the merge gate rejects it. When a rebase or cherry-pick stops on a conflict and is finished with `git commit`, the hooks run normally.
 - The signature is a semantic boundary, not a cryptographic one. SSH commit signing with a Touch ID backed key is the git-native upgrade and needs no gpg, which is not installed on this machine.
 

@@ -22,15 +22,18 @@ type CertificationSelectStep = {
 
 const CERTIFICATION_INTRO_MESSAGE = "[ COMMIT COVENANT ]"
 
-const createCertificationStagedPathsNoteTitle = ({
-    branchName,
+const createCertificationDiffFilePathsNoteTitle = ({
+    branch,
 
     isAmending
 }: {
-    branchName: string
+    branch: string | null
 
     isAmending: boolean
-}) => `${isAmending ? "AMENDING" : "STAGED"} ON ${branchName}`
+}) => `${isAmending ? "AMENDING" : "STAGED"} ON ${branch ?? "DETACHED HEAD"}`
+
+const CERTIFICATION_DIFF_FILE_PATHS_NOTE_NO_CHANGES_MESSAGE =
+    "No file changes to display."
 
 const CERTIFICATION_SELECT_STEPS: readonly CertificationSelectStep[] = [
     {
@@ -153,11 +156,15 @@ const CERTIFICATION_OUTRO_MESSAGE = "Certified."
 
 const CERTIFICATION_CANCELLED_PROMPT_MESSAGE = "Aborted."
 
+const CERTIFICATION_WILL_OPEN_MESSAGE_EDITOR_REFUSAL_MESSAGE =
+    "No commit message was set. Pass one with `-m`, or use `--no-edit` to skip when amending."
+
 const CERTIFICATION_NON_INTERACTIVE_REFUSAL_MESSAGE =
     "No terminal attached. Certification can't be completed through a pipe, a GUI, or an agent shell. Commit from a terminal."
 
 export {
     CERTIFICATION_CANCELLED_PROMPT_MESSAGE,
+    CERTIFICATION_DIFF_FILE_PATHS_NOTE_NO_CHANGES_MESSAGE,
     CERTIFICATION_INTRO_MESSAGE,
     CERTIFICATION_NON_INTERACTIVE_REFUSAL_MESSAGE,
     CERTIFICATION_OUTRO_MESSAGE,
@@ -167,7 +174,8 @@ export {
     CERTIFICATION_SIGNATURE_STEP_REFUSAL_MESSAGE,
     CERTIFICATION_SOURCE_OF_TRUTH_STEP_PROMPT,
     CERTIFICATION_SOURCE_OF_TRUTH_STEP_REFUSAL_MESSAGE,
+    CERTIFICATION_WILL_OPEN_MESSAGE_EDITOR_REFUSAL_MESSAGE,
     type CertificationSelectStep,
-    createCertificationReasoningStepValidationErrorMessage,
-    createCertificationStagedPathsNoteTitle
+    createCertificationDiffFilePathsNoteTitle,
+    createCertificationReasoningStepValidationErrorMessage
 }

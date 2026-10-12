@@ -10,4 +10,6 @@ if [ "$2" = "merge" ]; then exit 0; fi
 
 if (exec < /dev/tty) 2>/dev/null; then exec < /dev/tty; fi
 
-pnpm exec tsx packages/tooling/bin/versioning/certification/commit.ts "$1" "$2"
+#  We pass Git's process ID so that the script can read the Git arguments, since Git hooks can't easily tell if a commit is an amend.
+
+pnpm exec tsx packages/tooling/bin/versioning/certification/commit.ts "$1" "$PPID"

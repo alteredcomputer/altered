@@ -1,37 +1,30 @@
 #!/usr/bin/env tsx
 
 import { CERTIFICATION_REASONING_TRAILER_KEY } from "../../../src/versioning/certification/trailers/definitions"
-import { readCommitMessageTrailer } from "../../../src/versioning/certification/trailers/read"
+import { readGitCommitMessageTrailer } from "../../../src/versioning/certification/trailers/read"
 import { writeCommitCertificationMessageTrailers } from "../../../src/versioning/certification/trailers/write"
-import { getCommitContext } from "../../../src/versioning/certification/utils/get-commit-context"
+import { getGitCommitContext } from "../../../src/versioning/certification/utils/get-commit-context"
 import { runCommitCertification } from "../../../src/versioning/commits/certify"
 
-const [gitCommitMessagePath, gitCommitMessageOperationType] =
-    process.argv.slice(2)
+const [gitCommitMessageFilePath, gitProcessId] = process.argv.slice(2)
 
-if (!gitCommitMessagePath)
+if (!gitCommitMessageFilePath || !gitProcessId)
     throw new Error(
-        "Expected a commit message file path as the first argument."
+        "Expected a commit message file path and a Git process ID as arguments."
     )
 
-const { branch, stagedPaths } = getCommitContext()
+const commitContext = getGitCommitContext({ gitProcessId })
 
-/**
- * @todo P0: Consider whether this amend logic needs to be improved.
- */
-const isAmending = gitCommitMessageOperationType === "commit"
-
-const previousCertificationReasoning = readCommitMessageTrailer({
-    messageFilePath: gitCommitMessagePath,
-    trailerKey: CERTIFICATION_REASONING_TRAILER_KEY
-})
+const previousCertificationReasoning = commitContext.isAmending
+    ? readGitCommitMessageTrailer({
+          commitObjectId: "HEAD",
+          trailerKey: CERTIFICATION_REASONING_TRAILER_KEY
+      })
+    : null
 
 const certificationResult = await runCommitCertification({
     context: {
-        branch,
-        stagedPaths,
-
-        isAmending,
+        ...commitContext,
 
         previousCertificationReasoning
     }
@@ -44,7 +37,7 @@ if (!certificationResult) process.exit(1)
 const { reasoning, signature } = certificationResult
 
 writeCommitCertificationMessageTrailers({
-    messageFilePath: gitCommitMessagePath,
+    messageFilePath: gitCommitMessageFilePath,
 
     values: { reasoning, signature }
 })

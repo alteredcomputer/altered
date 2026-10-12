@@ -1,25 +1,27 @@
 import { readGit } from "../utils/read-git"
 
-function readCommitMessageTrailer({
-    messageFilePath,
+function readGitCommitMessageTrailer({
+    commitObjectId,
 
     trailerKey
 }: {
-    messageFilePath: string
+    commitObjectId: string
 
     trailerKey: string
 }): string | null {
-    const trailerPrefix = `${trailerKey}: `
+    const trailerValues = readGit([
+        "log",
+        "--max-count=1",
+        `--format=%(trailers:key=${trailerKey},valueonly,unfold)`,
 
-    const trailers = readGit(["interpret-trailers", "--parse", messageFilePath])
+        commitObjectId
+    ])
 
-    const trailer = trailers
-        .split("\n")
-        .find(trailer => trailer.startsWith(trailerPrefix))
+    const [trailerValue] = trailerValues.split("\n")
 
-    if (!trailer) return null
+    if (!trailerValue?.trim()) return null
 
-    return trailer.slice(trailerPrefix.length)
+    return trailerValue
 }
 
-export { readCommitMessageTrailer }
+export { readGitCommitMessageTrailer }
