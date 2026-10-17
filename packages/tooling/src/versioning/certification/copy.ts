@@ -22,18 +22,20 @@ type CertificationSelectStep = {
 
 const CERTIFICATION_INTRO_MESSAGE = "[ COMMIT COVENANT ]"
 
-const createCertificationDiffFilePathsNoteTitle = ({
-    branch,
+const CERTIFICATION_CONTEXT_NOTE_TITLE = "[ CONTEXT ]"
 
-    isAmending
-}: {
-    branch: string | null
+const createCertificationContextNoteBranchLine = (branch: string | null) =>
+    `BRANCH: ${branch ?? "DETACHED HEAD"}`
 
-    isAmending: boolean
-}) => `${isAmending ? "AMENDING" : "STAGED"} ON ${branch ?? "DETACHED HEAD"}`
+const CERTIFICATION_COMMIT_CONTEXT_NOTE_PROMPT_SECTION_TITLES_MAP = {
+    staged: "STAGED CHANGES:",
 
-const CERTIFICATION_DIFF_FILE_PATHS_NOTE_NO_CHANGES_MESSAGE =
-    "No file changes to display."
+    existing: "EXISTING CHANGES:",
+    amended: "AMENDED CHANGES:",
+    resulting: "RESULTING CHANGES:"
+} as const
+
+const CERTIFICATION_CONTEXT_NOTE_NO_CHANGES_MESSAGE = "No file changes."
 
 const CERTIFICATION_SELECT_STEPS: readonly CertificationSelectStep[] = [
     {
@@ -159,13 +161,19 @@ const CERTIFICATION_CANCELLED_PROMPT_MESSAGE = "Aborted."
 const CERTIFICATION_WILL_OPEN_MESSAGE_EDITOR_REFUSAL_MESSAGE =
     "No commit message was set. Pass one with `-m`, or use `--no-edit` to skip when amending."
 
+const CERTIFICATION_MESSAGE_CONTAINS_AMEND_FLAG_REFUSAL_MESSAGE =
+    "Commit messages can't contain `--amend` as a standalone word, since it's how amends are detected. Reword it, such as to `amend`."
+
 const CERTIFICATION_NON_INTERACTIVE_REFUSAL_MESSAGE =
     "No terminal attached. Certification can't be completed through a pipe, a GUI, or an agent shell. Commit from a terminal."
 
 export {
     CERTIFICATION_CANCELLED_PROMPT_MESSAGE,
-    CERTIFICATION_DIFF_FILE_PATHS_NOTE_NO_CHANGES_MESSAGE,
+    CERTIFICATION_COMMIT_CONTEXT_NOTE_PROMPT_SECTION_TITLES_MAP,
+    CERTIFICATION_CONTEXT_NOTE_NO_CHANGES_MESSAGE,
+    CERTIFICATION_CONTEXT_NOTE_TITLE,
     CERTIFICATION_INTRO_MESSAGE,
+    CERTIFICATION_MESSAGE_CONTAINS_AMEND_FLAG_REFUSAL_MESSAGE,
     CERTIFICATION_NON_INTERACTIVE_REFUSAL_MESSAGE,
     CERTIFICATION_OUTRO_MESSAGE,
     CERTIFICATION_REASONING_STEP_PROMPT,
@@ -176,6 +184,6 @@ export {
     CERTIFICATION_SOURCE_OF_TRUTH_STEP_REFUSAL_MESSAGE,
     CERTIFICATION_WILL_OPEN_MESSAGE_EDITOR_REFUSAL_MESSAGE,
     type CertificationSelectStep,
-    createCertificationDiffFilePathsNoteTitle,
+    createCertificationContextNoteBranchLine,
     createCertificationReasoningStepValidationErrorMessage
 }

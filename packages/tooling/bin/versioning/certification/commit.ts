@@ -13,7 +13,11 @@ if (!gitCommitMessageFilePath || !gitProcessId)
         "Expected a commit message file path and a Git process ID as arguments."
     )
 
-const commitContext = getGitCommitContext({ gitProcessId })
+const commitContext = getGitCommitContext({
+    gitProcessId,
+
+    messageFilePath: gitCommitMessageFilePath
+})
 
 const previousCertificationReasoning = commitContext.isAmending
     ? readGitCommitMessageTrailer({

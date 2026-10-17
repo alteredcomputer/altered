@@ -1,6 +1,6 @@
 # PLAN STATE (Generated)
 
-Last updated: 2026-10-07
+Last updated: 2026-10-12
 
 ## Focus
 
@@ -8,9 +8,9 @@ Versioning certification (the Commit Covenant). Building the commit gate and mer
 
 ## Resume here
 
-- Branch: `feat/versioning-certification`. Last commit `17fab5a`, the single-hook restructure, certified and amend-tested by the operator.
-- **Uncommitted chunk:** full amend file list, amend detection from Git's process arguments, reasoning prefill read from `HEAD`, the editor refusal, the empty-paths note, and the detached-HEAD title. Typechecks and lints clean. Context and trailer reads verified in a scratch repo across every commit variant. The prompts themselves still need an operator at a terminal.
-- Operator tests after committing: `git commit --amend --no-edit` and `git commit --amend -m "..."` should both title `AMENDING`, list all 23-ish files of the amended commit, and prefill the reasoning. Plain `git commit` should refuse before any prompt.
+- Branch: `feat/versioning-certification`. Last commit `5d03a19`, the full amend list, amend detection, `HEAD` reasoning prefill, and the editor refusal.
+- **Uncommitted chunk:** the `[ CONTEXT ]` note (branch line, then `STAGED CHANGES`, or `EXISTING` / `AMENDED` / `RESULTING` when amending) rendered as a sorted file tree with right-aligned status letters, truncated to the terminal width instead of wrapping. Messages containing a standalone `--amend` are refused, which makes amend detection exact. Typechecks and lints clean, and the note was rendered at 40 columns from a scratch repo hook, including an amend that reverts a file.
+- Operator tests after committing: `git commit --amend --no-edit` at 40 columns should show all three sections, and `git commit -m "fix the --amend thing"` should refuse before the frame.
 
 ## Plan linkage
 
@@ -36,7 +36,7 @@ Versioning certification (the Commit Covenant). Building the commit gate and mer
 
 ## Open issues
 
-- Long paths wrap mid-segment in narrow terminals (`@todo P3` in the gate).
+- None open. Deep file names still truncate at 40 columns (`get-commit-context.…`), by design.
 
 ## Next
 

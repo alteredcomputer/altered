@@ -1,6 +1,26 @@
-import { getGitDiffFilePaths } from "./get-commit-paths"
+import { readFileSync } from "node:fs"
+import { containsAmendFlag } from "./contains-amend-flag"
+import { getGitCommitAmendDiffBaseObjectId } from "./get-amend-diff-base"
+import {
+    type GitDiffFileChange,
+    getGitDiffFileChanges
+} from "./get-diff-file-changes"
 import { isAmendingCommit } from "./is-amending-commit"
 import { readGit } from "./read-git"
+
+type GitCommitAmendFileChanges = {
+    /**
+     * The changes in the commit being amended.
+     */
+    existing: GitDiffFileChange[]
+
+    /**
+     * Every change that the rewritten commit will contain.
+     *
+     * @remarks Changes that the amend reverts drop out of this list, but still appear in `existing`.
+     */
+    resulting: GitDiffFileChange[]
+}
 
 type GitCommitContext = {
     /**
@@ -9,38 +29,74 @@ type GitCommitContext = {
     branch: string | null
 
     /**
-     * Every file change path that the resulting commit will contain.
-     *
-     * @remarks This includes the staged changes and the changes in the last commit.
+     * @remarks When amending, these are the amended changes on top of the existing commit.
      */
-    filePaths: string[]
+    stagedFileChanges: GitDiffFileChange[]
 
     isAmending: boolean
+
+    /**
+     * @remarks `null` unless amending.
+     */
+    amendFileChanges: GitCommitAmendFileChanges | null
 
     /**
      * True when no message-related arguments are passed.
      */
     willOpenMessageEditor: boolean
+
+    /**
+     * @remarks Refused by the gate, since it would make amend detection ambiguous.
+     */
+    messageContainsAmendFlag: boolean
 }
 
 function getGitCommitContext({
-    gitProcessId
+    gitProcessId,
+    messageFilePath
 }: {
     gitProcessId: string
+    messageFilePath: string
 }): GitCommitContext {
     const isAmending = isAmendingCommit({ gitProcessId })
+
+    const amendDiffBaseObjectId = isAmending
+        ? getGitCommitAmendDiffBaseObjectId()
+        : null
+
+    const amendFileChanges = amendDiffBaseObjectId
+        ? {
+              existing: getGitDiffFileChanges({
+                  diffArguments: [amendDiffBaseObjectId, "HEAD"]
+              }),
+
+              resulting: getGitDiffFileChanges({
+                  diffArguments: ["--cached", amendDiffBaseObjectId]
+              })
+          }
+        : null
 
     return {
         branch: readGit(["branch", "--show-current"]) || null,
 
-        filePaths: getGitDiffFilePaths({
-            includeLastCommit: isAmending
+        stagedFileChanges: getGitDiffFileChanges({
+            diffArguments: ["--cached"]
         }),
+
+        amendFileChanges,
 
         isAmending,
 
-        willOpenMessageEditor: process.env.GIT_EDITOR !== ":"
+        willOpenMessageEditor: process.env.GIT_EDITOR !== ":",
+
+        messageContainsAmendFlag: containsAmendFlag(
+            readFileSync(messageFilePath, "utf8")
+        )
     }
 }
 
-export { type GitCommitContext, getGitCommitContext }
+export {
+    type GitCommitAmendFileChanges,
+    type GitCommitContext,
+    getGitCommitContext
+}
