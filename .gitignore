@@ -1,21 +1,13 @@
 *.pem
 *.tsbuildinfo
 
-.cache/
 .DS_Store
 .env*
 !.env.example
-.logs/
 .next/
-.pnpm-debug.log*
 .pnpm-store/
 .turbo/
 .vercel/
 
-build/
-!**/src/build/
-coverage/
 dist/
 node_modules/
-npm-debug.log*
-out/
