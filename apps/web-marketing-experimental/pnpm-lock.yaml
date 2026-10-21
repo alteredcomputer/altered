@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@tailwindcss/turbopack@4.3.3': b8abeddd87ca8e179171fe573c41a8640713065c11b5cae83bd5802426b4b5d4
+
 importers:
 
   .:
@@ -32,7 +35,7 @@ importers:
         version: 2.4.2
       '@tailwindcss/turbopack':
         specifier: ^4
-        version: 4.3.3
+        version: 4.3.3(patch_hash=b8abeddd87ca8e179171fe573c41a8640713065c11b5cae83bd5802426b4b5d4)
       '@types/mdast':
         specifier: ^4.0.4
         version: 4.0.4
@@ -1068,7 +1071,7 @@ snapshots:
       '@tailwindcss/oxide-win32-arm64-msvc': 4.3.3
       '@tailwindcss/oxide-win32-x64-msvc': 4.3.3
 
-  '@tailwindcss/turbopack@4.3.3':
+  '@tailwindcss/turbopack@4.3.3(patch_hash=b8abeddd87ca8e179171fe573c41a8640713065c11b5cae83bd5802426b4b5d4)':
     dependencies:
       '@alloc/quick-lru': 5.3.0
       '@tailwindcss/node': 4.3.3
