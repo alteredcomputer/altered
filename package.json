@@ -1,0 +1,10 @@
+{
+    "scripts": {
+        "check": "ultracite check",
+        "fix": "ultracite fix"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.6.2",
+        "ultracite": "8.0.1"
+    }
+}
