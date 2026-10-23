@@ -1,0 +1,21 @@
+diff --git a/config/biome/core/biome.jsonc b/config/biome/core/biome.jsonc
+index cfcef622192ca54af7db77896c6356b7cc97ceeb..9de62994dbd3c5f2baa1a19253797f14ccf71fba 100644
+--- a/config/biome/core/biome.jsonc
++++ b/config/biome/core/biome.jsonc
+@@ -294,13 +294,10 @@
+       "nursery": {
+         // Typically we don't enable nursery rules anymore (https://github.com/haydenbleasel/ultracite/issues/457)
+         // but this was requested specifically by a lot of people.
+-        "useSortedClasses": {
++        // Renamed from `useSortedClasses` in Biome 2.6; functions are now configured via top-level `tailwind` (defaults cover clsx, cva, tw, twMerge, cn, twJoin, tv).
++        "useTailwindSortedClasses": {
+           "fix": "safe",
+-          "level": "error",
+-          "options": {
+-            // class and className attributes are sorted by default.
+-            "functions": ["clsx", "cva", "tw", "twMerge", "cn", "twJoin", "tv"]
+-          }
++          "level": "error"
+         }
+       },
+       "performance": {

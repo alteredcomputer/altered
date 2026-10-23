@@ -1,0 +1,2 @@
+patchedDependencies:
+  ultracite@8.0.1: patches/ultracite@8.0.1.patch
