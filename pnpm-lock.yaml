@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  ultracite@8.0.1: 28472cbd75a0979f9a4cd3ffab009e5a4fc6b3fa05c4279a372fcdd8cd5d295b
+
 importers:
 
   .:
@@ -13,7 +16,7 @@ importers:
         version: 2.6.2
       ultracite:
         specifier: 8.0.1
-        version: 8.0.1(@biomejs/biome@2.6.2)
+        version: 8.0.1(patch_hash=28472cbd75a0979f9a4cd3ffab009e5a4fc6b3fa05c4279a372fcdd8cd5d295b)(@biomejs/biome@2.6.2)
 
 packages:
 
@@ -743,7 +746,7 @@ snapshots:
 
   ufo@1.6.4: {}
 
-  ultracite@8.0.1(@biomejs/biome@2.6.2):
+  ultracite@8.0.1(patch_hash=28472cbd75a0979f9a4cd3ffab009e5a4fc6b3fa05c4279a372fcdd8cd5d295b)(@biomejs/biome@2.6.2):
     dependencies:
       '@clack/prompts': 1.8.1
       cli-truncate: 6.1.1

@@ -94,6 +94,8 @@
     "markdown": {
         "parser": {
             "frontmatter": true
-        }
+        },
+
+        "analyzeEmbeds": true
     }
 }
