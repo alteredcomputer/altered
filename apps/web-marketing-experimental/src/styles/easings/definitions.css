@@ -1,0 +1,7 @@
+@layer theme {
+    :root {
+        --altered-ease-in-expo: cubic-bezier(0.75, 0, 0.875, 0);
+        --altered-ease-out-expo: cubic-bezier(0.125, 1, 0.25, 1);
+        --altered-ease-in-out-expo: cubic-bezier(0.875, 0, 0.125, 1);
+    }
+}

@@ -1,0 +1,84 @@
+@theme {
+    --spacing-*: initial;
+    --spacing: initial;
+
+    --spacing-0px-rem: 0rem;
+    --spacing-1px-rem: 0.0625rem;
+    --spacing-2px-rem: 0.125rem;
+    --spacing-3px-rem: 0.1875rem;
+    --spacing-4px-rem: 0.25rem;
+    --spacing-6px-rem: 0.375rem;
+    --spacing-8px-rem: 0.5rem;
+    --spacing-10px-rem: 0.625rem;
+    --spacing-12px-rem: 0.75rem;
+    --spacing-14px-rem: 0.875rem;
+    --spacing-16px-rem: 1rem;
+    --spacing-20px-rem: 1.25rem;
+    --spacing-24px-rem: 1.5rem;
+    --spacing-28px-rem: 1.75rem;
+    --spacing-32px-rem: 2rem;
+    --spacing-40px-rem: 2.5rem;
+    --spacing-48px-rem: 3rem;
+    --spacing-56px-rem: 3.5rem;
+    --spacing-64px-rem: 4rem;
+    --spacing-80px-rem: 5rem;
+    --spacing-96px-rem: 6rem;
+    --spacing-112px-rem: 7rem;
+    --spacing-128px-rem: 8rem;
+    --spacing-160px-rem: 10rem;
+    --spacing-192px-rem: 12rem;
+    --spacing-224px-rem: 14rem;
+    --spacing-256px-rem: 16rem;
+    --spacing-320px-rem: 20rem;
+    --spacing-384px-rem: 24rem;
+    --spacing-448px-rem: 28rem;
+    --spacing-512px-rem: 32rem;
+    --spacing-640px-rem: 40rem;
+    --spacing-768px-rem: 48rem;
+    --spacing-896px-rem: 56rem;
+    --spacing-1024px-rem: 64rem;
+
+    --spacing-0px: 0px;
+    --spacing-1px: 1px;
+    --spacing-2px: 2px;
+    --spacing-3px: 3px;
+    --spacing-4px: 4px;
+    --spacing-6px: 6px;
+    --spacing-8px: 8px;
+    --spacing-10px: 10px;
+    --spacing-12px: 12px;
+    --spacing-14px: 14px;
+    --spacing-16px: 16px;
+    --spacing-20px: 20px;
+    --spacing-24px: 24px;
+    --spacing-28px: 28px;
+    --spacing-32px: 32px;
+    --spacing-40px: 40px;
+    --spacing-48px: 48px;
+    --spacing-56px: 56px;
+    --spacing-64px: 64px;
+    --spacing-80px: 80px;
+    --spacing-96px: 96px;
+    --spacing-112px: 112px;
+    --spacing-128px: 128px;
+    --spacing-160px: 160px;
+    --spacing-192px: 192px;
+    --spacing-224px: 224px;
+    --spacing-256px: 256px;
+    --spacing-320px: 320px;
+    --spacing-384px: 384px;
+    --spacing-448px: 448px;
+    --spacing-512px: 512px;
+    --spacing-640px: 640px;
+    --spacing-768px: 768px;
+    --spacing-896px: 896px;
+    --spacing-1024px: 1024px;
+
+    --spacing-line: 1lh;
+}
+
+@layer base {
+    * {
+        min-width: 0;
+    }
+}

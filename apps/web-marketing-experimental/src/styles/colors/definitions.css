@@ -1,0 +1,11 @@
+@layer theme {
+    :root {
+        --altered-color-white: hsl(0 0% 100%);
+        --altered-color-off-white: hsl(0 0% 98.4375%);
+
+        --altered-color-off-black: hsl(0 0% 6.25%);
+        --altered-color-way-off-black: hsl(0 0% 25%);
+
+        --altered-color-orange: hsl(30, 100%, 50%);
+    }
+}

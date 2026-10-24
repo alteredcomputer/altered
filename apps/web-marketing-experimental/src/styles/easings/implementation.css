@@ -1,0 +1,11 @@
+@import "./definitions.css";
+
+@theme {
+    --ease-*: initial;
+
+    --ease-in: var(--altered-ease-in-expo);
+    --ease-out: var(--altered-ease-out-expo);
+    --ease-in-out: var(--altered-ease-in-out-expo);
+
+    --default-transition-timing-function: var(--ease-out);
+}
