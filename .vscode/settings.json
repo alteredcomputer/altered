@@ -23,5 +23,7 @@
         "source.organizeImports.biome": "explicit"
     },
 
-    "emmet.showExpandedAbbreviation": "never"
+    "emmet.showExpandedAbbreviation": "never",
+
+    "cSpell.words": ["micromark"]
 }
