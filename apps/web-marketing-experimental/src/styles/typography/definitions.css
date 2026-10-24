@@ -1,0 +1,7 @@
+@layer theme {
+    :root {
+        --altered-font-size-px: 13;
+        --altered-line-height-ratio: 1.5;
+        --altered-measure: 64ch;
+    }
+}

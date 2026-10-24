@@ -1,0 +1,39 @@
+@import "./definitions.css";
+
+@theme {
+    --container-measure: var(--altered-measure);
+}
+
+@theme inline {
+    --font-*: initial;
+
+    --font-mono: var(--font-geist-mono);
+
+    --default-font-family: var(--font-geist-mono);
+}
+
+@layer base {
+    html {
+        @apply antialiased;
+    }
+
+    body {
+        font-size: calc(var(--altered-font-size-px) / 16 * 1rem);
+        line-height: var(--altered-line-height-ratio);
+
+        font-variant-ligatures: none;
+        overflow-wrap: anywhere;
+
+        @apply text-foreground/48-64;
+    }
+
+    a,
+    button {
+        text-underline-offset: 0.25em;
+    }
+
+    a:hover,
+    a:focus-visible {
+        @apply underline;
+    }
+}

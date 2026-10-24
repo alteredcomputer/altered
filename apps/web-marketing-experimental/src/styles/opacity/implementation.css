@@ -1,0 +1,23 @@
+@theme {
+    --opacity-0: 0%;
+    --opacity-1-64: 1.5625%;
+    --opacity-2-64: 3.125%;
+    --opacity-3-64: 4.6875%;
+    --opacity-4-64: 6.25%;
+    --opacity-6-64: 9.375%;
+    --opacity-8-64: 12.5%;
+    --opacity-12-64: 18.75%;
+    --opacity-16-64: 25%;
+    --opacity-24-64: 37.5%;
+    --opacity-32-64: 50%;
+    --opacity-40-64: 62.5%;
+    --opacity-48-64: 75%;
+    --opacity-52-64: 81.25%;
+    --opacity-56-64: 87.5%;
+    --opacity-58-64: 90.625%;
+    --opacity-60-64: 93.75%;
+    --opacity-61-64: 95.3125%;
+    --opacity-62-64: 96.875%;
+    --opacity-63-64: 98.4375%;
+    --opacity-1: 100%;
+}
