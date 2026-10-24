@@ -71,6 +71,15 @@
         }
     },
 
+    "assist": {
+        "actions": {
+            "source": {
+                "useSortedKeys": "off",
+                "useSortedProperties": "off"
+            }
+        }
+    },
+
     "javascript": {
         "formatter": {
             "semicolons": "asNeeded",
