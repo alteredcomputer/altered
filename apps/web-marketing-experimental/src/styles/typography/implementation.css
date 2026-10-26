@@ -1,7 +1,7 @@
 @import "./definitions.css";
 
 @theme {
-    --container-measure: var(--altered-measure);
+    --container-line-length: calc(var(--altered-line-length) * 1ch);
 }
 
 @theme inline {
@@ -18,8 +18,8 @@
     }
 
     body {
-        font-size: calc(var(--altered-font-size-px) / 16 * 1rem);
-        line-height: var(--altered-line-height-ratio);
+        font-size: calc(var(--altered-font-size) / 16 * 1rem);
+        line-height: var(--altered-line-height);
 
         font-variant-ligatures: none;
         overflow-wrap: anywhere;
