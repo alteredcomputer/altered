@@ -1,0 +1,25 @@
+@layer theme {
+    :root {
+        --altered-ratio-zero: 0%;
+        --altered-ratio-1-64: 1.5625%;
+        --altered-ratio-2-64: 3.125%;
+        --altered-ratio-3-64: 4.6875%;
+        --altered-ratio-4-64: 6.25%;
+        --altered-ratio-6-64: 9.375%;
+        --altered-ratio-8-64: 12.5%;
+        --altered-ratio-12-64: 18.75%;
+        --altered-ratio-16-64: 25%;
+        --altered-ratio-24-64: 37.5%;
+        --altered-ratio-32-64: 50%;
+        --altered-ratio-40-64: 62.5%;
+        --altered-ratio-48-64: 75%;
+        --altered-ratio-52-64: 81.25%;
+        --altered-ratio-56-64: 87.5%;
+        --altered-ratio-58-64: 90.625%;
+        --altered-ratio-60-64: 93.75%;
+        --altered-ratio-61-64: 95.3125%;
+        --altered-ratio-62-64: 96.875%;
+        --altered-ratio-63-64: 98.4375%;
+        --altered-ratio-one: 100%;
+    }
+}

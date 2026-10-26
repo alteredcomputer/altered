@@ -75,6 +75,9 @@
     --spacing-1024px: 1024px;
 
     --spacing-line: 1lh;
+
+    --spacing-gutter: 4ch;
+    --spacing-section: 4lh;
 }
 
 @layer base {

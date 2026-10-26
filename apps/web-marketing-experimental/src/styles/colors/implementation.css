@@ -4,15 +4,31 @@
     --color-*: initial;
 
     --color-foreground: light-dark(
-        var(--altered-color-way-off-black),
-        var(--altered-color-white)
+        var(--altered-color-foreground-light),
+        var(--altered-color-foreground-dark)
     );
     --color-background: light-dark(
-        var(--altered-color-off-white),
-        var(--altered-color-off-black)
+        var(--altered-color-background-light),
+        var(--altered-color-background-dark)
     );
 
-    --color-accent: var(--altered-color-orange);
+    --color-accent: light-dark(
+        var(--altered-color-accent-light),
+        var(--altered-color-accent-dark)
+    );
+    --color-accent-monochrome: light-dark(
+        var(--altered-color-accent-monochrome-light),
+        var(--altered-color-accent-monochrome-dark)
+    );
+
+    --color-selection: light-dark(
+        var(--altered-color-selection-light),
+        var(--altered-color-selection-dark)
+    );
+    --color-selection-monochrome: light-dark(
+        var(--altered-color-selection-monochrome-light),
+        var(--altered-color-selection-monochrome-dark)
+    );
 }
 
 @layer base {
@@ -29,7 +45,9 @@
         }
 
         &[data-palette="monochrome"] {
-            --color-accent: var(--color-foreground);
+            --color-accent: var(--color-accent-monochrome);
+
+            --color-selection: var(--color-selection-monochrome);
         }
     }
 
@@ -40,7 +58,7 @@
     }
 
     ::selection {
-        @apply bg-accent text-background;
+        @apply bg-selection text-background;
     }
 
     :focus-visible {

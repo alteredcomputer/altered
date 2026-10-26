@@ -1,11 +1,33 @@
+@import "../ratios/definitions.css";
+
 @layer theme {
     :root {
-        --altered-color-white: hsl(0 0% 100%);
-        --altered-color-off-white: hsl(0 0% 98.4375%);
+        --altered-color-foreground-light: hsl(0 0% var(--altered-ratio-16-64));
+        --altered-color-foreground-dark: hsl(0 0% var(--altered-ratio-one));
 
-        --altered-color-off-black: hsl(0 0% 6.25%);
-        --altered-color-way-off-black: hsl(0 0% 25%);
+        --altered-color-background-light: hsl(0 0% var(--altered-ratio-63-64));
+        --altered-color-background-dark: hsl(0 0% var(--altered-ratio-4-64));
 
-        --altered-color-orange: hsl(30, 100%, 50%);
+        --altered-color-accent-light: hsl(30, 100%, var(--altered-ratio-32-64));
+        --altered-color-accent-dark: hsl(30, 100%, var(--altered-ratio-32-64));
+        --altered-color-accent-monochrome-light: hsl(
+            0,
+            0%,
+            var(--altered-ratio-48-64)
+        );
+        --altered-color-accent-monochrome-dark: hsl(
+            0,
+            0%,
+            var(--altered-ratio-16-64)
+        );
+
+        --altered-color-selection-light: var(--altered-color-accent-light);
+        --altered-color-selection-dark: var(--altered-color-accent-dark);
+        --altered-color-selection-monochrome-light: var(
+            --altered-color-foreground-light
+        );
+        --altered-color-selection-monochrome-dark: var(
+            --altered-color-foreground-dark
+        );
     }
 }
