@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { Geist_Mono } from "next/font/google"
-import { viewOptionsScript } from "~/view-options/options"
+import { applyStoredClientPreferencesScript } from "~/domains/preferences/client/apply-stored"
 import "./globals.css"
 
 const geistMono = Geist_Mono({
@@ -30,7 +30,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <head>
                 <script
                     // biome-ignore lint/security/noDangerouslySetInnerHtml: Constant script.
-                    dangerouslySetInnerHTML={{ __html: viewOptionsScript }}
+                    dangerouslySetInnerHTML={{
+                        __html: applyStoredClientPreferencesScript
+                    }}
                 />
             </head>
             <body>{children}</body>

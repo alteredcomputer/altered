@@ -1,0 +1,18 @@
+@layer components {
+    /* All preference options exist in the HTML - so we hide all by default, and show the active one. These values must match the ones defined in `../registry.ts`. */
+
+    [data-preference-label] {
+        display: none;
+    }
+
+    html:not([data-color-scheme])
+        [data-preference-label="color-scheme=light dark"],
+    html[data-color-scheme="light"]
+        [data-preference-label="color-scheme=light"],
+    html[data-color-scheme="dark"] [data-preference-label="color-scheme=dark"],
+    html:not([data-palette]) [data-preference-label="palette=color"],
+    html[data-palette="monochrome"]
+        [data-preference-label="palette=monochrome"] {
+        display: inline;
+    }
+}
