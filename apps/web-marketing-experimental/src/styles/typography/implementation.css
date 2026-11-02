@@ -28,7 +28,8 @@
     }
 
     a,
-    button {
+    button,
+    [role="button"] {
         text-underline-offset: 0.25em;
     }
 
