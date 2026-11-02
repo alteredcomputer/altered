@@ -10,11 +10,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     title: {
-        template: "%s | ALTERED",
-        default: "ALTERED"
+        template: "%s — ALTERED",
+        default: "ALTERED: Knowledge Orchestration Infrastructure"
     },
 
-    description: "Knowledge Orchestration Infrastructure"
+    description: "The data control platform for humans in the AI era."
 }
 
 export const viewport: Viewport = {
