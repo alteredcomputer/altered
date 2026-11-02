@@ -2,8 +2,8 @@
 company: ALTERED Computer, Inc.
 app-name: ALTERED
 app-description: Knowledge Orchestration Infrastructure
-meta-title: `null`
-meta-description: `null`
+meta-title: null
+meta-description: null
 ---
 
 **Welcome to ALTERED.**

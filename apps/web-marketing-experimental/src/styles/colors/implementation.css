@@ -36,15 +36,15 @@
         color-scheme: light dark;
         background: var(--color-background);
 
-        &[data-color-scheme="light"] {
+        &[data-preference-color-scheme="light"] {
             color-scheme: light;
         }
 
-        &[data-color-scheme="dark"] {
+        &[data-preference-color-scheme="dark"] {
             color-scheme: dark;
         }
 
-        &[data-palette="monochrome"] {
+        &[data-preference-palette="monochrome"] {
             --color-accent: var(--color-accent-monochrome);
 
             --color-selection: var(--color-selection-monochrome);

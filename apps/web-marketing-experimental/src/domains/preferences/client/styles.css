@@ -1,17 +1,18 @@
 @layer components {
-    /* All preference options exist in the HTML - so we hide all by default, and show the active one. These values must match the ones defined in `../registry.ts`. */
+    /* All preference options exist in the HTML - so we hide all by default, and show the active one. These values must match the ones defined in `./definitions.ts`. */
 
     [data-preference-label] {
         display: none;
     }
 
-    html:not([data-color-scheme])
+    html:not([data-preference-color-scheme])
         [data-preference-label="color-scheme=light dark"],
-    html[data-color-scheme="light"]
+    html[data-preference-color-scheme="light"]
         [data-preference-label="color-scheme=light"],
-    html[data-color-scheme="dark"] [data-preference-label="color-scheme=dark"],
-    html:not([data-palette]) [data-preference-label="palette=color"],
-    html[data-palette="monochrome"]
+    html[data-preference-color-scheme="dark"]
+        [data-preference-label="color-scheme=dark"],
+    html:not([data-preference-palette]) [data-preference-label="palette=color"],
+    html[data-preference-palette="monochrome"]
         [data-preference-label="palette=monochrome"] {
         display: inline;
     }

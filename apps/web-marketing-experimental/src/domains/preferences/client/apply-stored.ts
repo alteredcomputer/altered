@@ -13,7 +13,7 @@ function serializable_applyStoredClientPreferences(
                 localPreferenceValue &&
                 preferenceOptions.includes(localPreferenceValue)
             ) {
-                const preferenceAttributeName = `data-${preferenceName}`
+                const preferenceAttributeName = `data-preference-${preferenceName}`
 
                 const htmlElement = document.documentElement
 
