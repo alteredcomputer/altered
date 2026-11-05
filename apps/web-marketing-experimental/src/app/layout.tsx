@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Geist_Mono } from "next/font/google"
 import { applyStoredClientPreferencesScript } from "~/domains/preferences/client/apply-stored"
+import { getDefaultClientPreferenceHtmlAttributes } from "~/domains/preferences/client/get-default-html-attributes"
 import "./globals.css"
 
 const geistMono = Geist_Mono({
@@ -26,7 +27,12 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
     return (
-        <html className={geistMono.variable} lang="en" suppressHydrationWarning>
+        <html
+            className={geistMono.variable}
+            lang="en"
+            suppressHydrationWarning
+            {...getDefaultClientPreferenceHtmlAttributes()}
+        >
             <head>
                 <script
                     // biome-ignore lint/security/noDangerouslySetInnerHtml: Constant script.
