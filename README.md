@@ -2,7 +2,7 @@
 
 **Welcome to ALTERED.**
 
-ALTERED is the data platform for human control.
+ALTERED is the data control platform for humans in the AI era.
 
 Store, develop, and use your ideas.
 
@@ -10,8 +10,6 @@ Store, develop, and use your ideas.
 
 ## Development
 
-Humans start in [./HUMANS.md](./HUMANS.md)
+Humans start in [./HUMANS.md](./HUMANS.md).
 
-Agents read [./AGENTS.md](./AGENTS.md)
-
-That's it.
+Agents read [./AGENTS.md](./AGENTS.md).
