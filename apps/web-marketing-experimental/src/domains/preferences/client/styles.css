@@ -1,19 +1,20 @@
 @layer components {
     /* All preference options exist in the HTML - so we hide all by default, and show the active one. These values must match the ones defined in `./definitions.ts`. */
 
-    [data-preference-label] {
+    [data-preference-name] {
         display: none;
     }
 
-    html:not([data-preference-color-scheme])
-        [data-preference-label="color-scheme=light dark"],
+    html[data-preference-color-scheme="light dark"]
+        [data-preference-name="color-scheme=light dark"],
     html[data-preference-color-scheme="light"]
-        [data-preference-label="color-scheme=light"],
+        [data-preference-name="color-scheme=light"],
     html[data-preference-color-scheme="dark"]
-        [data-preference-label="color-scheme=dark"],
-    html:not([data-preference-palette]) [data-preference-label="palette=color"],
+        [data-preference-name="color-scheme=dark"],
+    html[data-preference-palette="color"]
+        [data-preference-name="palette=color"],
     html[data-preference-palette="monochrome"]
-        [data-preference-label="palette=monochrome"] {
+        [data-preference-name="palette=monochrome"] {
         display: inline;
     }
 }
