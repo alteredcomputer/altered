@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { Suspense } from "react"
 import { defaultMarkdownConfig } from "~/markdown/definitions"
 import { getAllMarkdownPageRouteSegments } from "~/markdown/get-all-page-route-segments"
 import { getMarkdownFileContent } from "~/markdown/get-file-content"
@@ -37,8 +38,12 @@ async function generateMetadata({
     }
 }
 
-async function MarkdownPage({ params }: PageProps<"/[[...route-segments]]">) {
-    const { "route-segments": routeSegments = [] } = await params
+async function DynamicMarkdownContent({
+    pageParams
+}: {
+    pageParams: PageProps<"/[[...route-segments]]">["params"]
+}) {
+    const { "route-segments": routeSegments = [] } = await pageParams
 
     const mdast = getMarkdownFileContent({
         query: { routeSegments },
@@ -46,6 +51,15 @@ async function MarkdownPage({ params }: PageProps<"/[[...route-segments]]">) {
     })
 
     if (!mdast) notFound()
+
+    return <Markdown root={mdast} />
+}
+
+function MarkdownPage({ params }: PageProps<"/[[...route-segments]]">) {
+    const loadingMdast = getMarkdownFileContent({
+        query: { filePath: "_loading.md" },
+        config: defaultMarkdownConfig
+    })
 
     const viewOptionsMdast = getMarkdownFileContent({
         query: { filePath: "_view-options.md" },
@@ -55,7 +69,9 @@ async function MarkdownPage({ params }: PageProps<"/[[...route-segments]]">) {
     return (
         <main className="grid justify-items-center px-gutter py-section">
             <div className="grid w-full max-w-measure gap-line">
-                <Markdown root={mdast} />
+                <Suspense fallback={<Markdown root={loadingMdast} />}>
+                    <DynamicMarkdownContent pageParams={params} />
+                </Suspense>
 
                 <Markdown root={viewOptionsMdast} />
             </div>
