@@ -4,12 +4,14 @@
     "private": true,
     "scripts": {
         "build": "next build",
+        "check:types": "tsc --noEmit",
         "dev": "next dev",
         "format": "biome format --write",
         "lint": "biome check",
         "start": "next start"
     },
     "dependencies": {
+        "arktype": "^2.2.9",
         "mdast-util-from-markdown": "^2.1.0",
         "mdast-util-frontmatter": "^2.0.1",
         "micromark-extension-frontmatter": "^2.0.0",

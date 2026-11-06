@@ -1,7 +1,7 @@
 @import "./definitions.css";
 
 @theme {
-    --container-line-length: calc(var(--altered-line-length) * 1ch);
+    --container-measure: calc(var(--altered-line-length) * 1ch);
 }
 
 @theme inline {
