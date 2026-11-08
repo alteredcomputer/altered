@@ -5,7 +5,7 @@ import { defaultMarkdownConfig } from "~/markdown/definitions"
 import { getAllMarkdownPageRouteSegments } from "~/markdown/get-all-page-route-segments"
 import { getMarkdownFileContent } from "~/markdown/get-file-content"
 import { getMdastFrontmatterValues } from "~/markdown/get-frontmatter-values-from-parsed"
-import { Markdown } from "~/markdown/render"
+import { MarkdownRenderer } from "~/markdown/renderer"
 
 function generateStaticParams() {
     const allRouteSegments = getAllMarkdownPageRouteSegments({
@@ -52,7 +52,7 @@ async function DynamicMarkdownContent({
 
     if (!mdast) notFound()
 
-    return <Markdown root={mdast} />
+    return <MarkdownRenderer ast={mdast} />
 }
 
 function MarkdownPage({ params }: PageProps<"/[[...route-segments]]">) {
@@ -69,11 +69,11 @@ function MarkdownPage({ params }: PageProps<"/[[...route-segments]]">) {
     return (
         <main className="grid justify-items-center px-gutter py-section">
             <div className="grid w-full max-w-measure gap-line">
-                <Suspense fallback={<Markdown root={loadingMdast} />}>
+                <Suspense fallback={<MarkdownRenderer ast={loadingMdast} />}>
                     <DynamicMarkdownContent pageParams={params} />
                 </Suspense>
 
-                <Markdown root={viewOptionsMdast} />
+                <MarkdownRenderer ast={viewOptionsMdast} />
             </div>
         </main>
     )
