@@ -1,5 +1,6 @@
 import type { Heading } from "mdast"
 import { MarkdownDecorativeGlyph } from "../components/decorative-glyph"
+import type { MarkdownRendererNodeContext } from "./definitions"
 import { renderMarkdownChildNodes } from "./render-child-node"
 
 const astDepthToHtmlTagMap = {
@@ -11,7 +12,10 @@ const astDepthToHtmlTagMap = {
     6: "h6"
 } as const satisfies Record<Heading["depth"], string>
 
-function renderMarkdownHeadingNode(ast: Heading) {
+function renderMarkdownHeadingNode(
+    ast: Heading,
+    context: MarkdownRendererNodeContext
+) {
     const Tag = astDepthToHtmlTagMap[ast.depth]
 
     return (
@@ -19,7 +23,7 @@ function renderMarkdownHeadingNode(ast: Heading) {
             <MarkdownDecorativeGlyph>
                 {"#".repeat(ast.depth)}
             </MarkdownDecorativeGlyph>{" "}
-            {renderMarkdownChildNodes(ast)}
+            {renderMarkdownChildNodes(ast, context)}
         </Tag>
     )
 }

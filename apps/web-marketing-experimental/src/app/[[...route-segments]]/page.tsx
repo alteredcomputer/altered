@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+// biome-ignore lint/correctness/noUnresolvedImports: False positive.
 import { Suspense } from "react"
 import { defaultMarkdownConfig } from "~/markdown/definitions"
 import { getAllMarkdownPageRouteSegments } from "~/markdown/get-all-page-route-segments"

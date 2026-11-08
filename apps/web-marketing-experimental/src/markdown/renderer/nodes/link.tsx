@@ -3,10 +3,12 @@ import { MarkdownLink } from "~/markdown/renderer/components/link"
 import { assertValidMarkdownLinkTargetUrl } from "~/markdown/renderer/links/assert-valid-target-url"
 import type { MarkdownLinkOverrideLabelVariant } from "~/markdown/renderer/links/definitions"
 import { getMarkdownLinkOverrideConfig } from "~/markdown/renderer/links/overrides/get"
+import type { MarkdownRendererNodeContext } from "./definitions"
 import { renderMarkdownChildNodes } from "./render-child-node"
 
 const renderMarkdownLinkNodeLabel = (
     ast: Link,
+    context: MarkdownRendererNodeContext,
 
     {
         labelOverride
@@ -14,7 +16,7 @@ const renderMarkdownLinkNodeLabel = (
         labelOverride?: MarkdownLinkOverrideLabelVariant[]
     }
 ) => {
-    if (!labelOverride) return renderMarkdownChildNodes(ast)
+    if (!labelOverride) return renderMarkdownChildNodes(ast, context)
 
     return labelOverride.map(labelVariant => (
         <span key={labelVariant.text} {...labelVariant.attributes}>
@@ -23,7 +25,10 @@ const renderMarkdownLinkNodeLabel = (
     ))
 }
 
-function renderMarkdownLinkNode(ast: Link) {
+function renderMarkdownLinkNode(
+    ast: Link,
+    context: MarkdownRendererNodeContext
+) {
     const linkTargetText = ast.url
 
     const overrideConfig = getMarkdownLinkOverrideConfig({
@@ -35,7 +40,7 @@ function renderMarkdownLinkNode(ast: Link) {
     const overrideAction = overrideConfig?.target?.action
     if (!overrideAction) assertValidMarkdownLinkTargetUrl(linkTargetText)
 
-    const resolvedLabel = renderMarkdownLinkNodeLabel(ast, {
+    const resolvedLabel = renderMarkdownLinkNodeLabel(ast, context, {
         labelOverride: overrideConfig?.label
     })
 

@@ -1,8 +1,12 @@
 import type { List } from "mdast"
 import { MarkdownDecorativeGlyph } from "../components/decorative-glyph"
+import type { MarkdownRendererNodeContext } from "./definitions"
 import { renderMarkdownChildNodes } from "./render-child-node"
 
-function renderMarkdownListNode(ast: List) {
+function renderMarkdownListNode(
+    ast: List,
+    context: MarkdownRendererNodeContext
+) {
     const Tag = ast.ordered ? "ol" : "ul"
 
     const createListItemPrefix = (options: {
@@ -42,7 +46,7 @@ function renderMarkdownListNode(ast: List) {
                     </span>
 
                     <div className="grid gap-line">
-                        {renderMarkdownChildNodes(item)}
+                        {renderMarkdownChildNodes(item, context)}
                     </div>
                 </li>
             ))}

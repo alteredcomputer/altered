@@ -1,9 +1,12 @@
 import type { Blockquote } from "mdast"
 import { MarkdownDecorativeGlyph } from "../components/decorative-glyph"
-import { MarkdownRendererNode } from "."
+import type { MarkdownRendererNodeContext } from "./definitions"
 import { renderMarkdownChildNodes } from "./render-child-node"
 
-function renderMarkdownBlockquoteNode(ast: Blockquote) {
+function renderMarkdownBlockquoteNode(
+    ast: Blockquote,
+    context: MarkdownRendererNodeContext
+) {
     return (
         <blockquote className="grid gap-line">
             {ast.children.map((child, index) => (
@@ -12,9 +15,9 @@ function renderMarkdownBlockquoteNode(ast: Blockquote) {
                     <MarkdownDecorativeGlyph>{"> "}</MarkdownDecorativeGlyph>
 
                     {child.type === "paragraph" ? (
-                        renderMarkdownChildNodes(child)
+                        renderMarkdownChildNodes(child, context)
                     ) : (
-                        <MarkdownRendererNode ast={child} />
+                        <context.renderer ast={child} />
                     )}
                 </p>
             ))}

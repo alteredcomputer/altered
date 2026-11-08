@@ -1,10 +1,13 @@
 import type { Nodes } from "mdast"
-import { MarkdownRendererNode } from "."
+import type { MarkdownRendererNodeContext } from "./definitions"
 
-function renderMarkdownChildNodes(ast: { children: Nodes[] }) {
+function renderMarkdownChildNodes(
+    ast: { children: Nodes[] },
+    context: MarkdownRendererNodeContext
+) {
     return ast.children.map((child, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: Constant array.
-        <MarkdownRendererNode ast={child} key={`${child.type}-${index}`} />
+        <context.renderer ast={child} key={`${child.type}-${index}`} />
     ))
 }
 
