@@ -28,14 +28,18 @@ function renderMarkdownListNode(ast: List) {
             {ast.children.map((item, index) => (
                 // biome-ignore lint/suspicious/noArrayIndexKey: Constant array.
                 <li className="flex" key={`${item.type}-${index}`}>
-                    <MarkdownDecorativeGlyph>
-                        {createListItemPrefix({
-                            isOrdered: ast.ordered,
-                            startNumber: ast.start,
+                    {/* Since we're using `flex`, the 'list item prefix' would shrink + wrap for long list items and the trailing space would collapse. The span wrapper fixes that. */}
 
-                            itemIndex: index
-                        })}
-                    </MarkdownDecorativeGlyph>
+                    <span className="shrink-0 whitespace-pre">
+                        <MarkdownDecorativeGlyph>
+                            {createListItemPrefix({
+                                isOrdered: ast.ordered,
+                                startNumber: ast.start,
+
+                                itemIndex: index
+                            })}
+                        </MarkdownDecorativeGlyph>
+                    </span>
 
                     <div className="grid gap-line">
                         {renderMarkdownChildNodes(item)}
