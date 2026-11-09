@@ -19,10 +19,12 @@ function renderMarkdownHeadingNode(
     const Tag = astDepthToHtmlTagMap[ast.depth]
 
     return (
-        <Tag className="font-bold text-balance text-foreground">
-            <MarkdownDecorativeGlyph>
-                {"#".repeat(ast.depth)}
-            </MarkdownDecorativeGlyph>{" "}
+        <Tag className="font-bold text-balance text-foreground not-first:pt-line">
+            <span className="shrink-0 whitespace-pre">
+                <MarkdownDecorativeGlyph>
+                    {"#".repeat(ast.depth)}
+                </MarkdownDecorativeGlyph>{" "}
+            </span>
             {renderMarkdownChildNodes(ast, context)}
         </Tag>
     )

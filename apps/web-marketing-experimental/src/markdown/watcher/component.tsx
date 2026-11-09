@@ -5,7 +5,7 @@ import { useEffect } from "react"
 
 const markdownWatcherApiPath = "/api/dev/markdown/watcher"
 
-const refreshDebounceMs = 250
+const refreshDebounceMs = 125
 
 function _MarkdownWatcher() {
     // biome-ignore lint/correctness/useHookAtTopLevel: False positive.

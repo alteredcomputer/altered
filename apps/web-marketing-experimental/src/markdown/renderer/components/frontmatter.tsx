@@ -17,8 +17,10 @@ function MarkdownFrontmatter({ yaml }: { yaml: string }) {
 
     const nonBreakingSpace = "\u00A0"
 
+    const specialYamlValues = ["null", "true", "false"]
+
     return (
-        <header className="grid">
+        <header className="grid pb-line">
             <MarkdownDecorativeGlyph>{"---"}</MarkdownDecorativeGlyph>
 
             {parsedYamlLines.map(
@@ -27,15 +29,15 @@ function MarkdownFrontmatter({ yaml }: { yaml: string }) {
                     <p key={index}>
                         {keyWithDelimiter ? (
                             <>
-                                <MarkdownDecorativeGlyph>
+                                <span className="text-foreground/32-64">
                                     {keyWithDelimiter}
-                                </MarkdownDecorativeGlyph>
+                                </span>
 
                                 <span
                                     className={
-                                        value === "null"
-                                            ? "text-foreground/32-64"
-                                            : "text-foreground"
+                                        specialYamlValues.includes(value)
+                                            ? "text-foreground/16-64"
+                                            : "text-foreground/48-64"
                                     }
                                 >
                                     {value}
