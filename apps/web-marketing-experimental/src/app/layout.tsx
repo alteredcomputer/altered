@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Geist_Mono } from "next/font/google"
 import { applyStoredClientPreferencesScript } from "~/domains/preferences/client/apply-stored"
 import { getDefaultClientPreferenceHtmlAttributes } from "~/domains/preferences/client/get-default-html-attributes"
+import { MarkdownWatcher } from "~/markdown/watcher/component"
 import "./globals.css"
 
 const geistMono = Geist_Mono({
@@ -41,7 +42,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                     }}
                 />
             </head>
-            <body>{children}</body>
+            <body>
+                {children}
+
+                <MarkdownWatcher />
+            </body>
         </html>
     )
 }
