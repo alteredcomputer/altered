@@ -1,6 +1,6 @@
 import { clearClientPreferences } from "~/domains/preferences/client/clear"
+import { cycleClientPreference } from "~/domains/preferences/client/cycle"
 import { getClientPreferenceLinkOverrideLabelVariants } from "~/domains/preferences/client/get-link-override-label-variants"
-import { cycleClientPreference } from "~/domains/preferences/client/set"
 import type { MarkdownLinkOverrideConfig } from "~/markdown/renderer/links/definitions"
 
 const markdownLinkOverrideConfig = [
@@ -12,7 +12,8 @@ const markdownLinkOverrideConfig = [
         }),
 
         target: {
-            action: () => cycleClientPreference({ name: "color-scheme" })
+            action: () =>
+                cycleClientPreference({ preferenceName: "color-scheme" })
         }
     },
     {
@@ -23,7 +24,7 @@ const markdownLinkOverrideConfig = [
         }),
 
         target: {
-            action: () => cycleClientPreference({ name: "palette" })
+            action: () => cycleClientPreference({ preferenceName: "palette" })
         }
     },
     {
