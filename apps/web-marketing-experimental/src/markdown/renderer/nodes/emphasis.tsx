@@ -8,13 +8,13 @@ function renderMarkdownEmphasisNode(
     context: MarkdownRendererNodeContext
 ) {
     return (
-        <>
+        <em className="text-foreground/32-64">
             <MarkdownDecorativeGlyph>{"*"}</MarkdownDecorativeGlyph>
 
-            <em>{renderMarkdownChildNodes(ast, context)}</em>
+            {renderMarkdownChildNodes(ast, context)}
 
             <MarkdownDecorativeGlyph>{"*"}</MarkdownDecorativeGlyph>
-        </>
+        </em>
     )
 }
 

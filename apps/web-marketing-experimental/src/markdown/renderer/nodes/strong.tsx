@@ -8,15 +8,13 @@ function renderMarkdownStrongNode(
     context: MarkdownRendererNodeContext
 ) {
     return (
-        <>
+        <strong className="font-bold text-foreground">
             <MarkdownDecorativeGlyph>{"**"}</MarkdownDecorativeGlyph>
 
-            <strong className="font-bold text-foreground">
-                {renderMarkdownChildNodes(ast, context)}
-            </strong>
+            {renderMarkdownChildNodes(ast, context)}
 
             <MarkdownDecorativeGlyph>{"**"}</MarkdownDecorativeGlyph>
-        </>
+        </strong>
     )
 }
 
