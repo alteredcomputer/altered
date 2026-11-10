@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Geist_Mono } from "next/font/google"
 import { applyStoredClientPreferencesScript } from "~/domains/preferences/client/apply-stored"
+import { ColorSchemeToggleShortcut } from "~/domains/preferences/client/color-scheme-toggle-shortcut"
 import { getDefaultClientPreferenceHtmlAttributes } from "~/domains/preferences/client/get-default-html-attributes"
 import { MarkdownWatcher } from "~/markdown/watcher/component"
 import "./globals.css"
@@ -46,6 +47,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 {children}
 
                 <MarkdownWatcher />
+
+                <ColorSchemeToggleShortcut />
             </body>
         </html>
     )
