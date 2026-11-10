@@ -20,10 +20,25 @@ type GetMarkdownFileContentOptions = {
     config: MarkdownConfig
 }
 
+type GetMarkdownFileContentResult =
+    | {
+          data: { mdast: Root }
+
+          error: null
+      }
+    | {
+          data: null
+
+          error: {
+              message: string
+              cause: Record<string, unknown>
+          }
+      }
+
 function getMarkdownFileContent({
     query,
     config
-}: GetMarkdownFileContentOptions): Root {
+}: GetMarkdownFileContentOptions): GetMarkdownFileContentResult {
     let resolvedFilePath: string
 
     if ("routeSegments" in query) {
@@ -50,9 +65,15 @@ function getMarkdownFileContent({
         )
 
         if (!matchingFilePath)
-            throw new Error(
-                "No file was found matching the given route segments."
-            )
+            return {
+                data: null,
+
+                error: {
+                    message:
+                        "No file was found matching the given route segments.",
+                    cause: { routeSegments: query.routeSegments }
+                }
+            }
 
         resolvedFilePath = matchingFilePath
     } else {
@@ -71,7 +92,11 @@ function getMarkdownFileContent({
 
     const mdast = parseMarkdown({ content: fileContent })
 
-    return mdast
+    return {
+        data: { mdast },
+
+        error: null
+    }
 }
 
 export { getMarkdownFileContent }

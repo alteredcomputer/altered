@@ -17,7 +17,7 @@ function renderMarkdownEmphasisNode(
         return renderMarkdownStrongEmphasisNode(firstChild, context)
 
     return (
-        <em className="text-foreground/32-64">
+        <em className="text-foreground/32-64 in-[strong]:text-foreground">
             <MarkdownDecorativeGlyph>{"*"}</MarkdownDecorativeGlyph>
 
             {renderMarkdownChildNodes(ast, context)}

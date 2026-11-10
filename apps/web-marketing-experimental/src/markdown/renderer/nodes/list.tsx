@@ -22,7 +22,7 @@ function renderMarkdownListNode(
             startNumber: options.startNumber ?? 1
         }
 
-        if (!isOrdered) return "-  "
+        if (!isOrdered) return "- "
 
         return `${startNumber + itemIndex}. `
     }

@@ -25,10 +25,13 @@ async function generateMetadata({
 }: PageProps<"/[[...route-segments]]">): Promise<Metadata> {
     const { "route-segments": routeSegments = [] } = await params
 
-    const mdast = getMarkdownFileContent({
+    const { data: markdownFileData } = getMarkdownFileContent({
         query: { routeSegments },
         config: defaultMarkdownConfig
     })
+
+    if (!markdownFileData) notFound()
+    const { mdast } = markdownFileData
 
     const { "meta-title": title, "meta-description": description } =
         getMdastFrontmatterValues(mdast)
@@ -46,26 +49,32 @@ async function DynamicMarkdownContent({
 }) {
     const { "route-segments": routeSegments = [] } = await pageParams
 
-    const mdast = getMarkdownFileContent({
+    const { data: markdownFileData } = getMarkdownFileContent({
         query: { routeSegments },
         config: defaultMarkdownConfig
     })
 
-    if (!mdast) notFound()
+    if (!markdownFileData) notFound()
+    const { mdast } = markdownFileData
 
     return <MarkdownRenderer ast={mdast} />
 }
 
 function MarkdownPage({ params }: PageProps<"/[[...route-segments]]">) {
-    const loadingMdast = getMarkdownFileContent({
+    const { data: loadingMarkdownFileData } = getMarkdownFileContent({
         query: { filePath: "_loading.md" },
         config: defaultMarkdownConfig
     })
 
-    const viewOptionsMdast = getMarkdownFileContent({
+    const { data: viewOptionsMarkdownFileData } = getMarkdownFileContent({
         query: { filePath: "_view-options.md" },
         config: defaultMarkdownConfig
     })
+
+    if (!loadingMarkdownFileData || !viewOptionsMarkdownFileData) notFound()
+
+    const { mdast: loadingMdast } = loadingMarkdownFileData,
+        { mdast: viewOptionsMdast } = viewOptionsMarkdownFileData
 
     return (
         <main className="grid justify-items-center px-gutter py-section">
