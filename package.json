@@ -4,7 +4,7 @@
         "fix": "ultracite fix"
     },
     "devDependencies": {
-        "@biomejs/biome": "2.6.2",
+        "@biomejs/biome": "2.6.6",
         "ultracite": "8.0.1"
     },
     "packageManager": "pnpm@12.15.0"
