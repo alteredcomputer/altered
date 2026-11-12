@@ -7,6 +7,9 @@ import { getMarkdownLinkOverrideConfig } from "../links/overrides/get"
 type MarkdownLinkProps = {
     target: { text: string }
 
+    /** @remarks For targets that aren't pages of the site, such as images. */
+    isOpeningInNewTab?: boolean
+
     children: ReactNode
 }
 
@@ -53,7 +56,11 @@ function MarkdownActionOverrideLink({
     )
 }
 
-function MarkdownLink({ target, ...props }: MarkdownLinkProps) {
+function MarkdownLink({
+    target,
+    isOpeningInNewTab,
+    ...props
+}: MarkdownLinkProps) {
     const overrideConfig = getMarkdownLinkOverrideConfig({
         query: {
             target: { text: target.text }
@@ -76,10 +83,13 @@ function MarkdownLink({ target, ...props }: MarkdownLinkProps) {
         <Link
             className="font-bold text-accent hover:underline focus-visible:underline"
             href={target.text}
+            {...(isOpeningInNewTab
+                ? { rel: "noopener noreferrer", target: "_blank" }
+                : {})}
         >
             {props.children}
         </Link>
     )
 }
 
-export { MarkdownLink }
+export { MarkdownActionOverrideLink, MarkdownLink }

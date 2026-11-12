@@ -1,10 +1,13 @@
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import type { Root } from "mdast"
+import { IS_MARKDOWN_TRANSFORM_RULES_ENABLED } from "~/config/general"
+import { markdownTransformRules } from "~/config/markdown/transforms"
 import type { MarkdownConfig } from "./definitions"
 import { markdownFilePathToRouteSegments } from "./file-path-to-route-segments"
 import { getMarkdownFilePaths } from "./get-file-paths"
 import { parseMarkdown } from "./parse"
+import { transformMarkdown } from "./transform"
 
 type GetMarkdownFileContentQueryOptions =
     | {
@@ -90,7 +93,11 @@ function getMarkdownFileContent({
         "utf8"
     )
 
-    const mdast = parseMarkdown({ content: fileContent })
+    const mdast = transformMarkdown({
+        mdast: parseMarkdown({ content: fileContent }),
+        source: fileContent,
+        rules: IS_MARKDOWN_TRANSFORM_RULES_ENABLED ? markdownTransformRules : []
+    })
 
     return {
         data: { mdast },

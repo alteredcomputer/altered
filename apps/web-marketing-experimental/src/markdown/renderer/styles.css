@@ -1,0 +1,22 @@
+/**
+ * @remarks Line numbers are generated content, so they can't be selected or copied. Every element that starts a source line carries `data-markdown-line`.
+ */
+@layer components {
+    .markdown-line-numbers {
+        counter-reset: markdown-line;
+
+        @apply relative;
+    }
+
+    .markdown-line-numbers [data-markdown-line]::before {
+        counter-increment: markdown-line;
+        content: counter(markdown-line);
+
+        @apply absolute right-full w-max pr-gutter font-normal text-foreground/16-64 not-italic;
+    }
+
+    /* A space at a wrap hangs past the line's edge and is still highlighted when selected, so outermost lines wrap 1ch early to keep it inside the measure. */
+    [data-markdown-line]:not([data-markdown-line] *) {
+        @apply pr-[1ch];
+    }
+}

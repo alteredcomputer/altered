@@ -14,15 +14,20 @@ function renderMarkdownEmphasisNode(
     const isChildStrong = firstChild?.type === "strong"
 
     if (isOnlyChild && isChildStrong)
-        return renderMarkdownStrongEmphasisNode(firstChild, context)
+        return renderMarkdownStrongEmphasisNode(
+            { outer: ast, inner: firstChild },
+            context
+        )
+
+    const marker = ast.data?.marker ?? "*"
 
     return (
         <em className="text-foreground/32-64 in-[strong]:text-foreground">
-            <MarkdownDecorativeGlyph>{"*"}</MarkdownDecorativeGlyph>
+            <MarkdownDecorativeGlyph>{marker}</MarkdownDecorativeGlyph>
 
             {renderMarkdownChildNodes(ast, context)}
 
-            <MarkdownDecorativeGlyph>{"*"}</MarkdownDecorativeGlyph>
+            <MarkdownDecorativeGlyph>{marker}</MarkdownDecorativeGlyph>
         </em>
     )
 }

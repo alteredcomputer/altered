@@ -20,13 +20,15 @@ function MarkdownFrontmatter({ yaml }: { yaml: string }) {
     const specialYamlValues = ["null", "true", "false"]
 
     return (
-        <header className="grid pb-line">
-            <MarkdownDecorativeGlyph>{"---"}</MarkdownDecorativeGlyph>
+        <header className="grid">
+            <div data-markdown-line="">
+                <MarkdownDecorativeGlyph>{"---"}</MarkdownDecorativeGlyph>
+            </div>
 
             {parsedYamlLines.map(
                 ({ yamlLine, keyWithDelimiter, value }, index) => (
                     // biome-ignore lint/suspicious/noArrayIndexKey: Constant array.
-                    <p key={index}>
+                    <div data-markdown-line="" key={index}>
                         {keyWithDelimiter ? (
                             <>
                                 <span className="text-foreground/32-64">
@@ -46,11 +48,13 @@ function MarkdownFrontmatter({ yaml }: { yaml: string }) {
                         ) : (
                             yamlLine || nonBreakingSpace
                         )}
-                    </p>
+                    </div>
                 )
             )}
 
-            <MarkdownDecorativeGlyph>{"---"}</MarkdownDecorativeGlyph>
+            <div data-markdown-line="">
+                <MarkdownDecorativeGlyph>{"---"}</MarkdownDecorativeGlyph>
+            </div>
         </header>
     )
 }

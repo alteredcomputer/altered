@@ -1,13 +1,19 @@
 import type { ThematicBreak } from "mdast"
+import { MarkdownLine } from "../components/line"
+import type { MarkdownRendererNodeContext } from "./definitions"
 
-function renderMarkdownThematicBreakNode(_ast: ThematicBreak) {
+function renderMarkdownThematicBreakNode(
+    ast: ThematicBreak,
+    context: MarkdownRendererNodeContext
+) {
     return (
-        <p
+        <MarkdownLine
             aria-hidden="true"
-            className="text-foreground/48-64 not-first:pt-line"
+            className="text-foreground/48-64"
+            linePrefix={context.linePrefix}
         >
-            {"---"}
-        </p>
+            {ast.data?.marker ?? "---"}
+        </MarkdownLine>
     )
 }
 

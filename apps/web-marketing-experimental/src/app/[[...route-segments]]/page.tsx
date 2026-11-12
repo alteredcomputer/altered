@@ -7,6 +7,7 @@ import { getAllMarkdownPageRouteSegments } from "~/markdown/get-all-page-route-s
 import { getMarkdownFileContent } from "~/markdown/get-file-content"
 import { getMdastFrontmatterValues } from "~/markdown/get-frontmatter-values-from-parsed"
 import { MarkdownRenderer } from "~/markdown/renderer"
+import { MarkdownBlankLine } from "~/markdown/renderer/components/blank-line"
 
 function generateStaticParams() {
     const allRouteSegments = getAllMarkdownPageRouteSegments({
@@ -78,10 +79,13 @@ function MarkdownPage({ params }: PageProps<"/[[...route-segments]]">) {
 
     return (
         <main className="grid justify-items-center px-gutter py-section">
-            <div className="grid w-full max-w-measure gap-line">
+            <div className="grid w-full max-w-measure">
                 <Suspense fallback={<MarkdownRenderer ast={loadingMdast} />}>
                     <DynamicMarkdownContent pageParams={params} />
                 </Suspense>
+
+                <MarkdownBlankLine />
+                <MarkdownBlankLine />
 
                 <MarkdownRenderer ast={viewOptionsMdast} />
             </div>

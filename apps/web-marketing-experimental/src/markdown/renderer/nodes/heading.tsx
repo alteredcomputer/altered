@@ -1,5 +1,6 @@
 import type { Heading } from "mdast"
 import { MarkdownDecorativeGlyph } from "../components/decorative-glyph"
+import { MarkdownLine, MarkdownLinePrefixGlyph } from "../components/line"
 import type { MarkdownRendererNodeContext } from "./definitions"
 import { renderMarkdownChildNodes } from "./render-child-node"
 
@@ -18,15 +19,43 @@ function renderMarkdownHeadingNode(
 ) {
     const Tag = astDepthToHtmlTagMap[ast.depth]
 
+    const marker = ast.data?.marker ?? `${"#".repeat(ast.depth)} `
+
+    /** @remarks A setext heading's marker is its underline (`===` or `---`), on the line below the text. */
+    const isSetextHeading = !marker.startsWith("#")
+
     return (
-        <Tag className="font-bold text-balance text-foreground not-first:pt-line">
-            <span className="shrink-0 whitespace-pre">
-                <MarkdownDecorativeGlyph>
-                    {"#".repeat(ast.depth)}
-                </MarkdownDecorativeGlyph>{" "}
-            </span>
+        <MarkdownLine
+            as={Tag}
+            className="font-bold text-balance whitespace-pre-line text-foreground"
+            linePrefix={context.linePrefix}
+        >
+            {isSetextHeading ? null : (
+                <span className="whitespace-pre">
+                    <MarkdownDecorativeGlyph>{marker}</MarkdownDecorativeGlyph>
+                </span>
+            )}
+
             {renderMarkdownChildNodes(ast, context)}
-        </Tag>
+
+            {ast.data?.closingMarker ? (
+                <span className="whitespace-pre">
+                    <MarkdownDecorativeGlyph>
+                        {ast.data.closingMarker}
+                    </MarkdownDecorativeGlyph>
+                </span>
+            ) : null}
+
+            {isSetextHeading ? (
+                <>
+                    {"\n"}
+                    <MarkdownLinePrefixGlyph>
+                        {context.linePrefix?.rest ?? ""}
+                    </MarkdownLinePrefixGlyph>
+                    <MarkdownDecorativeGlyph>{marker}</MarkdownDecorativeGlyph>
+                </>
+            ) : null}
+        </MarkdownLine>
     )
 }
 

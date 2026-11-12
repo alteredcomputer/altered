@@ -1,3 +1,4 @@
 @import "tailwindcss";
 @import "../styles/index.css";
 @import "../domains/preferences/client/styles.css";
+@import "../markdown/renderer/styles.css";
