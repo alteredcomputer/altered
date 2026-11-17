@@ -1,13 +1,13 @@
 # Prerequisites
 
-1. Put God first. He can block your success from happening, or make it happen in an instant. Honour Him.
+1. Put God first. He can block your success from happening, or make it happen in an instant. Honour Him. Jesus Christ is his name.
 
 2. Organize your environment. A cluttered workspace means a cluttered mind.
 
 # Mindset
 
-## Writing Code
+- Focus on the right thing. Take the straightest path to v1.
 
-- Move as fast as possible without sacrificing UX or durability.
+# Getting Started
 
-- Artistic or aesthetic appeal is a side effect, not the primary focus.
+- Read the [TODOs](context/todos.md).

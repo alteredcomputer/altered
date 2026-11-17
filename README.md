@@ -10,6 +10,6 @@ Store, develop, and use your ideas.
 
 ## Development
 
-Humans start in [./HUMANS.md](./HUMANS.md).
+Humans start in [./HUMANS.md](HUMANS.md).
 
-Agents read [./AGENTS.md](./AGENTS.md).
+Agents read [./AGENTS.md](AGENTS.md).

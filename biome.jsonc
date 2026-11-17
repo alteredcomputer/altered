@@ -10,7 +10,7 @@
 
     "files": {
         /**
-         * @remarks Since Ultracite's default rules completely exclude certain folders such as `"build/"`, we need to manually re-include paths like `"packages/tooling/src/build/**"` if we want to run Biome on them.
+         * @remarks Since Ultracite's default rules completely exclude certain folders like "build/", we need to manually re-include paths like "packages/tooling/src/build/**" if we want Biome to run on them.
          */
         "includes": []
     },
@@ -121,9 +121,5 @@
         },
 
         "analyzeEmbeds": true
-    },
-
-    "tailwind": {
-        "stylesheet": "./apps/web-marketing-experimental/src/app/globals.css"
     }
 }

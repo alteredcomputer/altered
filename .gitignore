@@ -10,8 +10,8 @@
 .turbo/
 .vercel/
 
+context/.tmp/
+context/repos/
 dist/
 node_modules/
 
-context/state/
-context/repos/
