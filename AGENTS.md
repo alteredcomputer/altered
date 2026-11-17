@@ -1,4 +1,4 @@
-# Instructions and Context
+Always use:
 
-Before making any changes, read:
-1. All vendor instructions in [context/_vendors/](context/_vendors/).
+- [Vendored Instructions](context/_vendored/)
+- [Local Knowledge Base](../../generatedcomputer/altered-knowledge-base/) or [Remote](git@github.com:generatedcomputer/altered-knowledge-base.git)
