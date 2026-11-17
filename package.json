@@ -1,11 +1,30 @@
 {
+    "name": "altered",
+    "private": true,
+    "type": "module",
+
     "scripts": {
-        "check": "ultracite check",
-        "fix": "ultracite fix"
+        "check:types": "turbo check:types",
+        "check:style": "ultracite check",
+        "check": "turbo check:types //#check:style",
+
+        "fix:style": "ultracite fix",
+        "fix:style:force": "ultracite fix --unsafe",
+        "fix": "pnpm fix:style"
     },
+
     "devDependencies": {
+        "@altered/tooling": "workspace:*",
         "@biomejs/biome": "2.6.6",
+        "@types/node": "catalog:",
+        "turbo": "2.11.11",
+        "typescript": "catalog:",
         "ultracite": "8.0.1"
     },
-    "packageManager": "pnpm@12.15.0"
+
+    "packageManager": "pnpm@12.15.0",
+
+    "engines": {
+        "node": ">=26.13.1"
+    }
 }

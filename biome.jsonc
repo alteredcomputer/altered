@@ -82,7 +82,8 @@
         "actions": {
             "source": {
                 "useSortedKeys": "off",
-                "useSortedProperties": "off"
+                "useSortedProperties": "off",
+                "useSortedPackageJson": "off"
             }
         }
     },
