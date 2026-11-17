@@ -26,6 +26,13 @@
 
     "linter": {
         "rules": {
+            "correctness": {
+                /**
+                 * @remarks Since our final monorepo strategy requires extensions when importing from packages, we re-enable this to enforce codebase-wide consistency. This check applies to relative imports as well.
+                 */
+                "useImportExtensions": "error"
+            },
+
             "style": {
                 "useBlockStatements": "off",
 

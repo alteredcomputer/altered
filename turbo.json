@@ -1,0 +1,13 @@
+{
+    "$schema": "https://turborepo.com/schema.json",
+    "ui": "tui",
+
+    "globalDependencies": ["packages/tooling/src/typescript/config/**/*.json"],
+
+    "tasks": {
+        "check:types": {
+            "dependsOn": ["^check:types"]
+        },
+        "//#check:style": {}
+    }
+}
