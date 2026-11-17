@@ -1,6 +1,6 @@
 {
-    "js/ts.tsdk.path": "node_modules/typescript/lib",
-    "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+    "js/ts.experimental.useTsgo": true,
+    "js/ts.tsdk.path": "node_modules/typescript",
 
     "[css]": { "editor.defaultFormatter": "biomejs.biome" },
     "[graphql]": { "editor.defaultFormatter": "biomejs.biome" },
@@ -19,8 +19,7 @@
 
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-        "source.fixAll.biome": "explicit",
-        "source.organizeImports.biome": "explicit"
+        "source.fixAll.biome": "explicit"
     },
 
     "emmet.showExpandedAbbreviation": "never",
