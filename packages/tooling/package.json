@@ -1,0 +1,9 @@
+{
+    "name": "@altered/tooling",
+    "private": true,
+    "type": "module",
+
+    "exports": {
+        "./typescript/config/*.json": "./src/typescript/config/*.json"
+    }
+}
