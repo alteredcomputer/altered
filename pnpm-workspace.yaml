@@ -2,7 +2,22 @@ packages:
     - apps/*
     - packages/*
 
+allowBuilds:
+    esbuild: true
+
 catalog:
     "@types/node": 26.6.6
     arktype: 2.2.9
     typescript: 7.0.2
+
+catalogs:
+    react:
+        "@types/react": 19.3.0
+        react: 19.3.1
+
+    raycast:
+        "@raycast/api": 2.12.1
+        "@types/node": 26.6.5
+
+patchedDependencies:
+    "@raycast/api@2.12.1": patches/@raycast__api@2.12.1.patch
