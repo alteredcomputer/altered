@@ -11,6 +11,10 @@ catalog:
     typescript: 7.0.2
 
 catalogs:
+    orpc:
+        "@orpc/contract": 2.0.0-beta.51
+        "@orpc/server": 2.0.0-beta.51
+
     react:
         "@types/react": 19.3.0
         react: 19.3.1
