@@ -1,0 +1,76 @@
+{
+    "$schema": "https://www.raycast.com/schemas/extension.json",
+
+    "name": "altered-launcher-experimental",
+    "title": "ALTERED: Knowledge Orchestration Infrastructure (Experimental)",
+    "description": "ALTERED is the data control platform for humans in the AI era. Store, develop, and use your ideas.",
+    "icon": "launcher-icon-experimental-tmp.png",
+
+    "author": "inducingchaos",
+    "owner": "alteredcomputer",
+    "license": "MIT",
+
+    "platforms": [
+        "macOS",
+        "Windows"
+    ],
+
+    "categories": [
+        "Applications",
+        "Data",
+        "Design Tools",
+        "Developer Tools",
+        "Documentation",
+        "Media",
+        "Other",
+        "Productivity",
+        "System",
+        "Web"
+    ],
+
+    "keywords": [
+        "altered",
+        "knowledge",
+        "thoughts",
+        "orchestration",
+        "infrastructure",
+        "control",
+        "ai",
+        "agents",
+        "organization",
+        "files",
+        "notes",
+        "folders"
+    ],
+
+    "commands": [
+        {
+            "mode": "view",
+            "name": "hello",
+            "title": "Hello",
+            "subtitle": "ALTERED",
+            "description": "Shows the first ALTERED thought."
+        }
+    ],
+
+    "scripts": {
+        "dev": "WATCH_PATHS=../../packages/launcher-experimental/src,../../packages/shared-experimental/src ray develop",
+
+        "check:types": "tsc",
+        "check:style:raycast": "ray lint",
+
+        "build:raycast": "ray build"
+    },
+
+    "dependencies": {
+        "@altered/launcher-experimental": "workspace:*",
+        "@raycast/api": "catalog:raycast"
+    },
+
+    "devDependencies": {
+        "@altered/tooling": "workspace:*",
+        "@types/node": "catalog:raycast",
+        "@types/react": "catalog:react",
+        "typescript": "catalog:"
+    }
+}
