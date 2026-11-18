@@ -54,7 +54,7 @@
     ],
 
     "scripts": {
-        "dev": "WATCH_PATHS=../../packages/launcher-experimental/src,../../packages/shared-experimental/src ray develop",
+        "dev": "ray develop --watch-workspace-packages",
 
         "check:types": "tsc",
         "check:style:raycast": "ray lint",

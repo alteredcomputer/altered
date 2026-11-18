@@ -214,7 +214,7 @@ catalogs:
       version: 19.3.1
 
 patchedDependencies:
-  '@raycast/api@2.12.1': 8717e2566e69f6d3de228c29300fb70f0e6e4b554df405d5abf3e2117eb03691
+  '@raycast/api@2.12.1': 2e2830ce7df0a18201c0b80911680532f26e4067d22af268eb24de61320a7fe9
 
 importers:
 
@@ -249,7 +249,7 @@ importers:
         version: link:../../packages/launcher-experimental
       '@raycast/api':
         specifier: catalog:raycast
-        version: 2.12.1(patch_hash=8717e2566e69f6d3de228c29300fb70f0e6e4b554df405d5abf3e2117eb03691)(@types/node@26.6.5)(@types/react@19.3.0)(supports-color@8.1.1)
+        version: 2.12.1(patch_hash=2e2830ce7df0a18201c0b80911680532f26e4067d22af268eb24de61320a7fe9)(@types/node@26.6.5)(@types/react@19.3.0)(supports-color@8.1.1)
     devDependencies:
       '@altered/tooling':
         specifier: workspace:*
@@ -271,7 +271,7 @@ importers:
         version: link:../shared-experimental
       '@raycast/api':
         specifier: catalog:raycast
-        version: 2.12.1(patch_hash=8717e2566e69f6d3de228c29300fb70f0e6e4b554df405d5abf3e2117eb03691)(@types/node@26.6.5)(@types/react@19.3.0)(supports-color@8.1.1)
+        version: 2.12.1(patch_hash=2e2830ce7df0a18201c0b80911680532f26e4067d22af268eb24de61320a7fe9)(@types/node@26.6.5)(@types/react@19.3.0)(supports-color@8.1.1)
       react:
         specifier: catalog:react
         version: 19.3.1
@@ -2077,7 +2077,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@raycast/api@2.12.1(patch_hash=8717e2566e69f6d3de228c29300fb70f0e6e4b554df405d5abf3e2117eb03691)(@types/node@26.6.5)(@types/react@19.3.0)(supports-color@8.1.1)':
+  '@raycast/api@2.12.1(patch_hash=2e2830ce7df0a18201c0b80911680532f26e4067d22af268eb24de61320a7fe9)(@types/node@26.6.5)(@types/react@19.3.0)(supports-color@8.1.1)':
     dependencies:
       '@oclif/core': 5.1.12
       '@oclif/plugin-autocomplete': 4.0.6(supports-color@8.1.1)
