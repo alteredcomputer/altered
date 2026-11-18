@@ -14,4 +14,4 @@ context/.tmp/
 context/repos/
 dist/
 node_modules/
-
+raycast-env.d.ts
