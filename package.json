@@ -4,6 +4,10 @@
     "type": "module",
 
     "scripts": {
+        "dev:launcher-experimental": "turbo dev --filter=altered-launcher-experimental",
+        "dev:experimental": "turbo dev --filter=*experimental",
+        "dev": "turbo dev",
+
         "check:types": "turbo check:types",
         "check:style": "ultracite check",
         "check": "turbo check:types //#check:style",

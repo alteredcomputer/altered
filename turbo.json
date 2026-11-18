@@ -5,6 +5,11 @@
     "globalDependencies": ["packages/tooling/src/typescript/config/**/*.json"],
 
     "tasks": {
+        "dev": {
+            "persistent": true,
+            "cache": false
+        },
+
         "check:types": {
             "dependsOn": ["^check:types"]
         },
