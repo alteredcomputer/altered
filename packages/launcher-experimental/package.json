@@ -1,0 +1,27 @@
+{
+    "name": "@altered/launcher-experimental",
+    "private": true,
+    "type": "module",
+
+    "exports": {
+        "./*.ts": "./src/*.ts",
+        "./*.tsx": "./src/*.tsx"
+    },
+
+    "scripts": {
+        "check:types": "tsc"
+    },
+
+    "dependencies": {
+        "@altered/shared-experimental": "workspace:*",
+        "@raycast/api": "catalog:raycast",
+        "react": "catalog:react"
+    },
+
+    "devDependencies": {
+        "@altered/tooling": "workspace:*",
+        "@types/node": "catalog:raycast",
+        "@types/react": "catalog:react",
+        "typescript": "catalog:"
+    }
+}
