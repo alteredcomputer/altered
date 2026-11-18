@@ -1,0 +1,23 @@
+{
+    "name": "@altered/shared-experimental",
+    "private": true,
+    "type": "module",
+
+    "exports": {
+        "./*.ts": "./src/*.ts"
+    },
+
+    "scripts": {
+        "check:types": "tsc"
+    },
+
+    "dependencies": {
+        "arktype": "catalog:"
+    },
+
+    "devDependencies": {
+        "@altered/tooling": "workspace:*",
+        "@types/node": "catalog:",
+        "typescript": "catalog:"
+    }
+}
