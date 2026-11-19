@@ -10,7 +10,9 @@ const InternalServerErrorAPIErrorFactory = error("INTERNAL_SERVER_ERROR", {
     data: type({
         why: "string",
 
-        fix: "string"
+        fix: type("string").default(
+            "This is on our end. Try again, and report it if it keeps happening."
+        )
     })
 })
 
