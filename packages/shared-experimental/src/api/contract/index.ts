@@ -15,14 +15,14 @@ type APIContract = typeof apiContract
 type APIInputs = InferRouterContractInputs<APIContract>
 type APIOutputs = InferRouterContractOutputs<APIContract>
 
-type APIErrorDefinitions = InferRouterContractErrors<APIContract>
+type APIProcedureErrors = InferRouterContractErrors<APIContract>
 type APIError = InferRouterContractError<APIContract>
 
 export {
     type APIContract,
     type APIError,
-    type APIErrorDefinitions,
     type APIInputs,
     type APIOutputs,
+    type APIProcedureErrors,
     apiContract
 }

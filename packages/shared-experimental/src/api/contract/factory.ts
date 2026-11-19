@@ -1,6 +1,6 @@
 import { oc } from "@orpc/contract"
-import { apiErrorMap } from "../errors/map.ts"
+import { apiErrorFactoryMap } from "../errors/factories/map.ts"
 
-const apiContractFactory = oc.errors(apiErrorMap)
+const apiContractFactory = oc.errors(apiErrorFactoryMap)
 
 export { apiContractFactory }
