@@ -249,6 +249,25 @@ importers:
         specifier: 8.2.1
         version: 8.2.1(@biomejs/biome@2.6.8)
 
+  apps/api-experimental:
+    dependencies:
+      '@altered/api-experimental':
+        specifier: workspace:*
+        version: link:../../packages/api-experimental
+      '@altered/shared-experimental':
+        specifier: workspace:*
+        version: link:../../packages/shared-experimental
+    devDependencies:
+      '@altered/tooling':
+        specifier: workspace:*
+        version: link:../../packages/tooling
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.6
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+
   apps/launcher-experimental:
     dependencies:
       '@altered/launcher-experimental':
@@ -267,6 +286,28 @@ importers:
       '@types/react':
         specifier: catalog:react
         version: 19.3.0
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+
+  packages/api-experimental:
+    dependencies:
+      '@altered/server-experimental':
+        specifier: workspace:*
+        version: link:../server-experimental
+      '@altered/shared-experimental':
+        specifier: workspace:*
+        version: link:../shared-experimental
+      '@orpc/server':
+        specifier: catalog:orpc
+        version: 2.0.0-beta.51
+    devDependencies:
+      '@altered/tooling':
+        specifier: workspace:*
+        version: link:../tooling
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.6
       typescript:
         specifier: 'catalog:'
         version: 7.0.2

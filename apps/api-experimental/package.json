@@ -1,0 +1,19 @@
+{
+    "name": "altered-api-experimental",
+    "private": true,
+    "type": "module",
+
+    "scripts": {
+        "check:types": "tsc"
+    },
+
+    "dependencies": {
+        "@altered/api-experimental": "workspace:*"
+    },
+
+    "devDependencies": {
+        "@altered/tooling": "workspace:*",
+        "@types/node": "catalog:",
+        "typescript": "catalog:"
+    }
+}
