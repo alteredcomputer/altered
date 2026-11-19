@@ -1,7 +1,7 @@
-import { systemEchoApiProcedure } from "./echo.ts"
+import { systemEchoApiContractProcedure } from "./echo.ts"
 
 const systemApiContract = {
-    echo: systemEchoApiProcedure
+    echo: systemEchoApiContractProcedure
 }
 
 export { systemApiContract }

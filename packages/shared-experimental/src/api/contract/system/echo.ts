@@ -1,7 +1,7 @@
 import { type } from "arktype"
 import { apiContractFactory } from "../factory.ts"
 
-const systemEchoApiProcedure = apiContractFactory
+const systemEchoApiContractProcedure = apiContractFactory
     .input(
         type({
             message: "string"
@@ -15,4 +15,4 @@ const systemEchoApiProcedure = apiContractFactory
         })
     )
 
-export { systemEchoApiProcedure }
+export { systemEchoApiContractProcedure }
