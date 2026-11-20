@@ -1,4 +1,4 @@
-import { apiRpcPathPrefix } from "@altered/shared-experimental/config/api.ts"
+import { apiRpcPathPrefix } from "@altered/shared-experimental/config/tmp.ts"
 import { onError } from "@orpc/server"
 import { RPCHandler } from "@orpc/server/fetch"
 import { apiRouter } from "../../router/index.ts"

@@ -1,5 +1,5 @@
 import { type InspectColor, styleText } from "node:util"
-import { terminalTextAccentStyle } from "../config/preferences.ts"
+import { terminalTextAccentStyle } from "../config/tmp.ts"
 
 type TerminalTextStyle = InspectColor
 

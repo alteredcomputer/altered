@@ -3,7 +3,7 @@ import {
     apiDevelopmentServerOrigin,
     apiDevelopmentServerPort,
     apiRpcPathPrefix
-} from "@altered/shared-experimental/config/api.ts"
+} from "@altered/shared-experimental/config/tmp.ts"
 import { styleTerminalText } from "@altered/shared-experimental/utils/style-terminal-text.ts"
 import { Hono } from "hono"
 import { logger } from "hono/logger"
