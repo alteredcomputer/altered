@@ -1,8 +1,7 @@
-import { apiFactory } from "../factory.ts"
-import { apiErrorBoundaryMiddleware } from "../middleware/error-boundary.ts"
+import { apiFactory } from "../factory/index.ts"
 import { systemApiRouter } from "./system/index.ts"
 
-const apiRouter = apiFactory.use(apiErrorBoundaryMiddleware).router({
+const apiRouter = apiFactory.router({
     system: systemApiRouter
 })
 

@@ -1,10 +1,12 @@
-/**
- * @remarks The initial/base context provided by the handler. Specialize later.
- */
-type APIContext = {
+type APIRequestContext = {
     request: {
         headers: Headers
     }
 }
 
-export type { APIContext }
+// biome-ignore lint/complexity/noBannedTypes: Placeholder.
+type APIAuthContext = {}
+
+type APIContext = APIRequestContext & APIAuthContext
+
+export type { APIAuthContext, APIContext, APIRequestContext }
