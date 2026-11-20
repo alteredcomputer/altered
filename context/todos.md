@@ -13,3 +13,7 @@
 - Rebuild/test all types and functions prefixed with `unstable_`/`Unstable_`.
 
 - Refactor `isEnvironment` to use our config instead of reading environment variables directly.
+
+- Add versions to all packages.
+
+- When releases start, solidify a versioning system.

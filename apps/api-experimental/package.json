@@ -1,10 +1,19 @@
 {
     "name": "altered-api-experimental",
+    "version": "0.1.0",
     "private": true,
     "type": "module",
 
     "scripts": {
-        "check:types": "tsc"
+        "dev": "tsx watch --env-file=../../.env --include ../../.env src/index.ts",
+
+        "check:types": "tsc",
+
+        "clean": "echo 'Not yet implemented.'",
+
+        "build": "echo 'Not yet implemented.'",
+
+        "start": "echo 'Not yet implemented.'"
     },
 
     "dependencies": {
@@ -16,6 +25,7 @@
     "devDependencies": {
         "@altered/tooling": "workspace:*",
         "@types/node": "catalog:",
+        "tsx": "catalog:",
         "typescript": "catalog:"
     }
 }

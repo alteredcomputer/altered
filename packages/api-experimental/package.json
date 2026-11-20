@@ -14,7 +14,8 @@
     "dependencies": {
         "@altered/server-experimental": "workspace:*",
         "@altered/shared-experimental": "workspace:*",
-        "@orpc/server": "catalog:orpc"
+        "@hono/node-server": "catalog:",
+        "hono": "catalog:"
     },
 
     "devDependencies": {

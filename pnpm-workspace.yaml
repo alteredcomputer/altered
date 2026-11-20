@@ -6,8 +6,11 @@ allowBuilds:
     esbuild: true
 
 catalog:
+    "@hono/node-server": 2.1.9
     "@types/node": 26.6.6
     arktype: 2.2.9
+    hono: 4.13.19
+    tsx: 4.23.15
     typescript: 7.0.2
 
 catalogs:

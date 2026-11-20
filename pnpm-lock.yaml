@@ -189,12 +189,18 @@ settings:
 
 catalogs:
   default:
+    '@hono/node-server':
+      specifier: 2.1.9
+      version: 2.1.9
     '@types/node':
       specifier: 26.6.6
       version: 26.6.6
     arktype:
       specifier: 2.2.9
       version: 2.2.9
+    hono:
+      specifier: 4.13.19
+      version: 4.13.19
     typescript:
       specifier: 7.0.2
       version: 7.0.2
@@ -257,6 +263,9 @@ importers:
       '@altered/shared-experimental':
         specifier: workspace:*
         version: link:../../packages/shared-experimental
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.19
     devDependencies:
       '@altered/tooling':
         specifier: workspace:*
@@ -298,9 +307,12 @@ importers:
       '@altered/shared-experimental':
         specifier: workspace:*
         version: link:../shared-experimental
-      '@orpc/server':
-        specifier: catalog:orpc
-        version: 2.0.0-beta.51
+      '@hono/node-server':
+        specifier: 'catalog:'
+        version: 2.1.9(hono@4.13.19)
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.19
     devDependencies:
       '@altered/tooling':
         specifier: workspace:*
@@ -634,6 +646,12 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@hono/node-server@2.1.9':
+    resolution: {integrity: sha512-Sk4NQd3GFY0WZWCzndwFMPwJhtD0y9qjsQ+pjID0/03nK9pxyBCUoUHCho8QYBLBVhi0ssL8UkNPHqbgSOFPIQ==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      hono: ^4 || ^5.0.0-0
 
   '@inquirer/ansi@1.0.2':
     resolution: {integrity: sha512-S8qNSZiYzFd0wAcyG5AXCvUHC5Sr7xpZ9wZ2py9XR88jUz8wooStVx5M6dRzczbBWjic9NP7+rY0Xi7qqK/aMQ==}
@@ -1299,6 +1317,10 @@ packages:
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
+
+  hono@4.13.19:
+    resolution: {integrity: sha512-KmXvQAXwcAHV+muzbIwoJ23niEB5nMoDVr9WcRkU8mvjUECm/1+7v4Jgp7P7a+H6MLFrh+vXrGonGrGS+RQfkA==}
+    engines: {node: '>=16.9.0'}
 
   human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
@@ -2026,6 +2048,10 @@ snapshots:
   '@esbuild/win32-x64@0.28.2':
     optional: true
 
+  '@hono/node-server@2.1.9(hono@4.13.19)':
+    dependencies:
+      hono: 4.13.19
+
   '@inquirer/ansi@1.0.2': {}
 
   '@inquirer/checkbox@4.3.2(@types/node@26.6.5)':
@@ -2667,6 +2693,8 @@ snapshots:
       is-glob: 4.0.3
 
   has-flag@4.0.0: {}
+
+  hono@4.13.19: {}
 
   human-signals@2.1.0: {}
 
