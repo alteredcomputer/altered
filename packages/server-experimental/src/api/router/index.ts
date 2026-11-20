@@ -1,7 +1,7 @@
-import { apiFactory } from "../factory/index.ts"
+import { apiRootRouterFactory } from "../factory/index.ts"
 import { systemApiRouter } from "./system/index.ts"
 
-const apiRouter = apiFactory.router({
+const apiRouter = apiRootRouterFactory.router({
     system: systemApiRouter
 })
 

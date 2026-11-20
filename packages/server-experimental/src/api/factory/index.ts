@@ -7,10 +7,12 @@ const createMiddlewareProps = {
 } satisfies CreateMiddlewareProps
 
 /**
- * @remarks Completely replaces `os` from "@orpc/server".
+ * @remarks Applies global middleware once to avoid duplication.
  */
-const apiFactory = apiFactoryBuilder.use(
+const apiRootRouterFactory = apiFactoryBuilder.use(
     createApiErrorBoundaryMiddleware(createMiddlewareProps)
 )
 
-export { apiFactory }
+const apiProcedureFactory = apiFactoryBuilder
+
+export { apiProcedureFactory, apiRootRouterFactory }
