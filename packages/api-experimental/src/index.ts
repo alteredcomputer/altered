@@ -6,10 +6,21 @@ import {
 } from "@altered/shared-experimental/config/api.ts"
 import { styleTerminalText } from "@altered/shared-experimental/utils/style-terminal-text.ts"
 import { Hono } from "hono"
+import { logger } from "hono/logger"
 
 class ALTEREDAPI extends Hono {
     constructor() {
         super()
+
+        this.use(
+            logger((message: string, ...rest: string[]) => {
+                const newMessage = message
+                    .replace("<--", styleTerminalText(">>>"))
+                    .replace("-->", styleTerminalText("<<<"))
+
+                console.log(newMessage, ...rest)
+            })
+        )
 
         this.use(`${apiRpcPathPrefix}/*`, async (context, next) => {
             const handlerResult = await handleApiRpcFetchRequest(
