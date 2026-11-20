@@ -2,6 +2,7 @@
     "js/ts.experimental.useTsgo": true,
     "js/ts.tsdk.path": "node_modules/typescript",
     "js/ts.preferences.importModuleSpecifierEnding": "js",
+    "js/ts.format.semicolons": "remove",
 
     "[css]": { "editor.defaultFormatter": "biomejs.biome" },
     "[graphql]": { "editor.defaultFormatter": "biomejs.biome" },
