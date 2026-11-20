@@ -13,8 +13,10 @@
     },
 
     "dependencies": {
+        "@altered/client-experimental": "workspace:*",
         "@altered/shared-experimental": "workspace:*",
         "@raycast/api": "catalog:raycast",
+        "@tanstack/react-query": "catalog:tanstack-query",
         "react": "catalog:react"
     },
 

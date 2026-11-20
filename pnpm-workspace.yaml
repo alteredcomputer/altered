@@ -15,8 +15,14 @@ catalog:
 
 catalogs:
     orpc:
-        "@orpc/contract": 2.0.0-beta.51
-        "@orpc/server": 2.0.0-beta.51
+        "@orpc/client": 2.0.0-beta.52
+        "@orpc/contract": 2.0.0-beta.52
+        "@orpc/server": 2.0.0-beta.52
+        "@orpc/tanstack-query": 2.0.0-beta.52
+
+    tanstack-query:
+        "@tanstack/query-core": 5.108.1
+        "@tanstack/react-query": 5.108.1
 
     react:
         "@types/react": 19.3.0
