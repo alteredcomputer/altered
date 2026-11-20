@@ -1,5 +1,5 @@
 import type { CreateMiddlewareProps } from "../middleware/definitions.ts"
-import { createApiErrorBoundaryMiddleware } from "../middleware/error-boundary.ts"
+import { createApiErrorBoundaryMiddleware } from "../middleware/error-boundary/index.ts"
 import { apiFactoryBuilder } from "./builder.ts"
 
 const createMiddlewareProps = {

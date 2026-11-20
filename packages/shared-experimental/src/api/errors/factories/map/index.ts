@@ -1,6 +1,5 @@
 import type { ErrorMapItem } from "@orpc/contract"
-// biome-ignore lint/performance/noNamespaceImport: Aggregates exports for self-mapping.
-import * as apiErrorFactoriesModule from "../definitions.ts"
+import { apiErrorFactories } from "../index.ts"
 
 function createOrpcErrorFactoryMap<
     const ErrorFactory extends ErrorMapItem & { code: string },
@@ -15,8 +14,6 @@ function createOrpcErrorFactoryMap<
 
     return Object.fromEntries(errorFactoryMapEntries) as ErrorFactoryMap
 }
-
-const apiErrorFactories = [...Object.values(apiErrorFactoriesModule)]
 
 const apiErrorFactoryMap = createOrpcErrorFactoryMap(...apiErrorFactories)
 
