@@ -17,3 +17,5 @@
 - Add versions to all packages.
 
 - When releases start, solidify a versioning system.
+
+- We should further refine the server-side error boundary classification and logging, including beyond the RPC handler.
