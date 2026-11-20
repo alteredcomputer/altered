@@ -11,3 +11,5 @@
 - Replace the oRPC console logger interceptor with a more tailored solution.
 
 - Rebuild/test all types and functions prefixed with `unstable_`/`Unstable_`.
+
+- Refactor `isEnvironment` to use our config instead of reading environment variables directly.

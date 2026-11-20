@@ -8,7 +8,9 @@
     },
 
     "dependencies": {
-        "@altered/api-experimental": "workspace:*"
+        "@altered/api-experimental": "workspace:*",
+        "@altered/shared-experimental": "workspace:*",
+        "hono": "catalog:"
     },
 
     "devDependencies": {
